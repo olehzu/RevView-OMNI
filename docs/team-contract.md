@@ -1,7 +1,7 @@
 # Team Contract: Team 8 RevView/OMNI
 
 **Project:** 	RevView/OMNI
-**Members:** Oleh Zubariev, **add more**
+**Members:** Oleh Zubariev, add more
 **Repository:** https://github.com/olehzu/RevView-OMNI
 **Signed:** 09/04/2026
 
