@@ -59,3 +59,4 @@ Each member adds their own line, in their own commit.
 - Cong Le, 09/04/2026
 - Francisco Lugo Gonzales, 09/04/2026
 - Ralph Castilleja, 09/04/2026
+- Ethan Nguyen, 09/07/2026
