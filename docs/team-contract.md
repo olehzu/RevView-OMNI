@@ -60,3 +60,4 @@ Each member adds their own line, in their own commit.
 - Francisco Lugo Gonzales, 09/04/2026
 - Ralph Castilleja, 09/04/2026
 - Ethan Nguyen, 09/07/2026
+- Valerie Valles, 09/11/2026
