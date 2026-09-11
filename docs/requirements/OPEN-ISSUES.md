@@ -1,7 +1,7 @@
 # Open Issues
 
-**Project:** _[Your project name]_
-**Team:** _[Team NN]_
+**Project:** _[RevView/OMNI Review Helper Application]_
+**Team:** _[8]_
 
 ---
 
