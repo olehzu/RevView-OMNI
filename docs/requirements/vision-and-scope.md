@@ -1,8 +1,8 @@
 # Vision and Scope
 
-**Project:** _[Your project name]_
-**Team:** _[Team NN]_
-**Client:** _[Client name and organization]_
+**Project:** RevView/OMNI
+**Team:** Team 8
+**Client:** Sumalee Rodolph
 **Version:** 0.1
 
 ---
@@ -33,7 +33,7 @@ _Why this matters more with an agent than it used to: ask an agent to insert a n
 
 | Date | Version | Description | Author |
 |---|---|---|---|
-| _[YYYY-MM-DD]_ | 0.1 | Initial draft from the client brief and first client meeting | _[Name]_ |
+| 2026-09-11 | 0.1 | Initial draft from the client brief and first client meeting | Oleh Zubariev |
 
 ---
 
@@ -43,13 +43,10 @@ _[This document defines the goals, purpose, and boundaries of the project. It gi
 
 ### 1.1 Background
 
-_[Summarize the rationale and context for the new product, or for the changes to an existing one. Describe the situation that led to the decision to build it.]_
 
-_**Step 1: Describe the business.** Introduce the organization. Cover what it does (industry, products, services), its size (employees, locations), and the goals that relate to the problem you are solving._
+The client, AppliedAvionics, Inc. (formerly Aerospace Optics, Inc.), is a manufacturer of avionics hardware headquartered in Fort Worth, Texas, within the Dallas–Fort Worth–Arlington metropolitan area. Founded in 1968 and acquired by Loar Holdings Inc. in 2024, the company designs and builds man-machine interface and system-integration equipment for aircraft: its VIVISUN® line of ruggedized, lighted pushbutton switches and cockpit displays, and its NEXSYS® line of system-to-system integration modules, signal processors, and converters. AppliedAvionics employs roughly 80 people at its Fort Worth manufacturing plant, with additional sales and support representation in the United Kingdom, France, Germany, Italy, Spain, Brazil, and Australia.
 
-_Example: "The client, XYZ Logistics, is a mid-sized shipping company that specializes in last-mile delivery services for e-commerce businesses. The company operates in five major cities, employs 200 delivery staff, and handles over 10,000 deliveries per day. The goal is to optimize delivery efficiency and customer satisfaction."_
-
-_**Checklist:** Would a reader who has never heard of this organization understand what it does and why this project exists?]_
+As the NEXSYS product line has expanded beyond traditional hardware into embedded software and system-to-system integration, AppliedAvionics' engineering group now produces and reviews a correspondingly larger volume of source code before it can ship. The company's current code review process is manual: authors gather checklists, produce SVN diffs, fill out review records by hand, pull build information from Jenkins, and notify reviewers individually, with Jira used to track the associated work. The goal of this project is to centralize that process into a single workflow that ties Jira, SVN, Jenkins, diffs, checklists, and reviewer comments together, and to use automation and AI to handle summarization and simple compliance checks, while keeping a human reviewer's judgment and a traceable review record at the center of every release.
 
 ### 1.2 Current Process Flows (As-Is Process Flows)
 
