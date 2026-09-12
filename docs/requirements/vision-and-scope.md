@@ -1,8 +1,8 @@
 # Vision and Scope
 
-**Project:** _[Your project name]_
-**Team:** _[Team NN]_
-**Client:** _[Client name and organization]_
+**Project:** _[RevReview OMNI_
+**Team:** _[Team 8]_
+**Client:** _[Sumalee Rodolph - Applied Avionics]_
 **Version:** 0.1
 
 ---
@@ -33,7 +33,7 @@ _Why this matters more with an agent than it used to: ask an agent to insert a n
 
 | Date | Version | Description | Author |
 |---|---|---|---|
-| _[YYYY-MM-DD]_ | 0.1 | Initial draft from the client brief and first client meeting | _[Name]_ |
+| _[2026-09-12]_ | 0.1 | Initial draft from the client brief and first client meeting | _[CongLe]_ |
 
 ---
 
