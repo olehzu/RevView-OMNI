@@ -2,7 +2,7 @@
 
 **Project:** _RevReview OMNI_  
 **Team:** _Team 8_  
-**Client:** _[Sumalee Rodolph](https://www.linkedin.com/in/sumalee-rodolph/)_  
+**Client:** _[Sumalee Rodolph](https://www.linkedin.com/in/sumalee-rodolph/)_ - Applied Avionics  
 **Version:** 0.1
 
 ---
