@@ -204,7 +204,7 @@ _**Never skip. 5 min.** The part teams cut when they run late, and the highest-v
 
 _Read back four things: the problem in one sentence, the objectives with any numbers you got, the top three things you heard are hard, and one thing you believe is **out** of scope. The last produces more correction than the other three together._
 
-_Fill in the [vision-and-scope.md](vision-and-scope.md) vision statement table during the meeting, read its six rows aloud, and see what they fix. Ninety seconds._
+_Fill in the [vision-and-scope.md](../vision-and-scope.md) vision statement table during the meeting, read its six rows aloud, and see what they fix. Ninety seconds._
 
 **What we read back, and what they corrected:** Not performed this meeting. The 30 minutes were spent on the maintenance and volume questions above rather than a structured read-back. A full read-back, including the vision statement table, is still owed and should happen at the start of meeting 3 rather than be deferred again.
 
@@ -228,15 +228,15 @@ _File everything within 24 hours, while you still remember why each answer matte
 
 | Section | Feeds |
 |---|---|
-| 1, 2 | [project-glossary.md](project-glossary.md), and Background in [vision-and-scope.md](vision-and-scope.md) |
-| 3 | Business Opportunity, Objectives, and Success Metrics in [vision-and-scope.md](vision-and-scope.md) |
-| 4, 6 | Background and the process flow in [vision-and-scope.md](vision-and-scope.md); use cases in week 4 |
+| 1, 2 | [project-glossary.md](../project-glossary.md), and Background in [vision-and-scope.md](../vision-and-scope.md) |
+| 3 | Business Opportunity, Objectives, and Success Metrics in [vision-and-scope.md](../vision-and-scope.md) |
+| 4, 6 | Background and the process flow in [vision-and-scope.md](../vision-and-scope.md); use cases in week 4 |
 | 5 | Business rules catalog, week 4 |
 | 7, 9, 10 | Quality attributes, constraints, and external interfaces in the specification, week 4 |
-| 8, 12 | Stakeholder Profiles in [vision-and-scope.md](vision-and-scope.md) |
-| 8, 11 | Risks (`RI-<slug>`) and assumptions (`AS-<slug>`) in [vision-and-scope.md](vision-and-scope.md) |
-| 14 | Scope and the vision statement in [vision-and-scope.md](vision-and-scope.md) |
-| Anything unanswered | [OPEN-ISSUES.md](OPEN-ISSUES.md) |
+| 8, 12 | Stakeholder Profiles in [vision-and-scope.md](../vision-and-scope.md) |
+| 8, 11 | Risks (`RI-<slug>`) and assumptions (`AS-<slug>`) in [vision-and-scope.md](../vision-and-scope.md) |
+| 14 | Scope and the vision statement in [vision-and-scope.md](../vision-and-scope.md) |
+| Anything unanswered | [OPEN-ISSUES.md](../OPEN-ISSUES.md) |
 
 ## Initial ideas
 
@@ -252,7 +252,7 @@ None noted. No dedicated observer role was recorded for this meeting.
 
 ## Open questions
 
-_[Everything you could not answer, and everything they answered with "I would have to check". Copy each into [OPEN-ISSUES.md](OPEN-ISSUES.md) as an `OI-*` with the person who can answer it, then sort them before the next meeting by what it costs you to stay wrong.]_
+_[Everything you could not answer, and everything they answered with "I would have to check". Copy each into [OPEN-ISSUES.md](../OPEN-ISSUES.md) as an `OI-*` with the person who can answer it, then sort them before the next meeting by what it costs you to stay wrong.]_
 
 - `OI-5` (partially resolved this meeting): 5 to 6 developers on the team, 6 reviews currently in process; weekly/monthly volume and largest change size still unknown.
 - `OI-7` (still partially open): sample Jira setup promised for about 2026-09-25, but the production system owner and documentation are still unknown.
@@ -262,7 +262,7 @@ _[Everything you could not answer, and everything they answered with "I would ha
 - `OI-11` (still open): the guide's catch-all "anything else" question has now been skipped twice.
 - `OI-12` (new, open): Sumalee to provide an example/sample Jira setup, expected around 2026-09-25.
 
-See [OPEN-ISSUES.md](OPEN-ISSUES.md) for the canonical, current list.
+See [OPEN-ISSUES.md](../OPEN-ISSUES.md) for the canonical, current list.
 
 ---
 

@@ -204,7 +204,7 @@ _**Never skip. 5 min.** The part teams cut when they run late, and the highest-v
 
 _Read back four things: the problem in one sentence, the objectives with any numbers you got, the top three things you heard are hard, and one thing you believe is **out** of scope. The last produces more correction than the other three together._
 
-_Fill in the [vision-and-scope.md](vision-and-scope.md) vision statement table during the meeting, read its six rows aloud, and see what they fix. Ninety seconds._
+_Fill in the [vision-and-scope.md](../vision-and-scope.md) vision statement table during the meeting, read its six rows aloud, and see what they fix. Ninety seconds._
 
 **What we read back, and what they corrected:** The team did read back its understanding of the project to Sumalee before ending the meeting, and she approved it. That read back covered the overall project understanding rather than the guide's full four part structure (problem statement, objectives with numbers, top three hard things, one thing out of scope), and the vision statement table was not read aloud. The team agreed internally to fully work out the scope before meeting 2. No corrections were recorded. Given how informal this read back was, a fuller structured read back, including the vision statement table, is recommended for meeting 3.
 
@@ -230,15 +230,15 @@ _File everything within 24 hours, while you still remember why each answer matte
 
 | Section | Feeds |
 |---|---|
-| 1, 2 | [project-glossary.md](project-glossary.md), and Background in [vision-and-scope.md](vision-and-scope.md) |
-| 3 | Business Opportunity, Objectives, and Success Metrics in [vision-and-scope.md](vision-and-scope.md) |
-| 4, 6 | Background and the process flow in [vision-and-scope.md](vision-and-scope.md); use cases in week 4 |
+| 1, 2 | [project-glossary.md](../project-glossary.md), and Background in [vision-and-scope.md](../vision-and-scope.md) |
+| 3 | Business Opportunity, Objectives, and Success Metrics in [vision-and-scope.md](../vision-and-scope.md) |
+| 4, 6 | Background and the process flow in [vision-and-scope.md](../vision-and-scope.md); use cases in week 4 |
 | 5 | Business rules catalog, week 4 |
 | 7, 9, 10 | Quality attributes, constraints, and external interfaces in the specification, week 4 |
-| 8, 12 | Stakeholder Profiles in [vision-and-scope.md](vision-and-scope.md) |
-| 8, 11 | Risks (`RI-<slug>`) and assumptions (`AS-<slug>`) in [vision-and-scope.md](vision-and-scope.md) |
-| 14 | Scope and the vision statement in [vision-and-scope.md](vision-and-scope.md) |
-| Anything unanswered | [OPEN-ISSUES.md](OPEN-ISSUES.md) |
+| 8, 12 | Stakeholder Profiles in [vision-and-scope.md](../vision-and-scope.md) |
+| 8, 11 | Risks (`RI-<slug>`) and assumptions (`AS-<slug>`) in [vision-and-scope.md](../vision-and-scope.md) |
+| 14 | Scope and the vision statement in [vision-and-scope.md](../vision-and-scope.md) |
+| Anything unanswered | [OPEN-ISSUES.md](../OPEN-ISSUES.md) |
 
 ## Initial ideas
 
@@ -254,7 +254,7 @@ None noted. No dedicated observer this meeting (whole team scribed instead), and
 
 ## Open questions
 
-_[Everything you could not answer, and everything they answered with "I would have to check". Copy each into [OPEN-ISSUES.md](OPEN-ISSUES.md) as an `OI-*` with the person who can answer it, then sort them before the next meeting by what it costs you to stay wrong.]_
+_[Everything you could not answer, and everything they answered with "I would have to check". Copy each into [OPEN-ISSUES.md](../OPEN-ISSUES.md) as an `OI-*` with the person who can answer it, then sort them before the next meeting by what it costs you to stay wrong.]_
 
 - `OI-2` (resolved 2026-09-09): baseline review time, about 20 minutes per review, excluding Jenkins build time.
 - `OI-3` (partially resolved 2026-09-09): Sumalee began a live walkthrough of one review but did not finish it; a complete pass and a "went wrong" story are still needed.
@@ -267,7 +267,7 @@ _[Everything you could not answer, and everything they answered with "I would ha
 - `OI-10` (partially resolved 2026-09-09): contact channel is Microsoft Teams direct messages, cadence and meeting 3 logistics still open.
 - `OI-11` (open): the guide's catch-all "anything else" question has not been asked in either meeting yet.
 
-See [OPEN-ISSUES.md](OPEN-ISSUES.md) for the canonical, current list, including anything raised in meeting 2.
+See [OPEN-ISSUES.md](../OPEN-ISSUES.md) for the canonical, current list, including anything raised in meeting 2.
 
 ---
 
