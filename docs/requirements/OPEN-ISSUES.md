@@ -1,7 +1,7 @@
 # Open Issues
 
-**Project:** _[Your project name]_
-**Team:** _[Team NN]_
+**Project:** RevView/OMNI
+**Team:** Team 8
 
 ---
 
@@ -29,10 +29,19 @@ _[Send the shortlist to your client the day before. A client who has seen the qu
 
 | ID | Question | Why it matters | Who can answer | Raised |
 |---|---|---|---|---|
-| OI-1 | _[The question, phrased so it has a definite answer. Not "tell us about reporting" but "who is allowed to see another student's evaluation scores?"]_ | _[What we get wrong if we guess. Name the artifact or decision it blocks.]_ | _[Client, instructor, a specific user, or the team itself]_ | _[YYYY-MM-DD]_ |
+| OI-3 | Can Sumalee walk the team through one complete, recent review end to end, including a case where it went wrong or got stuck? | She began a live walkthrough in meeting 1 (Excel spreadsheet, SVN links) but stopped after about 10 minutes without finishing. A full pass, and a "went wrong" story, are where the real requirements and business rules hide. | Sumalee Rodolph | 2026-09-09 |
+| OI-5 | How many reviews happen per week or month, and how big is the largest change ever reviewed? | We know 5 to 6 developers use the process daily and there are 6 reviews in progress right now (as of 2026-09-18), but not the ongoing rate or the size of the largest diff, both of which drive the SVN diff and build design. | Sumalee Rodolph | 2026-09-09 |
+| OI-7 | Who owns AppliedAvionics' production Jira, SVN, and Jenkins, and is there documentation for how the sandbox should mirror them? | The client's project concept document lays out the sandbox shape (Atlassian free-tier Jira, self-hosted SVN and Jenkins, isolated from AppliedAvionics' network), and a sample Jira was promised for about 2026-09-25, but no named system owner or formal documentation has been provided yet. | Sumalee Rodolph | 2026-09-09 |
+| OI-9 | Are there other AppliedAvionics stakeholders (for example engineering management, IT/security) the team should meet or get sign-off from? | Not raised in either meeting so far. A stakeholder with a veto discovered late is expensive to accommodate. | Sumalee Rodolph | 2026-09-09 |
+| OI-10 | What is the agreed meeting cadence, and when and where is meeting 3? | Contact channel is confirmed (Microsoft Teams direct messages, fast turnaround), but no explicit cadence has been agreed and meeting 3's date, time, and place are not yet on the calendar. | Sumalee Rodolph | 2026-09-09 |
+| OI-11 | Is there anything about the process or project we have not asked about that worries Sumalee? | The guide's catch-all question has not been asked in either meeting yet, and it is called out as the highest-yield question in the guide. | Sumalee Rodolph | 2026-09-09 |
+| OI-12 | When exactly will the example/sample Jira setup be ready, and does it cover what the sandbox needs? | Promised during meeting 2 for "next week" (around 2026-09-25); needed to validate the sandbox Jira structure against something concrete before integration work starts on it. | Sumalee Rodolph | 2026-09-18 |
 
 ## Resolved
 
 | ID | Question | Answer | Answered by | Date | Filed in |
 |---|---|---|---|---|---|
-| OI-0 | _[Example row, delete it]_ | _[What we were told]_ | _[Name]_ | _[YYYY-MM-DD]_ | _[`BO-grading-time`, or the glossary term, or the section]_ |
+| OI-2 | What does the current review process cost in time today, so we have a baseline for `BO-review-centralization`? | About 20 minutes per review to gather forms and fill in fields, not counting Jenkins build time. | Sumalee Rodolph | 2026-09-09 | `BO-review-centralization`, vision-and-scope.md section 2.3 (not yet drafted) |
+| OI-4 | What about the current process works well and should not change? | Do not change the underlying review process or the existing tools (SVN, Jira, Jenkins, the review record); the app should only make the existing process faster to run. Review records and checklists must still export in the same Excel/CSV format used today. | Sumalee Rodolph | 2026-09-09 | vision-and-scope.md sections 2.7 and 4 (not yet drafted) |
+| OI-6 | Can the team talk to or observe an actual review author or reviewer, not only Sumalee? | No, not at this time. Sumalee is the team's only point of contact at AppliedAvionics for now. | Sumalee Rodolph | 2026-09-09 | `RI-proxy-only-contact`, vision-and-scope.md section 2.6 (not yet drafted) |
+| OI-8 | Who maintains this system after the team graduates, and what do they already run? | Sumalee will maintain it herself. Expect to need about one person available for roughly a year after handoff for any issues; after that, support needs should drop off. | Sumalee Rodolph | 2026-09-18 | vision-and-scope.md section 4.4 (not yet drafted) |
