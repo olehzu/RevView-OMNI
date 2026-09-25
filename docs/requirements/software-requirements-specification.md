@@ -1,8 +1,8 @@
 # Software Requirements Specification
 
-**Project:** _[Your project name]_
-**Team:** _[Team NN]_
-**Client:** _[Client name and organization]_
+**Project:** RevView/OMNI
+**Team:** Team 8
+**Client:** Sumalee Rodolph, AppliedAvionics
 **Version:** 0.1
 
 ---
@@ -38,36 +38,41 @@ _Requirements cited from elsewhere keep their own identifiers: `UC-*` from [use-
 
 | Date | Version | Description | Author |
 |---|---|---|---|
-| _[YYYY-MM-DD]_ | 0.1 | Initial draft | _[Name]_ |
+| 2026-09-25 | 0.1 | Initial draft of section 1, from vision-and-scope.md and the client interview notes | Oleh Zubariev |
+| 2026-09-25 | 0.1 | Updated section 1 to match the filled-in vision-and-scope.md sections 2 through 4 | Oleh Zubariev |
 
 ---
 
 ## 1. Introduction
 
-### 1.1 The purpose of _[project name]_
+### 1.1 The purpose of RevView/OMNI
 
-_[What the system is for: who wants it, why, and who will use it. Even though the vision and scope answers this, restate it in a paragraph here, because people read this document without having read that one.]_
+RevView/OMNI is proposed for an internal aerospace software engineering team, at AppliedAvionics, that conducts formal code reviews for safety-critical avionics software. Today, authors manually assemble review information across Jira, SVN, and Jenkins, and complete separate checklists and review records, before a review can begin, and reviewers then move between those same materials to assess a change. This recurring administrative work takes time away from engineering assessment and creates opportunities for incomplete reviews, outdated source code under review, and missed reviewer notifications (see [vision-and-scope.md](vision-and-scope.md) sections 1.1, 1.2, and 2.1).
+
+RevView/OMNI consolidates the review record, source and diff context, checklists, and build information into a single review workspace, so that authors, reviewers, and the review moderator or coordinator, the primary user classes described in [vision-and-scope.md](vision-and-scope.md) section 3.1, spend their time on the review itself rather than on assembling it. The application supports the current safety-critical review process but is not itself a safety-critical system; it is a coordination and evidence-management tool for the review workflow.
+
+The project also serves as a senior design project for TCU students, who work with AppliedAvionics engineers to build it. Because students cannot access AppliedAvionics' production network, development uses isolated instances of Jira, SVN, and Jenkins populated with synthetic data, and AppliedAvionics' own software team validates the integrations against its production systems before the application is deployed internally.
 
 ### 1.2 The purpose of this document
 
-_[What this specification covers and for which release.]_
+This document describes the functional and nonfunctional requirements for RevView/OMNI. It serves as the reference for the project's requirements, defining the scope, functionality, and constraints for AppliedAvionics, the development team, and the course instructors.
 
-_Example: "This document describes the functional and nonfunctional requirements for release 1.0 of the Cafeteria Ordering System. It serves as the reference for the project's requirements, defining the scope, functionality, and constraints for stakeholders, developers, and testers."]_
+This specification supports the MVP scope defined in [vision-and-scope.md](vision-and-scope.md) section 4.3: `FEAT-review-initiation`, `FEAT-context-assembly`, `FEAT-diff-and-source-prep`, `FEAT-checklist-mapping`, `FEAT-integrity-validation`, `FEAT-review-notification`, and `FEAT-evidence-retention`. `FEAT-admin-and-configuration`, AI-generated review summarization beyond assisting with evidence assembly, and full production-grade integration across every platform variant are explicitly out of scope for this release, for the reasons given in that section.
 
 ### 1.3 Document conventions
 
-_[Any typographical conventions, and the identifier formats above, so that someone adding a requirement later knows how to name it.]_
+This document uses the identifier spaces listed under Identifiers above. Functional requirements that do not belong to a use case are written using the EARS (Easy Approach to Requirements Syntax) sentence shapes described in section 5.2, so that each one can be read only one way.
 
 ### 1.4 References
 
-_[Every document this specification refers to, with a link. At minimum, the four other documents in this folder. Include external standards you must conform to.]_
-
-- _[Project glossary](project-glossary.md)_
-- _[Vision and scope](vision-and-scope.md)_
-- _[Use cases](use-cases.md)_
-- _[Business rules](business-rules.md)_
-- _[Open issues](OPEN-ISSUES.md)_
-- _[The Easy Approach to Requirements Syntax (EARS)](https://alistairmavin.com/ears/)_
+- [Project glossary](project-glossary.md)
+- [Vision and scope](vision-and-scope.md)
+- [Use cases](use-cases.md)
+- [Business rules](business-rules.md)
+- [Open issues](OPEN-ISSUES.md)
+- [Client interview, 2026-09-09](client-meeting/client-interview-2026-09-09.md)
+- [Client interview, 2026-09-18](client-meeting/client-interview-2026-09-18.md)
+- [The Easy Approach to Requirements Syntax (EARS)](https://alistairmavin.com/ears/)
 
 ---
 
