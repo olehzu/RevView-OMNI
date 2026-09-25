@@ -29,7 +29,7 @@ _[Send the shortlist to your client the day before. A client who has seen the qu
 
 | ID | Question | Why it matters | Who can answer | Raised |
 |---|---|---|---|---|
-| OI-1 | _[The question, phrased so it has a definite answer. Not "tell us about reporting" but "who is allowed to see another student's evaluation scores?"]_ | _[What we get wrong if we guess. Name the artifact or decision it blocks.]_ | _[Client, instructor, a specific user, or the team itself]_ | _[YYYY-MM-DD]_ |
+| OI-1 | Does the formal review process need to comply with DO-178C (or another named standard), and if so, which specific clauses govern review artifacts, checklists, and traceability? | Several rules in `business-rules.md` (`BR-svn-diff-required`, `BR-review-package-exportable`, `BR-diff-checklist-match`, `BR-review-nine-parts`) are currently sourced only to the concept document's description of internal practice. If they actually trace back to DO-178C, that changes who owns changing them and what else must be cited in the specification. | Client (Sumalee Rodolph) | 2026-09-25 |
 
 ## Resolved
 
