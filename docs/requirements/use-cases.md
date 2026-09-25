@@ -1,8 +1,8 @@
 # Use Cases
 
-**Project:** _[Your project name]_
-**Team:** _[Team NN]_
-**Client:** _[Client name and organization]_
+**Project:** RevView/OMNI
+**Team:** Team 8
+**Client:** Sumalee Rodolph - Applied Avionics
 **Version:** 0.1
 
 ---
@@ -17,19 +17,13 @@ _The difference that matters is the parts a story does not have: preconditions, 
 
 ## Identifiers
 
-_Use cases are identified as `UC-<AREA>-<slug>`, where the area code groups related functionality and the slug is coined from the goal: `UC-RUB-create-rubric`, `UC-WAR-manage-activities`, `UC-STU-invite-students`._
-
-_Pick your own area codes from your project's feature areas, three or four letters each, and list them at the top of the Use Case List. Areas correspond to the `FEAT-*` entries in your [vision and scope](vision-and-scope.md), which is where use cases come from._
-
-_**Never renumber, rename, or repoint an identifier.** Moving a use case between areas would change its identifier, so put it in the right area the first time, and if you get it wrong, leave it. An identifier is an address, not a description._
-
-_Within one use case, `PRE-1`, `POST-1`, and the step numbers are local and may be renumbered freely, because nothing outside the use case cites them._
+Use cases are identified as `UC-<AREA>-<slug>`, where the area code groups related functionality and the slug is coined from the goal. The RevView/OMNI use cases below map to the product features documented in [vision-and-scope.md](vision-and-scope.md).
 
 ## Revision History
 
 | Date | Version | Description | Author |
 |---|---|---|---|
-| _[YYYY-MM-DD]_ | 0.1 | Initial use cases derived from the vision and scope feature list | _[Name]_ |
+| 2026-09-25 | 0.1 | Initial use cases for RevView/OMNI review-preparation, review, and closure workflow | Cong Le |
 
 ---
 
@@ -37,138 +31,486 @@ _Within one use case, `PRE-1`, `POST-1`, and the step numbers are local and may 
 
 ### 1.1 Purpose
 
-_[One paragraph: this document specifies the goals users can accomplish with the system, in enough detail that a developer knows what to build and a tester knows what to check.]_
+This document defines the primary goals users can accomplish with RevView/OMNI in enough detail for implementation and testing. It translates the vision and scope into operational use cases that describe how an author prepares a review, how a reviewer receives and evaluates it, and how the system retains evidence for later audit review.
 
 ### 1.2 Scope
 
-_[Which feature areas from the vision and scope are covered here. Name the `FEAT-*` entries. If a feature has no use cases yet, say so rather than leaving the reader to notice.]_
+This document covers the feature areas identified in [vision-and-scope.md](vision-and-scope.md): review initiation, context assembly, diff and source preparation, checklist mapping, integrity validation, review notification, and evidence retention. It does not cover production deployment beyond the internal system boundary or details of a final production network configuration.
 
 ---
 
 ## 2. Use Case Template
 
-_[The field definitions. Every use case below uses exactly these fields, in this order.]_
+**UC ID and Name.** The identifier plus a concise name stating the value this use case provides to a user.
 
-**UC ID and Name.** _The identifier plus a concise name stating the value this use case provides to a user. Begin with an action verb, followed by an object: "Create a rubric", not "Rubric creation" and not "Rubric management", which is a feature, not a goal._
+**Created By** and **Date Created.** Who wrote it and when.
 
-**Created By** and **Date Created.** _Who wrote it, and when._
+**Primary and Secondary Actors.** The initiator and supporting participants in the interaction.
 
-**Primary and Secondary Actors.** _An actor is a person or other entity outside the system that interacts with it. The primary actor initiates this use case; secondary actors participate in completing it. Actors usually correspond to the user classes you identified in the vision and scope._
+**Trigger.** The event that begins the use case.
 
-**Trigger.** _The business event, system event, or user action that starts the use case. The trigger tells the system to begin testing the preconditions._
+**Description.** The reason for and outcome of the use case.
 
-**Description.** _A brief statement of the reason for and the outcome of this use case._
+**Preconditions.** Facts that must already be true before the use case starts.
 
-**Preconditions.** _What must already be true before this use case can start. **The system must be able to test each precondition**, which is what separates a precondition from a hope. Label them `PRE-1`, `PRE-2`. Example: PRE-1. The user's identity has been authenticated._
+**Postconditions.** The state of the system at successful completion.
 
-**Postconditions.** _The state of the system at successful conclusion. Label them `POST-1`, `POST-2`. Example: POST-1. The price of the item in the database has been updated with the new value._
+**Main Success Scenario.** The actor and system steps under expected conditions.
 
-**Main Success Scenario.** _The actor's actions and the system's responses under normal, expected conditions, as a numbered list that alternates between the two and ends by accomplishing the goal in the name. Write "The system validates..." not "The system will validate..."; use cases are written in the present tense._
+**Extensions.** Alternative acceptable paths and expected error handling.
 
-**Extensions.** _Where the real work is. Two kinds, both numbered relative to the step they branch from:_
+**Priority.** Implementation priority.
 
-- _**Alternative flows**, other ways the use case can still succeed. Number them `4a`, `4b` for branches from step 4, with their own sub-steps `4a1`, `4a2`. Say where the flow branches off and, if it does, where it rejoins._
-- _**Exceptions**, anticipated error conditions and how the system responds. Numbered the same way._
+**Frequency of Use.** Estimated usage rate.
 
-_**A use case with no extensions is not finished.** For every step, ask: what if the input is invalid, the thing is not found, the user cancels, the user is not allowed, or the external system is down? An agent building from a flow with no failure paths will invent the error handling, and you will not find out until a demo._
+**Business Rules.** The `BR-*` identifiers that govern the behavior.
 
-**Priority.** _Relative priority of implementing this. Use the same scheme across all your use cases._
+**Associated Information.** Data fields, validations, and operational constraints relevant to the use case.
 
-**Frequency of Use.** _Roughly how often this is performed, per an appropriate unit of time. An early indicator of load, concurrency, and transaction volume, and it is the field that tells your architecture which use cases matter._
+**Related Use Cases.** Other use cases this one depends on or is invoked by.
 
-**Business Rules.** _The `BR-*` identifiers that govern this use case. **Identifiers only, never the rule's text**, so the rule has one home in [business-rules.md](business-rules.md) and cannot go stale here._
+**Assumptions.** Conditions assumed to be true during execution.
 
-**Associated Information.** _Everything a developer needs that is not a step: the data fields and their validation rules, quality attributes that apply, display and sort strategies, and what happens if execution fails for a systemic reason such as a network timeout. If the use case makes a durable change, say whether a failure rolls it back, completes it, or leaves it partially done._
-
-_Data fields are specified as a table:_
-
-| Property name | Data type | Validation rule | Security or access concerns | Glossary reference |
-|---|---|---|---|---|
-| _[field]_ | _[type]_ | _[required, format, range]_ | _[who may see or set it]_ | _[term]_ |
-
-**Related Use Cases.** _Other use cases this one invokes or is invoked by, by identifier and name._
-
-**Assumptions.** _Anything assumed about this use case or how it executes._
-
-**Open Issues.** _What you do not know yet. Mirror it into [OPEN-ISSUES.md](OPEN-ISSUES.md) so it is visible in one place._
+**Open Issues.** Missing details that should be confirmed with the client.
 
 ---
 
 ## 3. Use Case List
 
-_[Your area codes, then a table of every use case by area. Write this list first, before specifying any single use case in detail. It is the cheapest thing to review with your client, and finding out you missed a whole area costs minutes here rather than a week later.]_
-
 | Area code | Feature area | Use cases |
 |---|---|---|
-| _[RUB]_ | _[Rubric, from `FEAT-...`]_ | _[`UC-RUB-...`]_ |
+| `REV` | Review package creation and validation | `UC-REV-create-review`, `UC-REV-assemble-materials`, `UC-REV-validate-package` |
+| `NOT` | Review notification and coordination | `UC-NOT-notify-reviewers` |
+| `ASS` | Reviewer assessment and findings | `UC-ASS-assess-review-section`, `UC-ASS-record-findings` |
+| `CLS` | Review closure and evidence retention | `UC-CLS-close-review` |
 
 ---
 
 ## 4. Use Cases
 
-_[One `###` heading per use case, grouped under a `##` heading per area. Worked example below, taken from Project Pulse. Delete it and write your own.]_
+### `UC-REV-create-review`: Create a review package
 
-### UC-RUB-find-criteria: The course admin finds criteria
-
-**UC ID and Name:** `UC-RUB-find-criteria`: Find criteria
-**Created By:** _[Name]_
-**Date Created:** _[YYYY-MM-DD]_
-**Primary Actor:** course admin
-**Secondary Actors:** none
-**Trigger:** The course admin indicates to find criteria.
-**Description:** The course admin wants to find the peer evaluation criteria defined in her course so that she can review, edit, delete, or add one to a rubric.
+**UC ID and Name:** `UC-REV-create-review`: Create a review package
+**Created By:** Cong Le
+**Date Created:** 2026-09-25
+**Primary Actor:** author
+**Secondary Actors:** reviewer, moderator
+**Trigger:** The author chooses to start a formal review for a software change.
+**Description:** The author creates a review package for a specific change, selects the affected platform and review sections, and begins the review-preparation workflow.
 
 **Preconditions:**
 
-- PRE-1. The course admin is logged into the system.
+- PRE-1. The author is authenticated and authorized to create review packages for the selected project or platform.
+- PRE-2. A Jira ticket or equivalent change record exists for the software change under review.
+- PRE-3. The selected platform and review sections have been defined in the system configuration or review template.
 
 **Postconditions:**
 
-- POST-1. A list of matching criteria in the course admin's course is returned and displayed. The list may be empty.
+- POST-1. A review package record exists with a unique identifier, author, change context, platform, and selected sections.
+- POST-2. The review package is ready for material assembly and validation.
 
 **Main Success Scenario:**
 
-1. The course admin indicates to find criteria.
-2. The system asks the course admin to enter search values according to the "Search criteria" defined in the Associated Information of this use case.
-3. The course admin enters one or more search values and confirms that she has finished entering.
-4. The system finds all criteria in the course admin's course that match the provided search criteria.
-5. The system displays the matching criteria according to the "Search results display strategy" and the "Sort criteria" defined in the Associated Information of this use case.
+1. The author selects the software change to review and chooses the project or work item from Jira.
+2. The system displays candidate review sections and required checklist templates based on the selected platform and review scope.
+3. The author selects the applicable sections and confirms the review metadata.
+4. The system creates the review record and assigns a unique review identifier.
+5. The system begins collection of ticket data, affected files, repository references, and relevant diff information.
+6. The system stores the review state as “In preparation” and displays the package to the author.
+7. Use case ends.
+
+**Extensions:**
+
+- **4a. The change record is missing or incomplete:**
+    - 4a1. The system prompts the author to add or correct the Jira ticket or description.
+    - 4a2. The author updates the required metadata and returns to step 4.
+- **3a. The author chooses a platform or section not supported by the configuration:**
+    - 3a1. The system rejects the invalid selection and lists valid options.
+    - 3a2. The author chooses a valid combination and resumes at step 4.
+
+**Priority:** High
+**Frequency of Use:** Frequent; each review begins with this flow.
+**Business Rules:** `BR-review-package-required`, `BR-platform-section-required`
+
+**Associated Information:**
+
+| Property name | Data type | Validation rule | Security or access concerns | Glossary reference |
+|---|---|---|---|---|
+| review_id | String | Required; unique within project | Author and reviewer access only | Review record |
+| platform | String | Required; must match configured platforms | Restricted to approved engineering groups | Platform |
+| project_ticket | String | Required; link to the work item | Access limited to project participants | Jira ticket |
+| selected_sections | Array[String] | Required; at least one section | Section visibility follows role-based access | Review section |
+
+**Related Use Cases:** `UC-REV-assemble-materials`: Assemble review materials.
+**Assumptions:** The underlying Jira data source is available for the selected work item.
+**Open Issues:** Which platforms and sections are mandatory for each review type still need sponsor confirmation.
+
+---
+
+### `UC-REV-assemble-materials`: Assemble review materials
+
+**UC ID and Name:** `UC-REV-assemble-materials`: Assemble review materials
+**Created By:** Cong Le
+**Date Created:** 2026-09-25
+**Primary Actor:** author
+**Secondary Actors:** Jira, SVN, Jenkins
+**Trigger:** A review package is created and the system begins package assembly.
+**Description:** The system gathers the change context, file list, SVN revisions, repository links, diff information, and build/test data needed for review.
+
+**Preconditions:**
+
+- PRE-1. A review package exists in the “In preparation” state.
+- PRE-2. The author has permission to retrieve change details from Jira, SVN, and build outputs.
+- PRE-3. The review package includes at least one section requiring supporting evidence.
+
+**Postconditions:**
+
+- POST-1. The review package contains a complete set of supporting evidence for the selected sections.
+- POST-2. Missing or inconsistent material is flagged for correction before publication.
+
+**Main Success Scenario:**
+
+1. The system retrieves the associated Jira ticket and change context for the review.
+2. The system queries SVN for the changed files, revision numbers, repository links, and diff output.
+3. The system includes relevant source files or code excerpts tied to the selected review sections.
+4. The system checks whether the selected sections require Jenkins build or test information.
+5. The system attaches the required checklist templates and review-record documents for each section.
+6. The system stores the assembled materials in the review package and marks it as “Materials assembled.”
+7. Use case ends.
+
+**Extensions:**
+
+- **2a. SVN information is incomplete or missing:**
+    - 2a1. The system records the missing file or revision and alerts the author.
+    - 2a2. The author corrects the source information or selects a valid alternate change set.
+- **4a. The selected section requires build output but no Jenkins result is available:**
+    - 4a1. The system marks the item as “Pending build validation.”
+    - 4a2. The author requests or triggers the build and resumes the assembly process once the result is available.
+- **5a. A checklist template is not available for a selected section:**
+    - 5a1. The system shows a warning and keeps the package in an incomplete state.
+    - 5a2. The author confirms the template or requests a missing form before continuing.
+
+**Priority:** High
+**Frequency of Use:** Frequent; executed for every review package.
+**Business Rules:** `BR-review-evidence-retained`, `BR-review-package-required`
+
+**Associated Information:**
+
+| Property name | Data type | Validation rule | Security or access concerns | Glossary reference |
+|---|---|---|---|---|
+| file_list | Array[FileRef] | At least one file required for a code review | Project-scoped access only | Repository |
+| revision_number | String | Required for each changed file when available | Restricted to project participants | Revision number |
+| diff_output | Text/Attachment | Required when a code change is under review | Sensitive source information | Diff |
+| build_status | Enum | Optional unless the review section requires build evidence | Restricted to authorized engineering users | Build |
+| checklist_template | String | Required for each selected section | Role-based access to review records | Review checklist |
+
+**Related Use Cases:** `UC-REV-create-review`, `UC-REV-validate-package`
+**Assumptions:** SVN and Jenkins remain the authoritative data sources for the review package.
+**Open Issues:** The exact review sections and required evidence for each platform still need formal confirmation.
+
+---
+
+### `UC-REV-validate-package`: Validate review package completeness
+
+**UC ID and Name:** `UC-REV-validate-package`: Validate review package completeness
+**Created By:** Cong Le
+**Date Created:** 2026-09-25
+**Primary Actor:** author
+**Secondary Actors:** system, reviewer
+**Trigger:** The assembled review package is ready for review publication.
+**Description:** The system checks that all required sections, file descriptions, revision references, and checklist items are present before the review is sent to reviewers.
+
+**Preconditions:**
+
+- PRE-1. A review package exists with assembled materials and selected sections.
+- PRE-2. The author has completed all required package entry fields, or the system has identified the specific missing items.
+
+**Postconditions:**
+
+- POST-1. The review package is either marked as ready for review or returned to the author for correction.
+- POST-2. All validation warnings are recorded in the review log for traceability.
+
+**Main Success Scenario:**
+
+1. The author requests validation of the assembled review package.
+2. The system compares the selected review sections to the required sections for the selected platform.
+3. The system checks for missing file descriptions, missing revision numbers, incomplete diff coverage, or missing build/test evidence.
+4. The system checks that every required checklist form has an associated template or record.
+5. The system either marks the package as valid and ready for reviewer notification or lists the issues that must be corrected.
 6. Use case ends.
 
 **Extensions:**
 
-- **4a. No matching criteria are found:**
-    - 4a1. The system alerts the course admin that no matching criteria are found.
-    - 4a2. The course admin either chooses `UC-RUB-create-criterion`: Create a criterion, or terminates the use case, or returns to step 2 of the normal flow.
+- **2a. A required review section is missing:**
+    - 2a1. The system highlights the absent section and blocks publication.
+    - 2a2. The author adds the missing section or confirms an intentional exception.
+- **3a. Diff coverage is incomplete:**
+    - 3a1. The system lists the files excluded from the diff and warns the author.
+    - 3a2. The author updates the review package or documents the reason for exclusion.
+- **5a. Validation fails because of unresolved issues:**
+    - 5a1. The system keeps the package in a draft or corrective state.
+    - 5a2. The author fixes the issues and re-runs validation.
 
 **Priority:** High
-**Frequency of Use:** Occasional; mostly at course setup and rubric revision.
-**Business Rules:** `BR-role-based-access`
+**Frequency of Use:** Frequent; each review is validated before publication.
+**Business Rules:** `BR-review-package-required`, `BR-review-evidence-retained`
 
 **Associated Information:**
 
-Search criteria:
+| Property name | Data type | Validation rule | Security or access concerns | Glossary reference |
+|---|---|---|---|---|
+| validation_status | Enum | Required; values: valid, incomplete, blocked | Author and moderator access only | Review record |
+| missing_items | Array[String] | Optional but shown for incomplete reviews | Restricted to authorized reviewers and authors | Review section |
+| validation_log | Text | Required for issues and remediation steps | Audit access only | Audit |
+
+**Related Use Cases:** `UC-REV-assemble-materials`, `UC-NOT-notify-reviewers`
+**Assumptions:** Review section requirements are defined by the internal review configuration.
+**Open Issues:** The exact validation rules for platform-specific completeness are still being confirmed with the project sponsor.
+
+---
+
+### `UC-NOT-notify-reviewers`: Notify reviewers
+
+**UC ID and Name:** `UC-NOT-notify-reviewers`: Notify reviewers
+**Created By:** Cong Le
+**Date Created:** 2026-09-25
+**Primary Actor:** author
+**Secondary Actors:** reviewer, system
+**Trigger:** The review package is validated and ready for assessment.
+**Description:** The system notifies the assigned reviewers that the review package is ready and provides access to the same evidence package used for assessment.
+
+**Preconditions:**
+
+- PRE-1. The review package has passed validation.
+- PRE-2. At least one reviewer has been assigned to the review or the assignment list is available in the system.
+
+**Postconditions:**
+
+- POST-1. Each assigned reviewer receives a notification that a review is ready.
+- POST-2. The review package remains accessible for assessment until closure or reassignment.
+
+**Main Success Scenario:**
+
+1. The author submits the review package for reviewer access.
+2. The system verifies the package status is ready for review.
+3. The system identifies the assigned reviewers and notification method.
+4. The system sends the review invitation or notification with a link to the package and summary of required sections.
+5. The system records the time and outcome of the notification as part of the review history.
+6. Use case ends.
+
+**Extensions:**
+
+- **3a. No reviewer is assigned:**
+    - 3a1. The system requests the author to choose or assign at least one reviewer.
+    - 3a2. The author assigns a reviewer and resumes at step 4.
+- **4a. Notification delivery fails:**
+    - 4a1. The system logs the failure and flags the review as not yet notified.
+    - 4a2. The author retries delivery or uses an alternate notification channel.
+
+**Priority:** High
+**Frequency of Use:** Frequent; occurs for each review once ready for assessment.
+**Business Rules:** `BR-notification-timeliness`, `BR-review-package-required`
+
+**Associated Information:**
 
 | Property name | Data type | Validation rule | Security or access concerns | Glossary reference |
 |---|---|---|---|---|
-| criterion name | String | Optional | Course-scoped to the course admin's course | Criterion |
+| reviewer_list | Array[String] | At least one reviewer required for a live review | Restricted to review participants | Reviewer |
+| notification_time | DateTime | Required when sent | Audit and internal operational visibility | Review artifact |
+| review_status | Enum | Required; transitions to “Notified” | Access restricted to participants | Review record |
 
-Search results display strategy: criterion name, description, max score.
+**Related Use Cases:** `UC-REV-validate-package`, `UC-ASS-assess-review-section`
+**Assumptions:** Email or another internal notification channel is available for the review participants.
+**Open Issues:** The exact assignment model and coordinator role still need definition with the sponsor.
 
-Sort criteria: criterion name, ascending.
+---
 
-**Related Use Cases:** `UC-RUB-create-criterion`: Create a criterion.
-**Assumptions:** none
-**Open Issues:** none
+### `UC-ASS-assess-review-section`: Assess a review section
+
+**UC ID and Name:** `UC-ASS-assess-review-section`: Assess a review section
+**Created By:** Cong Le
+**Date Created:** 2026-09-25
+**Primary Actor:** reviewer
+**Secondary Actors:** author, system
+**Trigger:** A reviewer opens a review package and starts evaluating one section.
+**Description:** The reviewer examines the application’s assembled review materials for a specific platform section and records whether the section passes, fails, or needs follow-up based on checklist criteria and source evidence.
+
+**Preconditions:**
+
+- PRE-1. The reviewer is authenticated and authorized to access the review package.
+- PRE-2. The review has been notified and is currently open for assessment.
+- PRE-3. The review section has applicable evidence and an associated checklist template.
+
+**Postconditions:**
+
+- POST-1. The reviewer has recorded a result for the assessed section.
+- POST-2. The package reflects the current reviewer assessment outcome and any required findings.
+
+**Main Success Scenario:**
+
+1. The reviewer opens the review package and selects a section to assess.
+2. The system displays the checklist criteria, changed-file context, source references, and any build/test data that apply to that section.
+3. The reviewer reviews the evidence and evaluates the section against the checklist criteria.
+4. The reviewer records the result and adds comments or references to the relevant file, line, or checklist item when needed.
+5. The system saves the assessment result and updates the review progress status.
+6. The reviewer repeats the process for other applicable sections until complete or defers remaining sections.
+7. Use case ends.
+
+**Extensions:**
+
+- **3a. The evidence is incomplete or stale:**
+    - 3a1. The system alerts the reviewer that the package is missing supporting material or may be out of date.
+    - 3a2. The reviewer informs the author or requests a correction before continuing.
+- **4a. The review reveals a defect or issue:**
+    - 4a1. The reviewer creates a finding tied to the relevant checklist item, file, and line reference.
+    - 4a2. The system records the finding and updates the review as needing follow-up.
+- **5a. The reviewer submits an incomplete assessment:**
+    - 5a1. The system prevents closure while required sections remain unresolved.
+    - 5a2. The reviewer completes the missing entries or marks the section as deferred.
+
+**Priority:** High
+**Frequency of Use:** Frequent; each review section is assessed by one or more reviewers.
+**Business Rules:** `BR-reviewer-assessment-based-on-checklist`, `BR-review-evidence-retained`
+
+**Associated Information:**
+
+| Property name | Data type | Validation rule | Security or access concerns | Glossary reference |
+|---|---|---|---|---|
+| section_result | Enum | Required; values: pass, fail, needs follow-up | Reviewer-only edit; author may view | Review section |
+| checklist_reference | String | Required when the result is based on a checklist item | Access limited to project participants | Review checklist |
+| file_reference | String | Optional but required when recorded against a file | Scope limited by project permissions | Repository |
+| line_reference | String | Optional; valid when file reference exists | Restricted to the review package participants | Review artifact |
+
+**Related Use Cases:** `UC-NOT-notify-reviewers`, `UC-ASS-record-findings`, `UC-CLS-close-review`
+**Assumptions:** Reviewers use the checklist and supporting evidence as the ground truth for evaluation.
+**Open Issues:** The exact reviewer workflow for multiple-reviewer signoff and re-opened reviews still needs client confirmation.
+
+---
+
+### `UC-ASS-record-findings`: Record review findings
+
+**UC ID and Name:** `UC-ASS-record-findings`: Record review findings
+**Created By:** Cong Le
+**Date Created:** 2026-09-25
+**Primary Actor:** reviewer
+**Secondary Actors:** author, system
+**Trigger:** The reviewer identifies a defect, issue, or required change during section assessment.
+**Description:** The reviewer records the finding with context, references, and required follow-up so the author can address it and the review record reflects the issue accurately.
+
+**Preconditions:**
+
+- PRE-1. The review section is open for assessment and the reviewer has the necessary evidence.
+- PRE-2. The finding is connected to a specific checklist item, file, or code location when applicable.
+
+**Postconditions:**
+
+- POST-1. The review package contains a logged finding with supporting reference information.
+- POST-2. The author receives visibility into the finding and the review remains open until resolution or disposition.
+
+**Main Success Scenario:**
+
+1. The reviewer identifies a problem or required follow-up during assessment.
+2. The system asks for the checklist item, file reference, and description of the finding.
+3. The reviewer enters the issue description and any supporting evidence or line references.
+4. The system records the finding and associates it with the review package and selected section.
+5. The system marks the review as requiring author follow-up.
+6. Use case ends.
+
+**Extensions:**
+
+- **2a. The reviewer does not know the exact file or line:**
+    - 2a1. The system allows a general finding description but prompts for as much traceable evidence as possible.
+    - 2a2. The reviewer supplies what is available and continues.
+- **3a. The issue is duplicate of an existing finding:**
+    - 3a1. The system suggests a matching finding and allows merger with the existing record.
+    - 3a2. The reviewer confirms or edits the merged entry.
+- **5a. The author disputes the finding:**
+    - 5a1. The system keeps the finding and its disposition visible in the review record.
+    - 5a2. The review remains open until the issue is resolved or formally closed.
+
+**Priority:** High
+**Frequency of Use:** Moderate; each review may generate multiple findings.
+**Business Rules:** `BR-review-evidence-retained`, `BR-reviewer-assessment-based-on-checklist`
+
+**Associated Information:**
+
+| Property name | Data type | Validation rule | Security or access concerns | Glossary reference |
+|---|---|---|---|---|
+| finding_id | String | Required; unique within review | Restricted to review participants | Review artifact |
+| finding_description | Text | Required | Access limited to review participants | Review finding |
+| severity | Enum | Optional; if used, must be defined by policy | Restricted to internal reviewer roles | Review record |
+| resolution_status | Enum | Required after author response | Audit visibility | Review artifact |
+
+**Related Use Cases:** `UC-ASS-assess-review-section`, `UC-CLS-close-review`
+**Assumptions:** Findings are recorded as part of the review process and may remain open until resolved.
+**Open Issues:** The exact disposition workflow for disputed findings is not yet defined.
+
+---
+
+### `UC-CLS-close-review`: Close a review and retain evidence
+
+**UC ID and Name:** `UC-CLS-close-review`: Close a review and retain evidence
+**Created By:** Cong Le
+**Date Created:** 2026-09-25
+**Primary Actor:** moderator or author
+**Secondary Actors:** reviewer, system
+**Trigger:** The review package has been assessed, follow-up is complete, and closure is authorized.
+**Description:** The system records the final review outcome, archives the assembled evidence for audit or later inspection, and marks the review as closed.
+
+**Preconditions:**
+
+- PRE-1. The review package has been assessed and all mandatory sections have a disposition.
+- PRE-2. Any required findings have been addressed or formally accepted as unresolved under the review policy.
+- PRE-3. The closure action is performed by an authorized user.
+
+**Postconditions:**
+
+- POST-1. The review is marked closed in the system.
+- POST-2. A retained evidence package and final record are available for audit or review follow-up.
+
+**Main Success Scenario:**
+
+1. The moderator or author initiates closure for the review package.
+2. The system checks whether all required sections have a complete disposition and whether all major findings are addressed or accepted.
+3. The system captures the final review outcome and summary of findings.
+4. The system archives the review package, checklist records, supporting evidence, and metadata for retention.
+5. The system marks the review as closed and records the timestamp and user who closed it.
+6. Use case ends.
+
+**Extensions:**
+
+- **2a. A required section remains incomplete:**
+    - 2a1. The system prevents closure and identifies the incomplete section.
+    - 2a2. The moderator or author resolves the issue or documents the reason for deferred closure.
+- **3a. Review findings remain unresolved:**
+    - 3a1. The system records the unresolved findings with their status.
+    - 3a2. The review may remain open or be closed with formal disposition, depending on policy.
+- **4a. Evidence retention is unavailable:**
+    - 4a1. The system logs the storage failure and keeps the review in a closure-pending state.
+    - 4a2. The authorized user resolves the retention issue before the final close.
+
+**Priority:** Medium
+**Frequency of Use:** Moderate; occurs when a review is complete.
+**Business Rules:** `BR-review-evidence-retained`, `BR-review-package-required`
+
+**Associated Information:**
+
+| Property name | Data type | Validation rule | Security or access concerns | Glossary reference |
+|---|---|---|---|---|
+| final_status | Enum | Required; values: pass, fail, closed-with-findings | Restricted to authorized roles | Review record |
+| closure_timestamp | DateTime | Required | Internal audit access | Audit |
+| evidence_package | Attachment | Required for retained review evidence | Sensitive operational data | Review artifact |
+| closure_user | String | Required | Access limited to authorized internal roles | Moderator |
+
+**Related Use Cases:** `UC-ASS-record-findings`, `UC-ASS-assess-review-section`
+**Assumptions:** The organization maintains a formal policy for recording review outcomes and retained evidence.
+**Open Issues:** The exact closure criteria and required retention period still need sponsor confirmation.
 
 ---
 
 ## Working these with your agent
 
-_[Delegate: drafting the main success scenario once you have the trigger and the goal; proposing extensions you have not thought of, which it is genuinely good at; turning a filled-in use case into a first set of test cases; checking that every `BR-*` you cite exists in [business-rules.md](business-rules.md).]_
+This use-case set is intentionally grounded in the project brief and the review workflow documented in the concept note. The next useful step is to test these against the client’s actual process by verifying the review sections, role names, and notification model. Any mismatches should be captured as issues and moved into [OPEN-ISSUES.md](OPEN-ISSUES.md).
 
-_Keep human: whether this is one use case or three, what the priority is, and whether an extension the agent proposed is a real path in your client's business or a generic one it has seen elsewhere. "The system handles concurrent edits" is a real requirement for some projects and invented complexity for others, and only you have met the client._
+The key verification question is straightforward: if a stakeholder reads each main success scenario aloud, do they recognize the same review flow they perform today, but with the repetitive manual work removed? If the answer is “yes,” the use cases reflect real behavior. If the answer is “not quite,” the missing details belong in the open issues list before implementation begins.
 
-_The verification that catches the most: read the main success scenario aloud to someone who has not read the document, and stop wherever they ask a question. Every question is a missing step or a missing extension._
-
-_**Checklist for each use case:** Does the name start with a verb? Can the system test every precondition? Does every step alternate actor and system? Is there at least one extension per step that can fail? Does every business rule appear as an identifier only? Could a tester write test cases from this without asking you anything?_
