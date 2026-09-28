@@ -42,7 +42,7 @@ This table includes every rule defined in [business-rules.md section 2](requirem
 | Business rule | Source | Enforced by |
 |---|---|---|
 | `BR-svn-diff-required` | RevView/OMNI Review Helper Application Concept document, Section 8. | [`UC-REV-assemble-materials`](requirements/use-cases.md#uc-rev-assemble-materials-assemble-review-materials) |
-| `BR-review-package-exportable` | RevView/OMNI Review Helper Application Concept document, Sections 7–8. | [`UC-CLS-close-review`](requirements/use-cases.md#uc-cls-close-review-close-a-review-and-retain-evidence) |
+| `BR-review-package-exportable` | RevView/OMNI Review Helper Application Concept document, Sections 7–8. | [`UC-CLS-close-review`](requirements/use-cases.md#uc-cls-close-review-close-a-review-and-retain-evidence), [`UC-CLS-export-review-artifacts`](requirements/use-cases.md#uc-cls-export-review-artifacts-export-review-records-and-checklists) |
 | `BR-diff-checklist-match` | RevView/OMNI Review Helper Application Concept document, Section 7.3. | [`UC-REV-assemble-materials`](requirements/use-cases.md#uc-rev-assemble-materials-assemble-review-materials), [`UC-REV-validate-package`](requirements/use-cases.md#uc-rev-validate-package-validate-review-package-completeness) |
 | `BR-review-nine-parts` | RevView/OMNI Review Helper Application Concept document, Section 2.3. | [`UC-REV-create-review`](requirements/use-cases.md#uc-rev-create-review-create-a-review-package), [`UC-REV-validate-package`](requirements/use-cases.md#uc-rev-validate-package-validate-review-package-completeness) |
 | `BR-review-package-required` | RevView/OMNI Review Helper Application Concept document, Section 7. | [`UC-REV-create-review`](requirements/use-cases.md#uc-rev-create-review-create-a-review-package), [`UC-REV-assemble-materials`](requirements/use-cases.md#uc-rev-assemble-materials-assemble-review-materials), [`UC-REV-validate-package`](requirements/use-cases.md#uc-rev-validate-package-validate-review-package-completeness), [`UC-NOT-notify-reviewers`](requirements/use-cases.md#uc-not-notify-reviewers-notify-reviewers), [`UC-CLS-close-review`](requirements/use-cases.md#uc-cls-close-review-close-a-review-and-retain-evidence) |
@@ -76,7 +76,7 @@ An empty cell does not mean the team has decided to ignore a rule. In particular
 
 ## 3. Release plan and implementation traceability
 
-One row tracks each of the seven use cases and each of the three functional requirements defined in [SRS section 5.2](requirements/software-requirements-specification.md#52-non-use-case-functional-requirements). Template examples such as `FR-SAVE-autosave-active` are not project requirements.
+One row tracks each of the eight use cases and each of the three functional requirements defined in [SRS section 5.2](requirements/software-requirements-specification.md#52-non-use-case-functional-requirements). Template examples such as `FR-SAVE-autosave-active` are not project requirements.
 
 **Release:** the allowed assignments are `v0.1.0`, `v0.2.0`, `v1.0.0`, `Spring`, or `Out`. Assembly is assigned `v0.1.0` as the proving slice ([architecture section 6](design/architectural-design.md#6-runtime-view) and the Block 7 instruction). The other nine were set by the team on 2026-11-09 (Oleh Zubariev, deciding for the team), following the client's roadmap in the concept document: the author side first (`v0.2.0`), then export, notification, and auditing to complete this semester's MVP (`v1.0.0`), and the reviewer side next semester (`Spring`).
 
@@ -93,9 +93,12 @@ One row tracks each of the seven use cases and each of the three functional requ
 | [`UC-ASS-assess-review-section`](requirements/use-cases.md#uc-ass-assess-review-section-assess-a-review-section) | `Spring` | ❌ Not started | | | | 🔎 None |
 | [`UC-ASS-record-findings`](requirements/use-cases.md#uc-ass-record-findings-record-review-findings) | `Spring` | ❌ Not started | | | | 🔎 None |
 | [`UC-CLS-close-review`](requirements/use-cases.md#uc-cls-close-review-close-a-review-and-retain-evidence) | `Spring` | ❌ Not started | | | | 🔎 None |
+| [`UC-CLS-export-review-artifacts`](requirements/use-cases.md#uc-cls-export-review-artifacts-export-review-records-and-checklists) (proposed elaboration of `FR-EXPORT-legacy-format`; team/client review pending) | `v1.0.0` (inherits the existing export requirement assignment) | ❌ Not started | | | | 🔎 None |
 | [`FR-EXPORT-legacy-format`](requirements/software-requirements-specification.md#52-non-use-case-functional-requirements) | `v1.0.0` | ❌ Not started | | | | 🔎 None |
 | [`FR-AUDIT-action-log`](requirements/software-requirements-specification.md#52-non-use-case-functional-requirements) | `v1.0.0` | ❌ Not started | | | | 🔎 None |
 | [`FR-SYNC-reviewer-bidirectional`](requirements/software-requirements-specification.md#52-non-use-case-functional-requirements) | `Spring` | ❌ Not started | | | | 🔎 None |
+
+**PR #12 update (2026-11-13):** The proposed export use case adds an eleventh row, elaborating the existing export requirement without a new release assignment. Its export rule is `BR-review-package-exportable`; approval and implementation are pending.
 
 **Block 8 decision checklist:**
 
@@ -104,7 +107,7 @@ One row tracks each of the seven use cases and each of the three functional requ
 - Assign owners for the six rule-citation gaps; record agreed requirement or process links without inventing new policy.
 - Confirm the proving slice can demonstrate assembly with an existing package fixture before other workflow use cases are built.
 
-**Checks (2026-11-06):** exactly ten distinct rows cover all seven use cases and all three defined `FR-*` requirements; assembly is `v0.1.0`. All rows start at Build `❌ Not started` and Verify `🔎 None`, with Design empty. Every row has a release value (2026-11-09).
+**Checks (2026-11-06):** exactly ten distinct rows covered all seven use cases at that check and all three defined `FR-*` requirements; assembly is `v0.1.0`. All rows start at Build `❌ Not started` and Verify `🔎 None`, with Design empty. Every row has a release value (2026-11-09).
 
 ---
 
