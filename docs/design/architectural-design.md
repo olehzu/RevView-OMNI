@@ -116,28 +116,24 @@ RevView/OMNI's business context is:
 C4Context
     title System Context: RevView/OMNI
 
-    Person(author, "Author", "Prepares and submits a formal review package")
-    Person(reviewer, "Reviewer", "Assesses assigned review sections and records findings")
-    Person(moderator, "Moderator / Coordinator", "Tracks review readiness, completion, and closure")
+    Person(team_member, "Project Team Member", "Works as an author, reviewer, or moderator/coordinator")
 
-    System(omni, "RevView/OMNI", "Coordinates formal reviews and retains their evidence")
+    System(omni, "RevView/OMNI", "Manages formal reviews and their evidence")
 
-    System_Ext(jira, "Jira", "Authoritative ticket and change context")
-    System_Ext(svn, "SVN", "Authoritative revisions, changed files, source references, and diffs")
-    System_Ext(jenkins, "Jenkins", "Authoritative build and test results")
-    System_Ext(identity, "Approved Identity Service", "Authenticates internal users; provider and protocol TBD")
-    System_Ext(notification, "Approved Notification Service", "Delivers review notifications; channel and protocol TBD")
+    System_Ext(jira, "Jira", "Tickets and change context")
+    System_Ext(svn, "SVN", "Revisions and diffs")
+    System_Ext(jenkins, "Jenkins", "Build and test results")
+    System_Ext(identity, "Identity Service", "Authenticates users; provider TBD")
+    System_Ext(notification, "Notification Service", "Delivers notifications; provider TBD")
 
-    Rel_D(author, omni, "Creates and validates review packages")
-    Rel_D(reviewer, omni, "Assesses sections and records findings")
-    Rel_D(moderator, omni, "Coordinates and closes reviews")
-    Rel_D(omni, jira, "Reads ticket context")
-    Rel_D(omni, svn, "Reads revisions and diffs")
-    Rel_D(omni, jenkins, "Reads build and test evidence")
-    Rel_D(omni, identity, "Verifies identity")
-    Rel_D(omni, notification, "Sends review notifications")
+    Rel_R(team_member, omni, "Uses")
+    Rel_D(omni, jira, "Tickets")
+    Rel_D(omni, svn, "Revisions")
+    Rel_D(omni, jenkins, "Results")
+    Rel_R(omni, identity, "Login")
+    Rel_L(omni, notification, "Alerts")
 
-    UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
+    UpdateLayoutConfig($c4ShapeInRow="4", $c4BoundaryInRow="1")
 ```
 
 RevView/OMNI owns review workflow state, assembled evidence references, assessments, findings, and exports. Jira, SVN, and Jenkins remain authoritative for the engineering records they already own. The boxes trace to Jira (`SI-jira-read`, `DE-jira-interface`), SVN (`SI-svn-read`, `DE-svn-interface`), Jenkins (`SI-jenkins-read`, `DE-jenkins-interface`), the identity service (`SI-identity-provider`, `DE-identity-interface`, `SEC-authenticated-access`), and the notification service (`CI-review-notification`, `DE-notification-interface`). The exact identity and notification services are intentionally not named until AppliedAvionics confirms them.
@@ -208,36 +204,32 @@ RevView/OMNI's containers are:
 C4Container
     title Container Diagram: RevView/OMNI
 
-    Person(author, "Author", "Prepares reviews")
-    Person(reviewer, "Reviewer", "Assesses reviews")
-    Person(moderator, "Moderator / Coordinator", "Coordinates reviews")
+    Person(team_member, "Project Team Member", "Author, reviewer, or moderator/coordinator")
 
     System_Boundary(omni, "RevView/OMNI") {
-        Container(web, "Web Interface", "HTML / CSS / JavaScript", "Browser interface for review preparation, assessment, closure, and export")
-        Container(app, "Application", "Python web application; framework TBD", "Owns workflow, authorization, integrations, validation, and export generation")
-        ContainerDb(db, "Review Database", "Relational database; engine TBD", "Stores review metadata, assignments, status, findings, configuration, and audit events")
-        Container(store, "Artifact Store", "File or object storage; engine TBD", "Stores diffs, checklists, review records, build evidence, and generated exports")
+        Container(web, "Web Interface", "HTML / CSS / JavaScript", "Review screens in the browser")
+        Container(app, "Application", "Python; framework TBD", "Review workflow and integrations")
+        ContainerDb(db, "Review Database", "Relational database; engine TBD", "Structured review data")
+        Container(store, "Artifact Store", "File or object storage; engine TBD", "Review evidence and exports")
     }
 
-    System_Ext(jira, "Jira", "Ticket and change context")
-    System_Ext(svn, "SVN", "Revisions, changed files, and diffs")
-    System_Ext(jenkins, "Jenkins", "Build and test results")
-    System_Ext(identity, "Approved Identity Service", "Provider and protocol TBD")
-    System_Ext(notification, "Approved Notification Service", "Channel and protocol TBD")
+    System_Ext(jira, "Jira", "Tickets")
+    System_Ext(svn, "SVN", "Revisions")
+    System_Ext(jenkins, "Jenkins", "Build results")
+    System_Ext(identity, "Identity Service", "Provider TBD")
+    System_Ext(notification, "Notification Service", "Provider TBD")
 
-    Rel_D(author, web, "Prepares and submits reviews", "HTTPS")
-    Rel_D(reviewer, web, "Assesses reviews", "HTTPS")
-    Rel_D(moderator, web, "Coordinates and closes reviews", "HTTPS")
-    Rel_R(web, app, "Calls application API", "JSON / HTTPS")
-    Rel_D(app, db, "Reads and writes structured review state", "Database protocol TBD")
-    Rel_D(app, store, "Reads and writes review artifacts", "Storage protocol TBD")
-    Rel_U(app, jira, "Reads ticket context", "Approved interface TBD")
-    Rel_U(app, svn, "Reads revisions and diffs", "Approved interface TBD")
-    Rel_U(app, jenkins, "Reads build/test evidence", "Approved interface TBD")
-    Rel_U(app, identity, "Authenticates users", "Protocol TBD")
-    Rel_U(app, notification, "Sends notifications", "Protocol TBD")
+    Rel(team_member, web, "Uses", "HTTPS")
+    Rel(web, app, "API", "JSON / HTTPS")
+    Rel(app, db, "Data", "TBD")
+    Rel(app, store, "Files", "TBD")
+    Rel(app, jira, "Tickets", "TBD")
+    Rel(app, svn, "Revisions", "TBD")
+    Rel(app, jenkins, "Results", "TBD")
+    Rel(app, identity, "Login", "TBD")
+    Rel(app, notification, "Alerts", "TBD")
 
-    UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
+    UpdateLayoutConfig($c4ShapeInRow="4", $c4BoundaryInRow="1")
 ```
 
 The Web Interface is separate because it executes in each user's browser. Workflow, authorization, validation, and external integrations remain together in the Application, while structured review state and potentially large review artifacts have separate persistence responsibilities. External connections trace to the same `SI-*`, `CI-*`, `DE-*`, and `SEC-*` identifiers named under the context diagram. The team must record the final single-versus-multiple-deployable decision in section 9.2 after confirming the client's hosting constraints.
