@@ -110,6 +110,38 @@ C4Context
     Rel(cos, email, "Sends confirmations")
 ```
 
+RevView/OMNI's business context is:
+
+```mermaid
+C4Context
+    title System Context: RevView/OMNI
+
+    Person(author, "Author", "Prepares and submits a formal review package")
+    Person(reviewer, "Reviewer", "Assesses assigned review sections and records findings")
+    Person(moderator, "Moderator / Coordinator", "Tracks review readiness, completion, and closure")
+
+    System(omni, "RevView/OMNI", "Coordinates formal reviews and retains their evidence")
+
+    System_Ext(jira, "Jira", "Authoritative ticket and change context")
+    System_Ext(svn, "SVN", "Authoritative revisions, changed files, source references, and diffs")
+    System_Ext(jenkins, "Jenkins", "Authoritative build and test results")
+    System_Ext(identity, "Approved Identity Service", "Authenticates internal users; provider and protocol TBD")
+    System_Ext(notification, "Approved Notification Service", "Delivers review notifications; channel and protocol TBD")
+
+    Rel_D(author, omni, "Creates and validates review packages")
+    Rel_D(reviewer, omni, "Assesses sections and records findings")
+    Rel_D(moderator, omni, "Coordinates and closes reviews")
+    Rel_D(omni, jira, "Reads ticket context")
+    Rel_D(omni, svn, "Reads revisions and diffs")
+    Rel_D(omni, jenkins, "Reads build and test evidence")
+    Rel_D(omni, identity, "Verifies identity")
+    Rel_D(omni, notification, "Sends review notifications")
+
+    UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
+```
+
+RevView/OMNI owns review workflow state, assembled evidence references, assessments, findings, and exports. Jira, SVN, and Jenkins remain authoritative for the engineering records they already own. The boxes trace to Jira (`SI-jira-read`, `DE-jira-interface`), SVN (`SI-svn-read`, `DE-svn-interface`), Jenkins (`SI-jenkins-read`, `DE-jenkins-interface`), the identity service (`SI-identity-provider`, `DE-identity-interface`, `SEC-authenticated-access`), and the notification service (`CI-review-notification`, `DE-notification-interface`). The exact identity and notification services are intentionally not named until AppliedAvionics confirms them.
+
 ## 4. Solution Strategy
 
 _Due: Checkpoint 1._
@@ -170,6 +202,46 @@ C4Container
 
 _The system is one application and one database because nobody on the cafeteria side can operate more (`KD-deployment-shape`). The front end is a separate container only because it runs in the browser; it ships inside the application's package._
 
+RevView/OMNI's containers are:
+
+```mermaid
+C4Container
+    title Container Diagram: RevView/OMNI
+
+    Person(author, "Author", "Prepares reviews")
+    Person(reviewer, "Reviewer", "Assesses reviews")
+    Person(moderator, "Moderator / Coordinator", "Coordinates reviews")
+
+    System_Boundary(omni, "RevView/OMNI") {
+        Container(web, "Web Interface", "HTML / CSS / JavaScript", "Browser interface for review preparation, assessment, closure, and export")
+        Container(app, "Application", "Python web application; framework TBD", "Owns workflow, authorization, integrations, validation, and export generation")
+        ContainerDb(db, "Review Database", "Relational database; engine TBD", "Stores review metadata, assignments, status, findings, configuration, and audit events")
+        Container(store, "Artifact Store", "File or object storage; engine TBD", "Stores diffs, checklists, review records, build evidence, and generated exports")
+    }
+
+    System_Ext(jira, "Jira", "Ticket and change context")
+    System_Ext(svn, "SVN", "Revisions, changed files, and diffs")
+    System_Ext(jenkins, "Jenkins", "Build and test results")
+    System_Ext(identity, "Approved Identity Service", "Provider and protocol TBD")
+    System_Ext(notification, "Approved Notification Service", "Channel and protocol TBD")
+
+    Rel_D(author, web, "Prepares and submits reviews", "HTTPS")
+    Rel_D(reviewer, web, "Assesses reviews", "HTTPS")
+    Rel_D(moderator, web, "Coordinates and closes reviews", "HTTPS")
+    Rel_R(web, app, "Calls application API", "JSON / HTTPS")
+    Rel_D(app, db, "Reads and writes structured review state", "Database protocol TBD")
+    Rel_D(app, store, "Reads and writes review artifacts", "Storage protocol TBD")
+    Rel_U(app, jira, "Reads ticket context", "Approved interface TBD")
+    Rel_U(app, svn, "Reads revisions and diffs", "Approved interface TBD")
+    Rel_U(app, jenkins, "Reads build/test evidence", "Approved interface TBD")
+    Rel_U(app, identity, "Authenticates users", "Protocol TBD")
+    Rel_U(app, notification, "Sends notifications", "Protocol TBD")
+
+    UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
+```
+
+The Web Interface is separate because it executes in each user's browser. Workflow, authorization, validation, and external integrations remain together in the Application, while structured review state and potentially large review artifacts have separate persistence responsibilities. External connections trace to the same `SI-*`, `CI-*`, `DE-*`, and `SEC-*` identifiers named under the context diagram. The team must record the final single-versus-multiple-deployable decision in section 9.2 after confirming the client's hosting constraints.
+
 ### 5.2 Use case areas and components
 
 _[One row per use case area in your [use cases](../requirements/use-cases.md), taken from the area column of [traceability.md](../traceability.md) section 1, plus one row per **cross-cutting component** that no single area owns (authentication, notifications, file handling, an integration with an external system). A use case area with no row is a part of your system with no home; a component with no area and no cross-cutting reason is one nobody asked for._
@@ -188,6 +260,18 @@ _Example:]_
 | _(cross-cutting)_ | _Payment_ | _The only component that talks to the Payroll System_ | _Payroll System_ | _provisional_ |
 | _(cross-cutting)_ | _Identity_ | _Maps a signed-on employee to a role_ | _Corporate Sign-On_ | _provisional_ |
 | _(cross-cutting)_ | _Notification_ | _Sends every email the system sends_ | _Corporate Email_ | _provisional_ |
+
+| Use case area | Component | Responsibility | Depends on | Status |
+|---|---|---|---|---|
+| `REV` | Review Preparation | Owns review creation, evidence assembly, and package-readiness validation | Integration Gateway, Artifact Management, Identity, Jira, SVN, Jenkins | provisional |
+| `NOT` | Review Coordination | Owns reviewer assignment state and notification attempts | Notification, Identity, Review Database | provisional |
+| `ASS` | Review Assessment | Owns section assessments and findings tied to review evidence | Artifact Management, Identity, Review Database | provisional |
+| `CLS` | Review Closure | Owns closure state and the retained evidence set for a completed review | Artifact Management, Export, Identity, Review Database | provisional |
+| (cross-cutting) | Integration Gateway | Isolates workflow code from sandbox- and production-specific engineering-tool interfaces | Jira, SVN, Jenkins | provisional |
+| (cross-cutting) | Identity | Maps an authenticated internal identity to application roles and review assignments | Approved Identity Service | provisional |
+| (cross-cutting) | Notification | Sends reviewer and moderator notifications and records their delivery outcome | Approved Notification Service | provisional |
+| (cross-cutting) | Artifact Management | Stores and retrieves diffs, checklists, review records, and build evidence with provenance | Artifact Store, Review Database | provisional |
+| (cross-cutting) | Export | Produces client-compatible Excel/CSV review records and checklists | Artifact Management, Review Database | provisional |
 
 _[Check before Checkpoint 1: every area in your use case file appears in the first column, and every external system in section 3 appears in some Depends on cell.]_
 
