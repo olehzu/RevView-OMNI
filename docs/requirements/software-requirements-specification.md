@@ -3,7 +3,7 @@
 **Project:** RevView/OMNI
 **Team:** Team 8
 **Client:** Sumalee Rodolph, AppliedAvionics
-**Version:** 0.1
+**Version:** 0.2
 
 ---
 
@@ -40,6 +40,7 @@ _Requirements cited from elsewhere keep their own identifiers: `UC-*` from [use-
 |---|---|---|---|
 | 2026-09-25 | 0.1 | Initial draft of section 1, from vision-and-scope.md and the client interview notes | Oleh Zubariev |
 | 2026-09-25 | 0.1 | Updated section 1 to match the filled-in vision-and-scope.md sections 2 through 4 | Oleh Zubariev |
+| 2026-10-02 | 0.2 | Added identifiers for the C4 context, containers, and external-system interfaces | Ralph Castilleja |
 
 ---
 
@@ -116,6 +117,12 @@ _Examples:_
 
 - _`AS-supported-browser`: Users access the system with a browser that supports the ECMAScript version the frontend targets._
 - _`DE-payroll-integration`: Operation depends on changes being made in the Payroll System to accept payment requests for meals ordered through this system._
+
+- `DE-jira-interface`: Review context assembly depends on an approved read interface to the applicable Jira instance.
+- `DE-svn-interface`: File, revision, and diff assembly depends on an approved read interface to the applicable SVN instance.
+- `DE-jenkins-interface`: Build and test evidence depends on an approved read interface to the applicable Jenkins instance.
+- `DE-identity-interface`: Authenticated internal access depends on an AppliedAvionics-approved identity mechanism; the exact provider and protocol are not yet confirmed.
+- `DE-notification-interface`: Reviewer notification depends on an AppliedAvionics-approved email or messaging service; the exact channel and protocol are not yet confirmed.
 
 ---
 
@@ -204,6 +211,11 @@ _[Any hardware the system talks to, or "none".]_
 
 _[Other software systems yours connects to: what crosses the boundary, in which direction, in what format, and what happens when the other side is unavailable.]_
 
+- `SI-jira-read`: The system shall read ticket identity and approved change context from Jira through an adapter whose endpoint and credentials are configured per environment; when Jira is unavailable, the review package shall identify Jira evidence as unavailable rather than current.
+- `SI-svn-read`: The system shall read changed files, revisions, repository references, and SVN-generated diffs through an adapter whose endpoint and credentials are configured per environment; when SVN is unavailable, the review package shall not be marked ready.
+- `SI-jenkins-read`: The system shall read build and test status from Jenkins when a selected review section requires that evidence; an unavailable Jenkins result shall be recorded as unavailable rather than passing.
+- `SI-identity-provider`: The system shall authenticate users through an AppliedAvionics-approved identity interface. The provider and protocol remain to be confirmed before implementation.
+
 ### 8.4 API document
 
 _[Link to your API documentation. It is generated from the code, so link it rather than transcribing endpoints that will be stale within a week.]_
@@ -211,6 +223,8 @@ _[Link to your API documentation. It is generated from the code, so link it rath
 ### 8.5 Communications interfaces
 
 _[Email, notifications, messaging, and the protocols involved.]_
+
+- `CI-review-notification`: When a validated review package is submitted, the system shall send each assigned Reviewer a notification through the configured organization-approved channel and record whether delivery was accepted or failed. The channel and protocol remain to be confirmed.
 
 ---
 
@@ -233,6 +247,8 @@ _Example: `PER-report-load`: A peer evaluation report for a section of 80 studen
 ### 9.3 Security
 
 _Example: `SEC-authentication`: The system shall authenticate every request to a non-public endpoint, and shall reject unauthenticated requests without disclosing whether the requested resource exists._
+
+- `SEC-authenticated-access`: The system shall authenticate every request for review data and shall return no review fields to an unauthenticated requester.
 
 ### 9.4 Safety
 
