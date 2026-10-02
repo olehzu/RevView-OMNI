@@ -113,27 +113,35 @@ C4Context
 RevView/OMNI's business context is:
 
 ```mermaid
-C4Context
-    title System Context: RevView/OMNI
+%%{init: {"flowchart": {"nodeSpacing": 50, "rankSpacing": 60, "curve": "stepAfter"}}}%%
+flowchart TB
+    team(["Project Team Member<br/>[Person]<br/>Author, reviewer, or moderator/coordinator"])
+    omni["RevView/OMNI<br/>[Software System]<br/>Manages formal reviews and their evidence"]
 
-    Person(team_member, "Project Team Member", "Works as an author, reviewer, or moderator/coordinator")
+    subgraph external["External Systems"]
+        direction LR
+        jira["Jira<br/>[Software System]<br/>Tickets and change context"]
+        svn["SVN<br/>[Software System]<br/>Revisions and diffs"]
+        jenkins["Jenkins<br/>[Software System]<br/>Build and test results"]
+        identity["Identity Service<br/>[Software System]<br/>Authenticates users; provider TBD"]
+        notification["Notification Service<br/>[Software System]<br/>Delivers notifications; provider TBD"]
+    end
 
-    System(omni, "RevView/OMNI", "Manages formal reviews and their evidence")
+    team -->|Uses| omni
+    omni -->|Tickets| jira
+    omni -->|Revisions| svn
+    omni -->|Results| jenkins
+    omni -->|Login| identity
+    omni -->|Alerts| notification
 
-    System_Ext(jira, "Jira", "Tickets and change context")
-    System_Ext(svn, "SVN", "Revisions and diffs")
-    System_Ext(jenkins, "Jenkins", "Build and test results")
-    System_Ext(identity, "Identity Service", "Authenticates users; provider TBD")
-    System_Ext(notification, "Notification Service", "Delivers notifications; provider TBD")
-
-    Rel_R(team_member, omni, "Uses")
-    Rel_D(omni, jira, "Tickets")
-    Rel_D(omni, svn, "Revisions")
-    Rel_D(omni, jenkins, "Results")
-    Rel_R(omni, identity, "Login")
-    Rel_L(omni, notification, "Alerts")
-
-    UpdateLayoutConfig($c4ShapeInRow="4", $c4BoundaryInRow="1")
+    classDef person fill:#08427b,stroke:#052e56,color:#fff,stroke-width:2px
+    classDef system fill:#1168bd,stroke:#0b4884,color:#fff,stroke-width:2px
+    classDef externalSystem fill:#999,stroke:#666,color:#fff,stroke-width:2px
+    class team person
+    class omni system
+    class jira,svn,jenkins,identity,notification externalSystem
+    style external fill:transparent,stroke:#888,stroke-dasharray:5 5
+    linkStyle default stroke:#444,stroke-width:1.5px
 ```
 
 RevView/OMNI owns review workflow state, assembled evidence references, assessments, findings, and exports. Jira, SVN, and Jenkins remain authoritative for the engineering records they already own. The boxes trace to Jira (`SI-jira-read`, `DE-jira-interface`), SVN (`SI-svn-read`, `DE-svn-interface`), Jenkins (`SI-jenkins-read`, `DE-jenkins-interface`), the identity service (`SI-identity-provider`, `DE-identity-interface`, `SEC-authenticated-access`), and the notification service (`CI-review-notification`, `DE-notification-interface`). The exact identity and notification services are intentionally not named until AppliedAvionics confirms them.
@@ -201,35 +209,47 @@ _The system is one application and one database because nobody on the cafeteria 
 RevView/OMNI's containers are:
 
 ```mermaid
-C4Container
-    title Container Diagram: RevView/OMNI
+%%{init: {"flowchart": {"nodeSpacing": 70, "rankSpacing": 80, "curve": "stepAfter"}}}%%
+flowchart LR
+    team(["Project Team Member<br/>[Person]<br/>Author, reviewer, or moderator/coordinator"])
 
-    Person(team_member, "Project Team Member", "Author, reviewer, or moderator/coordinator")
+    subgraph omni["RevView/OMNI — System Boundary"]
+        direction LR
+        web["Web Interface<br/>[Container: HTML / CSS / JavaScript]<br/>Review screens in the browser"]
+        app["Application<br/>[Container: Python; framework TBD]<br/>Review workflow and integrations"]
+        db[("Review Database<br/>[Container: Relational database; engine TBD]<br/>Structured review data")]
+        store["Artifact Store<br/>[Container: File or object storage; engine TBD]<br/>Review evidence and exports"]
 
-    System_Boundary(omni, "RevView/OMNI") {
-        Container(web, "Web Interface", "HTML / CSS / JavaScript", "Review screens in the browser")
-        Container(app, "Application", "Python; framework TBD", "Review workflow and integrations")
-        ContainerDb(db, "Review Database", "Relational database; engine TBD", "Structured review data")
-        Container(store, "Artifact Store", "File or object storage; engine TBD", "Review evidence and exports")
-    }
+        web -->|"API<br/>[JSON / HTTPS]"| app
+        app -->|"Data<br/>[TBD]"| db
+        app -->|"Files<br/>[TBD]"| store
+    end
 
-    System_Ext(jira, "Jira", "Tickets")
-    System_Ext(svn, "SVN", "Revisions")
-    System_Ext(jenkins, "Jenkins", "Build results")
-    System_Ext(identity, "Identity Service", "Provider TBD")
-    System_Ext(notification, "Notification Service", "Provider TBD")
+    subgraph external["External Systems"]
+        direction TB
+        jira["Jira<br/>[Software System]<br/>Tickets"]
+        svn["SVN<br/>[Software System]<br/>Revisions"]
+        jenkins["Jenkins<br/>[Software System]<br/>Build results"]
+        identity["Identity Service<br/>[Software System]<br/>Provider TBD"]
+        notification["Notification Service<br/>[Software System]<br/>Provider TBD"]
+    end
 
-    Rel(team_member, web, "Uses", "HTTPS")
-    Rel(web, app, "API", "JSON / HTTPS")
-    Rel(app, db, "Data", "TBD")
-    Rel(app, store, "Files", "TBD")
-    Rel(app, jira, "Tickets", "TBD")
-    Rel(app, svn, "Revisions", "TBD")
-    Rel(app, jenkins, "Results", "TBD")
-    Rel(app, identity, "Login", "TBD")
-    Rel(app, notification, "Alerts", "TBD")
+    team -->|"Uses<br/>[HTTPS]"| web
+    app -->|"Tickets<br/>[TBD]"| jira
+    app -->|"Revisions<br/>[TBD]"| svn
+    app -->|"Results<br/>[TBD]"| jenkins
+    app -->|"Login<br/>[TBD]"| identity
+    app -->|"Alerts<br/>[TBD]"| notification
 
-    UpdateLayoutConfig($c4ShapeInRow="4", $c4BoundaryInRow="1")
+    classDef person fill:#08427b,stroke:#052e56,color:#fff,stroke-width:2px
+    classDef container fill:#438dd5,stroke:#2e6295,color:#fff,stroke-width:2px
+    classDef externalSystem fill:#999,stroke:#666,color:#fff,stroke-width:2px
+    class team person
+    class web,app,db,store container
+    class jira,svn,jenkins,identity,notification externalSystem
+    style omni fill:transparent,stroke:#777,stroke-width:2px,stroke-dasharray:5 5
+    style external fill:transparent,stroke:#888,stroke-dasharray:5 5
+    linkStyle default stroke:#444,stroke-width:1.5px
 ```
 
 The Web Interface is separate because it executes in each user's browser. Workflow, authorization, validation, and external integrations remain together in the Application, while structured review state and potentially large review artifacts have separate persistence responsibilities. External connections trace to the same `SI-*`, `CI-*`, `DE-*`, and `SEC-*` identifiers named under the context diagram. The team must record the final single-versus-multiple-deployable decision in section 9.2 after confirming the client's hosting constraints.
