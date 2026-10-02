@@ -1,8 +1,8 @@
 # Use Cases
 
-**Project:** _[Your project name]_
+**Project:** RevView/OMNI
 **Team:** _[Team NN]_
-**Client:** _[Client name and organization]_
+**Client:** Sumalee 
 **Version:** 0.1
 
 ---
