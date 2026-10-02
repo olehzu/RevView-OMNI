@@ -40,6 +40,7 @@ _Requirements cited from elsewhere keep their own identifiers: `UC-*` from [use-
 |---|---|---|---|
 | 2026-09-25 | 0.1 | Initial draft of section 1, from vision-and-scope.md and the client interview notes | Oleh Zubariev |
 | 2026-09-25 | 0.1 | Updated section 1 to match the filled-in vision-and-scope.md sections 2 through 4 | Oleh Zubariev |
+| 2026-10-02 | 0.2 | Added architecture-driving environment, constraint, interface, and quality requirements for Checkpoint 1 | Ralph Castilleja |
 
 ---
 
@@ -82,9 +83,13 @@ This document uses the identifier spaces listed under Identifiers above. Functio
 
 _[How this system relates to other systems and to the user's environment. Self-contained, or one component of something larger? Link to the product perspective section of your vision and scope and to your architecture's context diagram rather than redrawing them.]_
 
+RevView/OMNI is an internal coordination and evidence-management application that integrates with, but does not replace, Jira, SVN, Jenkins, the organization's identity service, and its notification service. See [vision and scope section 4.1](vision-and-scope.md#41-product-perspective) and the [architecture context diagram](../design/architectural-design.md#3-context-and-scope).
+
 ### 2.2 User classes and characteristics
 
 _[The kinds of user, and what distinguishes them: frequency of use, technical skill, privilege level, whether they are inside or outside the client's organization. Link to the stakeholder profiles in your vision and scope; what belongs here is what affects the software's behavior, especially permissions.]_
+
+The user classes are Author, Reviewer, Moderator or Coordinator, and authorized audit or management stakeholders, as profiled in [vision and scope section 3.1](vision-and-scope.md#31-stakeholder-profiles). Authors prepare review packages, Reviewers assess assigned sections and record findings, Moderators coordinate completion, and audit or management stakeholders have read-only evidence access when authorized. Exact role-to-action permissions remain subject to client confirmation.
 
 ### 2.3 Operating environment
 
@@ -95,6 +100,9 @@ _Examples:_
 - _`OE-supported-browsers`: The system shall operate correctly on the current and previous major versions of Chrome, Firefox, Safari, and Edge._
 - _`OE-server-platform`: The system shall run on a server running the current corporate-approved version of Linux._
 - _`OE-access-paths`: The system shall permit access from the corporate intranet, from a VPN connection, and from Android and iOS phones and tablets._
+
+- `OE-internal-web`: The system shall operate as an internal browser-based application in the sponsoring organization's engineering environment.
+- `OE-isolated-sandbox`: Development and student testing shall use isolated Jira, SVN, and Jenkins instances populated with synthetic or approved non-production data.
 
 ### 2.4 Design and implementation constraints
 
@@ -108,6 +116,11 @@ _Examples:_
 
 _The constraint students forget: **who maintains this after you graduate, and what do they already know how to run?** If the answer is one person who knows Python, a Spring Boot service is a constraint violation nobody wrote down._
 
+- `CO-existing-toolchain`: The system shall integrate with Jira, SVN, and Jenkins without replacing any of them as the authoritative source for ticket, revision, diff, build, or test information.
+- `CO-no-student-production-access`: Student-built and student-run environments shall not require credentials or network access to AppliedAvionics production systems (`BR-no-student-prod-access`).
+- `CO-export-existing-formats`: The system shall preserve the ability to produce the organization's existing review records and checklists in their Excel or CSV formats (`BR-review-package-exportable`).
+- `CO-single-maintainer`: The delivered application shall be operable and maintainable by one designated maintainer after handoff, with environment-specific settings separated from source code.
+
 ### 2.5 Assumptions and dependencies
 
 _[An assumption is a factor you believe true without proof, which would change these requirements if it turned out false. A dependency is something outside your control that the project relies on: an external API, a third-party library, a change someone else has to make.]_
@@ -117,15 +130,26 @@ _Examples:_
 - _`AS-supported-browser`: Users access the system with a browser that supports the ECMAScript version the frontend targets._
 - _`DE-payroll-integration`: Operation depends on changes being made in the Payroll System to accept payment requests for meals ordered through this system._
 
+- `DE-jira-interface`: Review context assembly depends on an approved read interface to the applicable Jira instance.
+- `DE-svn-interface`: File, revision, and diff assembly depends on an approved read interface to the applicable SVN instance.
+- `DE-jenkins-interface`: Build and test evidence depends on an approved read interface to the applicable Jenkins instance.
+- `DE-identity-interface`: Authenticated internal access depends on an AppliedAvionics-approved identity mechanism; the exact provider and protocol are not yet confirmed.
+- `DE-notification-interface`: Reviewer notification depends on an AppliedAvionics-approved email or messaging service; the exact channel and protocol are not yet confirmed.
+- `AS-client-production-validation`: AppliedAvionics personnel will validate sandbox-tested integrations against production systems because students cannot access production.
+
 ---
 
 ## 3. Project Glossary
 
 _[Link only. The glossary is [project-glossary.md](project-glossary.md).]_
 
+See the [project glossary](project-glossary.md).
+
 ## 4. Vision and Scope
 
 _[Link only. Business requirements, objectives, metrics, and scope live in [vision-and-scope.md](vision-and-scope.md).]_
+
+See [vision and scope](vision-and-scope.md).
 
 ---
 
@@ -134,6 +158,8 @@ _[Link only. Business requirements, objectives, metrics, and scope live in [visi
 ### 5.1 Use cases
 
 _[Link to [use-cases.md](use-cases.md). Most of your system's behavior is specified there, as use cases, and it does not get restated here.]_
+
+See the [use cases](use-cases.md).
 
 ### 5.2 Non-use-case functional requirements
 
@@ -156,6 +182,8 @@ _**Every requirement here needs an oracle.** If you cannot say how a tester woul
 ## 6. Business Rules
 
 _[Link only, to [business-rules.md](business-rules.md). Business rules are a rich source of requirements because they dictate properties the system must have in order to conform to them, but the rules themselves are properties of the client's business, not of your software, and they have their own document.]_
+
+See the [business rules](business-rules.md).
 
 ---
 
@@ -204,6 +232,11 @@ _[Any hardware the system talks to, or "none".]_
 
 _[Other software systems yours connects to: what crosses the boundary, in which direction, in what format, and what happens when the other side is unavailable.]_
 
+- `SI-jira-read`: The system shall read ticket identity and approved change context from Jira through an adapter whose endpoint and credentials are configured per environment; when Jira is unavailable, the review package shall identify Jira evidence as unavailable rather than current.
+- `SI-svn-read`: The system shall read changed files, revisions, repository references, and SVN-generated diffs through an adapter whose endpoint and credentials are configured per environment; when SVN is unavailable, the package shall not be marked ready.
+- `SI-jenkins-read`: The system shall read build and test status from Jenkins when a selected review section requires that evidence; an unavailable Jenkins result shall be recorded as unavailable rather than passing.
+- `SI-identity-provider`: The system shall authenticate users through an AppliedAvionics-approved identity interface. The provider and protocol remain to be confirmed before implementation.
+
 ### 8.4 API document
 
 _[Link to your API documentation. It is generated from the code, so link it rather than transcribing endpoints that will be stale within a week.]_
@@ -211,6 +244,8 @@ _[Link to your API documentation. It is generated from the code, so link it rath
 ### 8.5 Communications interfaces
 
 _[Email, notifications, messaging, and the protocols involved.]_
+
+- `CI-review-notification`: When a validated review package is submitted, the system shall send each assigned Reviewer a notification through the configured organization-approved channel and record whether delivery was accepted or failed. The channel and protocol remain to be confirmed.
 
 ---
 
@@ -226,29 +261,46 @@ _Write one subsection per attribute your project actually has, and say "not appl
 
 _Example: `USE-wcag-aa`: All user-facing views shall conform to WCAG 2.1 level AA._
 
+- `USE-single-review-workspace`: For a selected review, the system shall make the ticket context, changed-file and diff evidence, applicable checklists, build or test evidence, findings, and current status reachable from one review workspace without requiring a user to sign in to Jira, SVN, or Jenkins separately.
+
 ### 9.2 Performance
 
 _Example: `PER-report-load`: A peer evaluation report for a section of 80 students shall render within 2 seconds at the 95th percentile._
+
+- `PER-review-setup-time`: In a representative client pilot, the median elapsed author time from starting a review package to ready-for-review status shall be no more than 10 minutes, excluding external Jenkins build execution time (`SM-review-setup-time`).
 
 ### 9.3 Security
 
 _Example: `SEC-authentication`: The system shall authenticate every request to a non-public endpoint, and shall reject unauthenticated requests without disclosing whether the requested resource exists._
 
+- `SEC-authenticated-access`: The system shall authenticate every request for review data and shall return no review fields to an unauthenticated requester.
+- `SEC-participant-authorization`: The system shall authorize each request against the requester's assigned review role and shall return no review content when that role does not permit the requested action. The exact role matrix requires client confirmation before implementation.
+- `SEC-secrets-outside-repository`: Production and sandbox credentials, tokens, and connection strings shall not be stored in source control and shall be supplied through environment-specific secret configuration.
+
 ### 9.4 Safety
 
 _[Conditions under which the system could contribute to harm, and what prevents it. For most projects in this course the honest answer is `SAF-not-applicable`, with a sentence saying why.]_
+
+- `SAF-not-applicable`: RevView/OMNI is a review-coordination and evidence-management tool and does not execute, control, or deploy aircraft software; no direct physical-safety requirement is assigned to this release.
 
 ### 9.5 Availability
 
 _Example: `AVL-uptime`: The system shall be available 99% of the time during the academic term, excluding announced maintenance windows._
 
+No production availability target is defined yet because the client's operating hours, maintenance windows, hosting environment, and support expectations have not been confirmed. This is tracked as `OI-16` rather than assigned an invented percentage.
+
 ### 9.6 Robustness
 
 _Example: `ROB-edit-loss-bound`: On an unexpected client disconnect, the system shall lose no more than 30 seconds of a student's in-progress edits._
 
+- `ROB-no-false-ready`: If required Jira, SVN, Jenkins, checklist, or diff evidence is missing or unavailable, the system shall identify every missing source and shall not mark the review package ready for Reviewer notification.
+
 ### 9.7 Scalability, interoperability, maintainability
 
 _[Add the ones that apply, with `SCA-`, `INT-`, and `MNT-` identifiers. Maintainability is the one this course cares about most, because someone inherits your code in January.]_
+
+- `INT-existing-artifact-export`: For each client-supplied review-record or checklist template accepted into the MVP, the system shall export all mapped fields in that template's existing Excel or CSV format without requiring manual re-entry (`BR-review-package-exportable`).
+- `MNT-externalized-integration-config`: All environment-specific Jira, SVN, Jenkins, identity, notification, database, and file-storage settings shall be configurable without changing application source code.
 
 ---
 

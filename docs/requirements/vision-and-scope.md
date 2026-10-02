@@ -384,16 +384,7 @@ The status quo is the most likely near-term alternative because it requires no a
 
 RevView/OMNI is best understood as an internal coordination and evidence-management application, not as a standalone software development platform. It sits beside the systems the organization already uses for work tracking, version control, and build execution. Its purpose is to collect and assemble the necessary information for a review, validate that the package is complete, and deliver a consistent review record to reviewers.
 
-```mermaid
-flowchart LR
-  Author[Author] --> OMNI[RevView/OMNI]
-  Reviewer[Reviewer] --> OMNI
-  Moderator[Moderator or coordinator] --> OMNI
-  OMNI --> Jira[(Jira ticket data)]
-  OMNI --> SVN[(SVN revisions and diffs)]
-  OMNI --> Jenkins[(Build/test results)]
-  OMNI --> Docs[(Review checklists and records)]
-```
+The system boundary, users, and external systems are maintained in the architecture-of-record's [C4 context diagram](../design/architectural-design.md#3-context-and-scope).
 
 The system is therefore an integration layer and workflow orchestrator. It does not replace Jira, SVN, or Jenkins; it organizes the information from those sources into a review-specific package and reduces manual work across the review lifecycle.
 
