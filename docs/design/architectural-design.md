@@ -357,7 +357,7 @@ _List three to six, ranked by importance to your client times difficulty to achi
 
 | Rank | Requirement | Specification handles | Importance × difficulty | Drives |
 |---|---|---|---|---|
-| 1 | Authenticated access to review data | `SEC-authenticated-access`, `SI-identity-provider`, `DE-identity-interface` | High × High | Application-wide authentication enforcement and an Identity component that isolates the organization-approved identity provider (section 5.2) |
+| 1 | Authenticated access to review data | `SEC-authenticated-access`, `SI-identity-provider`, `DE-identity-interface` | High × High | Application-wide authentication enforcement and separation of authentication from review workflow (Identity, section 5.2). External identity integration remains provisional pending [OI-21](../requirements/OPEN-ISSUES.md): confirm whether AppliedAvionics provides a usable sign-on mechanism or an application account system is needed. |
 | 2 | Reliable SVN evidence assembly | `SI-svn-read`, `DE-svn-interface` | High × High | SVN access through the Integration Gateway and Review Preparation readiness validation that prevents unavailable SVN evidence from producing a ready package (section 5.2) |
 | 3 | Jira context integration | `SI-jira-read`, `DE-jira-interface` | High × Medium | A configurable Jira adapter in the Integration Gateway, separating external access from review workflow and explicitly representing unavailable evidence (section 5.2) |
 | 4 | Jenkins build and test evidence | `SI-jenkins-read`, `DE-jenkins-interface` | High × Medium | Jenkins access through the Integration Gateway and explicit handling of unavailable results so missing evidence is never treated as passing (section 5.2) |
