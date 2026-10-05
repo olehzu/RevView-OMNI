@@ -34,7 +34,7 @@ _[These are slugs, like every other identifier in your project, so an inserted d
 
 | Version | Date | Author | Change |
 |---|---|---|---|
-| 0.1 | | | Initial draft for Checkpoint 1 |
+| 0.1 | 2026-10-03 | Oleh Zubariev | Initial draft for Checkpoint 1, sections 1 through 5 |
 
 ---
 
@@ -44,25 +44,19 @@ _Due: Checkpoint 1._
 
 ### 1.1 Requirements overview
 
-_[Your [specification](../requirements/software-requirements-specification.md) and your [use cases](../requirements/use-cases.md) are the requirements overview. Link them here; do not summarize them.]_
+The requirements overview for RevView/OMNI is the [Software Requirements Specification](../requirements/software-requirements-specification.md) and the [use cases](../requirements/use-cases.md). This section links to them rather than restating them.
 
 ### 1.2 Quality goals
 
-_[The **three** quality attributes that most shape your system, in priority order. Pick them from section 9 of your [specification](../requirements/software-requirements-specification.md) and cite their identifiers. If you cannot rank them, ask your client which one they would give up first; that answer is the ranking._
-
-_These are usually the top rows of the table in section 9.1, and the two do different jobs. Here, say why each goal matters to your client. There, say which decision it forces._
-
-_Example, from the Cafeteria Ordering System:]_
-
 | Priority | Quality goal | Specification handles | Why it shapes the architecture |
 |---|---|---|---|
-| 1 | _Payroll data stays confidential_ | _`SEC-payroll-auth`, `SEC-employee-own-orders`_ | _Orders are paid by payroll deduction, so an order record carries an employee's pay account. A leak is a legal problem, not a bug._ |
-| 2 | _Orders placed before 10:00 are not lost_ | _`ROB-order-persisted`, `AVL-lunch-window`_ | _The lunch rush is the only load that matters, and a lost order is a hungry employee with a payroll charge._ |
-| 3 | _Cafeteria staff can run it without IT_ | _`CO-no-dedicated-ops`, `MNT-menu-self-service`_ | _Nobody on the cafeteria side can deploy, restart, or patch anything._ |
+| 1 | Review evidence is visible only to the review's own participants | `SEC-role-based-review-access` ([software-requirements-specification.md](../requirements/software-requirements-specification.md) section 9.3) | The reviewed source is AppliedAvionics' avionics code, and the diff, findings, and review record are sensitive by default. Role-scoped access is assumed throughout the use cases already, so the architecture has to enforce it in one place rather than per screen. |
+| 2 | A review package cannot be silently incomplete | `ROB-incomplete-package-blocked` (specification section 9.6), `FEAT-integrity-validation` and `RI-review-coverage-gap` ([vision-and-scope.md](../requirements/vision-and-scope.md) sections 4.2 and 2.6); exercised by `UC-REV-validate-package` | A missing section, a stale diff, or an untracked file turns a safety-critical code review into one that only looks complete. This is the specific failure mode the concept brief and the vision and scope's top risk both call out, and it is the reason `UC-REV-validate-package` exists as its own use case rather than a step inside review creation. |
+| 3 | One AppliedAvionics engineer can run and maintain the system after the team graduates | `MNT-single-maintainer` (specification section 9.7); [vision-and-scope.md](../requirements/vision-and-scope.md) section 4.4 and the 2026-09-18 client interview | Sumalee Rodolph will be the sole maintainer, with roughly a year of availability after handoff and no dedicated ops support after that. A stack, deployment shape, or operational habit she cannot run alone is a constraint violation nobody will notice until the team is gone. |
 
 ### 1.3 Stakeholders
 
-_[Your stakeholders are profiled in section 3.1 of [vision and scope](../requirements/vision-and-scope.md). Link it here; do not copy it.]_
+Stakeholder profiles are maintained in section 3.1 of [vision and scope](../requirements/vision-and-scope.md). This section links to them rather than restating them.
 
 ## 2. Architecture Constraints
 

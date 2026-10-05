@@ -37,6 +37,8 @@ _[Send the shortlist to your client the day before. A client who has seen the qu
 | OI-10 | What is the agreed meeting cadence, and when and where is meeting 3? | Contact channel is confirmed (Microsoft Teams direct messages, fast turnaround), but no explicit cadence has been agreed and meeting 3's date, time, and place are not yet on the calendar. | Sumalee Rodolph | 2026-09-09 |
 | OI-11 | Is there anything about the process or project we have not asked about that worries Sumalee? | The guide's catch-all question has not been asked in either meeting yet, and it is called out as the highest-yield question in the guide. | Sumalee Rodolph | 2026-09-09 |
 | OI-12 | When exactly will the example/sample Jira setup be ready, and does it cover what the sandbox needs? | Promised during meeting 2 for "next week" (around 2026-09-25); needed to validate the sandbox Jira structure against something concrete before integration work starts on it. | Sumalee Rodolph | 2026-09-18 |
+| OI-13 | Does AppliedAvionics have an internal accessibility or usability standard (for example WCAG) that an internal engineering tool must meet? | Drafting software-requirements-specification.md section 9.1 found no stated standard. Guessing one (or guessing "not applicable") either invents a requirement or silently drops a real one. | Sumalee Rodolph | 2026-10-03 |
+| OI-14 | Is there a required or expected uptime target for the application once deployed, and are there announced maintenance windows to plan around? | Drafting software-requirements-specification.md section 9.5 found no stated target. This is an internal daily-use tool for 5 to 6 engineers, so some expectation likely exists even if informal. | Sumalee Rodolph | 2026-10-03 |
 
 ## Resolved
 
