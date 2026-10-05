@@ -355,10 +355,9 @@ _Your quality goals from section 1.2 are usually the top rows; cite them by iden
 
 _List three to six, ranked by importance to your client times difficulty to achieve. Reuse the specification's identifiers, never new ones. **At least one row is a `SEC-*` attribute.** Every system your team builds this year holds some personal data, and if no security requirement appears here, that data's protection was never designed; it will be added later, which is where security bugs come from.]_
 
-The following ranking is provisional, based on the client's [RevView/OMNI concept document](../../team-08-revview-omni.pdf), especially sections 7–8 and 12–13; client confirmation is still needed. Importance reflects the consequence of failure, and difficulty reflects integration and evidence-management complexity. The specification currently defines only one project-specific security attribute and no project-specific performance, robustness, or maintainability attributes, so the table also cites existing business rules and use cases through the specification's linked requirements documents. “Drives” identifies architectural implications for the components in section 5, rather than asserting decisions that have not yet been recorded in section 9.2.
-
 | Rank | Requirement | Specification handles | Importance × difficulty | Drives |
 |---|---|---|---|---|
+| 1 | _Payroll data confidential_ | _`SEC-payroll-auth`_ | _High × Medium_ | _`KD-payment-isolated`_ |
 
 ### 9.2 Key decisions
 
