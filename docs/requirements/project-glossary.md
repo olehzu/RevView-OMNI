@@ -1,8 +1,8 @@
 # Project Glossary
 
-**Project:** _[Your project name]_
-**Team:** _[Team NN]_
-**Client:** _[Client name and organization]_
+**Project:** _RevView/OMNI_  
+**Team:** _Team 8_  
+**Client:** _Sumalee Rodolph, Applied Avionics_  
 **Version:** 0.1
 
 ---
@@ -50,34 +50,236 @@ _Rules:_
 
 | Date | Version | Description | Author |
 |---|---|---|---|
-| _[YYYY-MM-DD]_ | 0.1 | Initial terms from the client brief and first client meeting | _[Name]_ |
+| 2026-09-12 | 0.1 | Initial terms from the client brief and first client meeting | Ethan Nguyen |
 
 ---
 
 ## Definitions
 
-_[One `###` heading per term, alphabetical. Follow the heading with a definition of one to three sentences. Add **Synonyms**, **Not to be confused with**, or **Source** lines where they help. Where a term only makes sense with an example, give one._
+_[One `###` heading per term, alphabetical. Follow the heading with a definition of one to three sentences. Add **Synonyms**, **Not to be confused with**, or **Source** lines where they help. Where a term only makes sense with an example, give one.]_
 
-_Worked examples of the format:_
+### AI Assistance
 
-### Active Week
+The optional use of artificial intelligence to draft objective change summaries, describe file changes, or flag simple compliance concerns. Its output must remain reviewable and editable because AI Assistance supports, but never replaces, the judgment of the Author or Reviewer.
 
-_A week in which the course is in session and submissions are open. A student can submit a weekly activity report only during an active week, which makes this term the subject of a business rule rather than a piece of trivia._
+**Not to be confused with:** Automation, which also includes deterministic operations that do not use artificial intelligence.
 
-_**Not to be confused with:** the current calendar week, which continues during breaks when no week is active._
+**Source:** *RevView/OMNI Review Helper Application Concept*, sections 5 and 6.
 
-### City-Pair
+### AI Involvement Level
 
-_The origin and destination airports of a passenger journey, treated as an unordered pair. Used in International Civil Aviation Organization statistics._
+The configured degree of AI Assistance: **Level 1: None**, **Level 2: Necessary**, or **Level 3: Helper**. Level 2 is the recommended starting point because it uses AI only where it clearly reduces manual effort.
 
-_**Synonyms:** O and D (the International Air Transport Association's term for the same concept). Both appear in source data, so any report that combines the two sources has to normalize them first._
+**Source:** *RevView/OMNI Review Helper Application Concept*, section 5.4.
 
-### Weekly Activity Report
+### Author
 
-_A record of what one student did for their team during one week, submitted once per week by that student._
+The person who prepares and starts a Formal Review by verifying gathered information, completing fields that require human knowledge, selecting Reviewers, and approving any generated content. The Author remains responsible for the engineering reason behind a change.
 
-_**Synonyms:** WAR, used conversationally by the client and in the existing spreadsheets. Spell it out on first use in any document._
+### Automation
 
-_**Source:** the client's existing Google Sheets process, described in [vision-and-scope.md](vision-and-scope.md) section 1.2._
+The system-driven completion of repetitive review work, such as retrieving Jira information, locating an SVN Branch, generating a Diff, populating review fields, starting a Jenkins Build, sending Notifications, or assembling a Review Package.
 
-_[End of worked examples. Delete them and write your own terms below.]_
+**Not to be confused with:** AI Assistance, which is only one optional form of support within the broader automation strategy.
+
+### Changed File
+
+A source-code, tool, test, or related file whose contents changed and are included in a Formal Review. Every Changed File should be represented consistently in the Diff and applicable Review Checklist.
+
+### Checklist Item
+
+One review criterion within a Review Checklist. A Checklist Item may receive a Compliance Result, supporting reason, human decision, and related Review Comments.
+
+### Checklist Submission
+
+The event in which a Reviewer submits or updates a Review Checklist. It notifies the appropriate Author and Moderator, and the Moderator is notified when all required Review Checklists have been submitted.
+
+### Code/Tools/Tests Category
+
+One of the three client-used categories for organizing Changed Files and Review Checklist sections: production code, supporting tools, or tests. A Formal Review may contain several of these categories across multiple Platforms.
+
+### Compliance Result
+
+A preliminary or human-confirmed determination for a Checklist Item: **Compliant**, **Not compliant**, **Not applicable**, or **Needs reviewer judgment**. An automatically suggested result must include a reason when applicable and may be approved or overridden by a Reviewer.
+
+### Diff
+
+A representation of the changes between SVN Revisions that Reviewers use to examine a Formal Review. RevView/OMNI generates the required Diff and prompts the Author to verify that it includes the expected Changed Files.
+
+**Synonyms:** Diff file; SVN-generated Diff.
+
+**Not to be confused with:** a Changed File, which is one of the files compared by the Diff.
+
+### Formal Review
+
+The controlled process in which assigned people evaluate software changes and supporting evidence against required review criteria. It includes Changed Files, Diffs, Review Checklists, Review Comments, Build results, decisions, and retained Review Artifacts.
+
+**Synonym:** Review, used conversationally in the client concept.
+
+**Not to be confused with:** an informal code review that does not produce the required artifacts and traceability.
+
+### In Close Out
+
+The Jira workflow status to which the associated Jira Ticket is moved when the Moderator closes the Formal Review.
+
+**Not to be confused with:** Review Closure, which is the broader process that produces the final Review Package and notifications.
+
+### Integration Layer
+
+The boundary through which RevView/OMNI exchanges authentication, field, branch, revision, Diff, Build, and workflow information with Jira, SVN, and Jenkins. The client Software Team verifies this boundary against the Production Environment during iterative testing.
+
+### Jenkins Build
+
+An execution of the software build and test process through Jenkins for the changes associated with a Formal Review. Its status and results are linked to the Review and retained as Review Artifacts when required.
+
+**Synonym:** Test Build, when referring to the Jenkins build run for review verification.
+
+### Jira Ticket
+
+The Jira work item associated with the software changes under Formal Review. It provides the ticket identifier, title, description, status, linked requirements, and other metadata used to create and trace the Review.
+
+### Minimum Viable Product
+
+The smallest semester deliverable that provides the core RevView/OMNI workflow: Review Creation from a Jira Ticket, SVN Diff generation, a Unified Review Workspace, basic Automation and AI Assistance, Notifications, and Review Closure.
+
+**Synonym:** MVP. Spell it out on first use in a document.
+
+### Minor Issue
+
+A low-value problem that Automation or AI Assistance may identify before Reviewers begin, such as inconsistent indentation, blank lines, an outdated copyright header, a formatting inconsistency, or a simple style violation.
+
+### Moderator
+
+The participant who coordinates the Formal Review and initiates Review Closure after the required Review Checklists are submitted.
+
+**Needs client confirmation:** the Moderator's complete permissions and whether this role may also be filled by an Author or Reviewer.
+
+### Notification
+
+An alert sent to a Relevant User after a review event, such as Review Start, a new Review Comment, Checklist Submission, or Review Closure.
+
+**Needs client confirmation:** whether Notifications are in-app, email-based, or both.
+
+### Platform
+
+A client-defined avionics software target or product area for which a separate Review Checklist may be required. A Formal Review may affect up to three Platforms.
+
+**Needs client confirmation:** the official Platform names and the rule used to determine which Platforms a Jira Ticket affects.
+
+### Production Environment
+
+The client's internal Jira, SVN, Jenkins, repositories, and related systems used for real avionics software work. Students cannot directly access this environment.
+
+**Not to be confused with:** Sandbox Environment.
+
+### Relevant User
+
+An Author, Reviewer, Moderator, or other authorized participant who must receive a Notification about a particular Formal Review event. Which users are relevant depends on the event and their assigned responsibilities.
+
+### Review Artifact
+
+A file, record, or result that must be captured and possibly preserved for a Formal Review. Review Artifacts include the Review Record, Review Checklists, Diff, Build and test results, and additional files supplied by the Author.
+
+### Review Checklist
+
+A structured set of criteria used to evaluate files or changes in a Formal Review. RevView/OMNI may prefill information that can be determined reliably, but judgment-based items remain for a person to complete or approve.
+
+**Synonyms:** Checklist; Code Review Checklist.
+
+### Review Closure
+
+The process that completes a Formal Review by consolidating results, updating the Review Record, assembling the Review Package, notifying Relevant Users, and moving the Jira Ticket to **In Close Out**.
+
+**Needs client confirmation:** whether “complete,” “closed,” and **In Close Out** represent distinct workflow states.
+
+### Review Comment
+
+Feedback recorded by a Reviewer about a change, Checklist Item, or other Review Artifact. It should retain enough context to identify the applicable Changed File, line or code location, checklist criterion, and Jira Ticket.
+
+### Review Creation
+
+The process of establishing a Formal Review from a selected Jira Ticket. RevView/OMNI gathers available Jira and SVN information, identifies Changed Files, generates Diffs, and allows the Author to verify the prepared information before Review Start.
+
+### Review Package
+
+The complete collection of required Review Artifacts assembled at Review Closure. It preserves the information and original file types needed by the client's existing audit process even though users perform the Review through a new interface.
+
+**Not to be confused with:** Review Record, which is one artifact within the Review Package.
+
+### Review Record
+
+The formal record of the identifying, administrative, participant, and outcome information for a Formal Review. RevView/OMNI populates fields automatically where possible while retaining human input for information it cannot determine reliably.
+
+### Review Round
+
+A distinct cycle of review activity associated with a Formal Review, potentially created after Reviewer-requested changes produce new Revisions and Diffs. Each Review Round remains connected to the earlier review history.
+
+**Needs client confirmation:** the exact event that begins a new round and the artifacts required for each round.
+
+### Review Start
+
+The event that sends a prepared Formal Review to its assigned Reviewers after the Author verifies the generated information and completes required human-input fields.
+
+**Needs client confirmation:** the exact fields and approvals required before Review Start.
+
+### Reviewer
+
+A person assigned to evaluate the changes and evidence included in a Formal Review. The Reviewer examines the code, Diff, Jira Ticket, Review Checklist, Build results, and related files, then records comments and final judgments.
+
+### Reviewer Assignment
+
+The association of one or more Reviewers with a Formal Review. Adding a Reviewer in RevView/OMNI should also add that person to the Jira Ticket, while adding a Reviewer through Jira should notify that person in RevView/OMNI.
+
+### Revision
+
+A version identifier recorded by SVN for repository content. RevView/OMNI captures the current Revision and the Revision used at Review Creation so that later Diffs can be generated after requested changes.
+
+### RevView/OMNI
+
+The web application Team 8 is developing to centralize and automate repetitive parts of the formal review process for safety-critical avionics software while preserving human judgment, traceability, and required Review Artifacts.
+
+**Needs client confirmation:** whether **RevView/OMNI** is the complete official name and what **OMNI** means.
+
+### Safety-Critical Avionics Software
+
+Software used in aircraft or spacecraft contexts where failures may have serious safety consequences and development therefore requires disciplined assurance, review, testing, and traceability. RevView/OMNI supports a review process for this software, but the student project itself is not safety-critical.
+
+### Sandbox Environment
+
+An isolated development and testing environment containing representative Jira, SVN, and Jenkins instances and no route to the client's internal network. It uses Synthetic Data so Team 8 can build realistic integrations without production access or proprietary information.
+
+**Synonyms:** Sandbox; Mock Environment.
+
+**Not to be confused with:** Production Environment.
+
+### Software Team
+
+The client's internal engineering team that can access the Production Environment. It reviews Team 8's Integration Layer, tests completed components against designated production test areas, and reports differences for correction.
+
+### Subversion
+
+The version-control system used by the client's current review process. RevView/OMNI uses it to locate branches, identify Changed Files and Revisions, capture repository locations, and generate required Diffs.
+
+**Synonym:** SVN. Spell out Subversion on first use in a document.
+
+### SVN Branch
+
+A development branch in Subversion containing changes associated with a Jira Ticket or Formal Review. RevView/OMNI attempts to locate the matching branch or branches from the Jira Ticket name and available repository information.
+
+### Synthetic Data
+
+Non-proprietary test information that mirrors the structure and behavior of the client's workflow without copying production content. It includes representative Jira tickets, placeholder checklists, SVN history, sample Diffs, and Build results.
+
+**Synonym:** Mock Data.
+
+### Traceability
+
+The ability to follow the relationships among a software change, Jira Ticket, SVN Branch, Revisions, Changed Files, Diffs, requirements, Reviewers, Review Comments, Review Checklists, Build results, Review Rounds, and Review Package.
+
+### Unified Review Workspace
+
+The central RevView/OMNI interface in which users access source code, Jira Ticket details, Changed Files, Diffs, Review Checklists, Review Comments, Build status, and supporting files without managing several disconnected resources.
+
+### Version History
+
+The preserved sequence of changes to review information, Review Artifacts, Revisions, and Review Rounds. It allows users to determine what changed, when it changed, and which version was reviewed.

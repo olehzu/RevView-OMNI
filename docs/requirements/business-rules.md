@@ -1,8 +1,8 @@
 # Business Rules
 
-**Project:** _[Your project name]_
-**Team:** _[Team NN]_
-**Client:** _[Client name and organization]_
+**Project:** RevView-OMNI
+**Team:** Team 8
+**Client:** Sumalee Rodolph, Applied Avionics
 **Version:** 0.1
 
 ---
@@ -82,7 +82,9 @@ _The Source column is the defense. Every rule traces to a document or a person, 
 
 | Date | Version | Description | Author |
 |---|---|---|---|
-| _[YYYY-MM-DD]_ | 0.1 | Initial rules from the client brief and first client meeting | _[Name]_ |
+| 2026-09-09 | 0.1 | Initial rules from the client brief and first client meeting | Valerie Valles |
+| 2026-09-18 | 0.2 | Reviewed rules and clarified questions on project with the client | Valerie Valles |
+| 2026-09-25 | 0.3 | Drafted rules from the RevView/OMNI concept document; pending client confirmation | Valerie Valles |
 
 ---
 
@@ -90,29 +92,63 @@ _The Source column is the defense. Every rule traces to a document or a person, 
 
 ### 1.1 Purpose
 
-_[One paragraph: this document collects the policies, regulations, standards, and formulas that govern the business your software operates in, so the specification can cite them rather than restate them.]_
+This document collects the business rules — policies, regulations, standards, and
+formulas — that govern Applied Avionics' business as it relates to RevView-OMNI.
+The [software requirements specification / SRS] cites these rules by identifier
+rather than restating them, so each rule has a single source of truth.
 
 ### 1.2 Scope
 
-_[Which parts of the client's business these rules cover, and which are out of scope. If your client's organization has rules that your system does not touch, say so here rather than silently omitting them.]_
+This document covers business rules related to:
+
+- The required review artifacts (diff files, review records, checklists) and their audit/compliance properties.
+- The role of AI assistance relative to reviewer and author judgment.
+- Constraints on student access to Applied Avionics' internal systems during development.
+- The process governing how the student team hands off work to the software team for production verification.
+
+The following are out of scope for this document because they are not yet confirmed as governing rules rather than open questions or software design choices:
+
+- Any formal industry standard (e.g., DO-178C) that may govern the review process itself — the concept document references it only as educational context, not as a stated compliance requirement. See `OI-1` in [OPEN-ISSUES.md](OPEN-ISSUES.md).
+- Reviewer assignment, escalation, and platform-specific checklist criteria — not described in enough detail yet to state as rules.
+- Internal HR or vendor-account policy (e.g., Atlassian's free-tier user limit) that does not govern the review process itself.
+
 
 ---
 
 ## 2. Rules
 
-_[Group rules under topic headings that fit your project. The Project Pulse headings are one example, not a required set: Course Administration, Teams and Assignment, Access and Ownership, Identity and Uniqueness, Editing and Locking, Deletion Integrity, Review and Submission._
+### 2.1 Review Artifacts and Audit Compliance
 
-_Format each rule as a bold identifier, the rule in one sentence, then its source. Worked examples:]_
+- **`BR-svn-diff-required`:** A formal code review's diff file must be generated from SVN, since an SVN-generated diff is a required review artifact.
+  **Source:** RevView/OMNI Review Helper Application Concept document, Section 8.
+- **`BR-review-package-exportable`:** Review records and checklists must remain producible and exportable in their original file format (Excel/CSV) so the existing review package can still be generated for audits.
+  **Source:** same document, Sections 7–8.
+- **`BR-diff-checklist-match`:** Every file included in a review's diff must match the files listed in that review's checklist.
+  **Source:** same document, Section 7.3.
+- **`BR-review-nine-parts`:** A single code review may consist of up to nine parts, spanning code/tools/test categories across up to three platforms.
+  **Source:** same document, Section 2.3.
+- **`BR-review-record-fields`:** A review record must capture, at minimum, the type of review, method, date, return date, and reviewers.
+  **Source:** same document, Section 7.1. **Flagged:Needs_Review** the source document marks this information as possibly automatable, so which fields stay human-entered vs. system-derived may change — confirm with the client before treating the field list as fixed.
 
-### 2.1 _[Topic]_
+### 2.2 AI and Human Judgment
 
-- **`BR-active-weeks`:** A student may submit or edit a weekly activity report only during a week that the course section has marked active.
-  **Source:** course policy, confirmed by the instructor 2026-09-10.
-- **`BR-section-admin-only`:** Only a course admin may create or edit a course section, configure its active-weeks window (see `BR-active-weeks`), or assign a rubric to it.
-  **Source:** department policy on grade-bearing records.
-- **`BR-artifact-key-unique`:** Every artifact key is unique within a team and remains stable across edits to the artifact's content.
-  **Source:** team decision, 2026-09-10. **Candidate for the specification instead of this file**, since the team, not the client, would approve a change.
+- **`BR-ai-human-override`:** Any AI-generated compliance suggestion or flagged issue must be approved or overridden by a human reviewer; AI must not replace reviewer judgment.
+  **Source:** same document, Sections 5, 5.3.
+- **`BR-author-owns-change-rationale`:** The engineering reason for a file change belongs to the author. AI may summarize objective diff content but must not invent or assert the reason for the change.
+  **Source:** same document, Section 5.
 
-_[That third entry is deliberate. Flag rules you are not sure about rather than dropping them; deciding whether something is a rule or a requirement is a conversation to have with your client, and it is worth having.]_
+### 2.3 IT and Access Constraints
+
+- **`BR-no-student-prod-access`:** Students may not be added as users on Applied Avionics' internal network and may not be given direct access to the production Jira, SVN, or Jenkins instances for development or testing.
+  **Source:** same document, Section 12. **Flagged:Needs_Review** confirm this is still current IT policy directly with the client/IT, since it drives the sandbox architecture for the whole project.
+
+### 2.4 Student–Software Team Engagement
+
+- **`BR-sprint-handoff-cadence`:** The student team must hand off each completed component to the software team for verification against production systems by the earlier of (a) the last day of the sprint, or (b) whenever the student team marks the feature complete.
+  **Source:** same document, Section 13.
+- **`BR-build-tagging`:** Every build handed to the software team for verification must be tagged with a demonstration and/or a README.
+  **Source:** same document, Section 13.1.
+- **`BR-discrepancy-next-sprint`:** Any discrepancy the software team finds during verification must be logged and addressed by the student team in the following sprint.
+  **Source:** same document, Section 13.1.
 
 _**Checklist:** Does every rule have a source? Could your client change it without asking you? Is it stated as one sentence about the business, rather than as a sentence about your software? Does any use case cite it, and if none does, is that correct?_
