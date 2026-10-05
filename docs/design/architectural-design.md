@@ -357,7 +357,11 @@ _List three to six, ranked by importance to your client times difficulty to achi
 
 | Rank | Requirement | Specification handles | Importance × difficulty | Drives |
 |---|---|---|---|---|
-| 1 | _Payroll data confidential_ | _`SEC-payroll-auth`_ | _High × Medium_ | _`KD-payment-isolated`_ |
+| 1 | Authenticated access to review data | `SEC-authenticated-access`, `SI-identity-provider`, `DE-identity-interface` | High × High | Application-wide authentication enforcement and an Identity component that isolates the organization-approved identity provider (section 5.2) |
+| 2 | Reliable SVN evidence assembly | `SI-svn-read`, `DE-svn-interface` | High × High | SVN access through the Integration Gateway and Review Preparation readiness validation that prevents unavailable SVN evidence from producing a ready package (section 5.2) |
+| 3 | Jira context integration | `SI-jira-read`, `DE-jira-interface` | High × Medium | A configurable Jira adapter in the Integration Gateway, separating external access from review workflow and explicitly representing unavailable evidence (section 5.2) |
+| 4 | Jenkins build and test evidence | `SI-jenkins-read`, `DE-jenkins-interface` | High × Medium | Jenkins access through the Integration Gateway and explicit handling of unavailable results so missing evidence is never treated as passing (section 5.2) |
+| 5 | Reviewer notification | `CI-review-notification`, `DE-notification-interface` | Medium × Medium | A separate Notification component that uses the approved delivery channel and records delivery acceptance or failure (section 5.2) |
 
 ### 9.2 Key decisions
 
