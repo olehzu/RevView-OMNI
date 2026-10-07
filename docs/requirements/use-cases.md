@@ -1,8 +1,6 @@
 # Use Cases
 
 **Project:** RevView/OMNI
-**Team:** _[Team NN]_
-**Client:** Sumalee 
 **Team:** Team 8
 **Client:** Sumalee Rodolph - Applied Avionics
 **Version:** 0.1
@@ -515,4 +513,3 @@ This document covers the feature areas identified in [vision-and-scope.md](visio
 This use-case set is intentionally grounded in the project brief and the review workflow documented in the concept note. The next useful step is to test these against the client’s actual process by verifying the review sections, role names, and notification model. Any mismatches should be captured as issues and moved into [OPEN-ISSUES.md](OPEN-ISSUES.md).
 
 The key verification question is straightforward: if a stakeholder reads each main success scenario aloud, do they recognize the same review flow they perform today, but with the repetitive manual work removed? If the answer is “yes,” the use cases reflect real behavior. If the answer is “not quite,” the missing details belong in the open issues list before implementation begins.
-
