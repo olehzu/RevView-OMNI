@@ -309,6 +309,13 @@ _[arc42 leaves this section an open list of concepts. This template fixes its fi
 
 ### 8.1 Security
 
+The trust boundary for RevView-OMNI is the line between the user’s browser and the internal application environment. Browser-side code, client devices, and public network traffic are treated as untrusted; the web application server, authentication provider, and database are treated as trusted system components. Review data and authorization decisions are never accepted solely because they arrived from the client; every request is validated before it can access protected data.
+
+`SEC-authentication`: Users authenticate through the client’s enterprise identity system rather than by creating a separate local account store for the application. The application relies on the organization’s sign-on infrastructure to verify employee identity, and access to non-public review data is denied unless a valid authenticated session or token is present. This keeps authentication aligned with the company’s existing security controls and avoids duplicating credential management.
+
+`SEC-authorization`: Authorization is enforced at the application layer using the authenticated user’s identity and role, with least-privilege access by default. Reviewers can access only the review data needed for their assigned work, managers can see the records relevant to their responsibilities, and administrators can manage configuration or review structure only when explicitly permitted. Any action not explicitly allowed is denied, and role checks are applied before data is returned or updated.
+
+`SEC-sensitive-data`: RevView-OMNI stores peer-review records and associated evaluation data in the application database, which is treated as a protected internal system. Sensitive values such as API keys, database credentials, and service-to-service tokens are stored in the client-managed deployment environment or secret store rather than in the repository or application source files. All data in transit is protected with TLS, and review records are retained only for the period required by the client’s review and accountability policies. This ensures that confidential employee and review information is not exposed to the browser or unauthorized internal users.
 _Due: named at Checkpoint 1, detailed at Checkpoint 2._
 
 _[Four short paragraphs. The last three each cite the `SEC-*` requirement they answer:_
