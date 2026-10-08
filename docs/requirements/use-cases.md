@@ -2,7 +2,7 @@
 
 **Project:** RevView/OMNI
 **Team:** Team 8
-**Client:** Sumalee Rodolph - Applied Avionics
+**Client:** Sumalee Rodolph - AppliedAvionics
 **Version:** 0.1
 
 ---

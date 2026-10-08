@@ -2,7 +2,7 @@
 
 **Project:** RevView-OMNI
 **Team:** Team 8
-**Client:** Sumalee Rodolph, Applied Avionics
+**Client:** Sumalee Rodolph, AppliedAvionics
 **Version:** 0.1
 
 ---
@@ -93,7 +93,7 @@ _The Source column is the defense. Every rule traces to a document or a person, 
 ### 1.1 Purpose
 
 This document collects the business rules — policies, regulations, standards, and
-formulas — that govern Applied Avionics' business as it relates to RevView-OMNI.
+formulas — that govern AppliedAvionics' business as it relates to RevView-OMNI.
 The [software requirements specification / SRS] cites these rules by identifier
 rather than restating them, so each rule has a single source of truth.
 
@@ -103,7 +103,7 @@ This document covers business rules related to:
 
 - The required review artifacts (diff files, review records, checklists) and their audit/compliance properties.
 - The role of AI assistance relative to reviewer and author judgment.
-- Constraints on student access to Applied Avionics' internal systems during development.
+- Constraints on student access to AppliedAvionics' internal systems during development.
 - The process governing how the student team hands off work to the software team for production verification.
 
 The following are out of scope for this document because they are not yet confirmed as governing rules rather than open questions or software design choices:
@@ -139,7 +139,7 @@ The following are out of scope for this document because they are not yet confir
 
 ### 2.3 IT and Access Constraints
 
-- **`BR-no-student-prod-access`:** Students may not be added as users on Applied Avionics' internal network and may not be given direct access to the production Jira, SVN, or Jenkins instances for development or testing.
+- **`BR-no-student-prod-access`:** Students may not be added as users on AppliedAvionics' internal network and may not be given direct access to the production Jira, SVN, or Jenkins instances for development or testing.
   **Source:** same document, Section 12. **Flagged:Needs_Review** confirm this is still current IT policy directly with the client/IT, since it drives the sandbox architecture for the whole project.
 
 ### 2.4 Student–Software Team Engagement
