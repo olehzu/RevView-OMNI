@@ -40,6 +40,7 @@ _Requirements cited from elsewhere keep their own identifiers: `UC-*` from [use-
 |---|---|---|---|
 | 2026-09-25 | 0.1 | Initial draft of section 1, from vision-and-scope.md and the client interview notes | Oleh Zubariev |
 | 2026-09-25 | 0.1 | Updated section 1 to match the filled-in vision-and-scope.md sections 2 through 4 | Oleh Zubariev |
+| 2026-10-07 | 0.1 | Filled in section 8.2 (hardware interfaces) | Valerie Valles |
 
 ---
 
@@ -199,6 +200,10 @@ _[The user-facing surfaces, at requirement level: which views exist, standards t
 ### 8.2 Hardware interfaces
 
 _[Any hardware the system talks to, or "none".]_
+
+None.
+
+RevView/OMNI is a web application that interacts only with users through a browser and with Jira, SVN, and Jenkins through their software interfaces (section 8.3). It does not communicate directly with any hardware device, including the avionics target systems referred to as Platforms in the [project glossary](project-glossary.md). A Platform only decides which review checklist applies. Builds and tests that run on target or test hardware happen in Jenkins, and RevView/OMNI receives only their results. Server and client hardware are covered as operating environment in section 2.3. Whether AppliedAvionics requires hardware-based authentication (for example smart cards or security tokens) is still open; see OI-13.
 
 ### 8.3 Software interfaces
 

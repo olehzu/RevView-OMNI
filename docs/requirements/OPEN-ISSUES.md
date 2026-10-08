@@ -37,6 +37,7 @@ _[Send the shortlist to your client the day before. A client who has seen the qu
 | OI-10 | What is the agreed meeting cadence, and when and where is meeting 3? | Contact channel is confirmed (Microsoft Teams direct messages, fast turnaround), but no explicit cadence has been agreed and meeting 3's date, time, and place are not yet on the calendar. | Sumalee Rodolph | 2026-09-09 |
 | OI-11 | Is there anything about the process or project we have not asked about that worries Sumalee? | The guide's catch-all question has not been asked in either meeting yet, and it is called out as the highest-yield question in the guide. | Sumalee Rodolph | 2026-09-09 |
 | OI-12 | When exactly will the example/sample Jira setup be ready, and does it cover what the sandbox needs? | Promised during meeting 2 for "next week" (around 2026-09-25); needed to validate the sandbox Jira structure against something concrete before integration work starts on it. | Sumalee Rodolph | 2026-09-18 |
+| OI-13 | Does AppliedAvionics require hardware-based authentication (smart cards, hardware security tokens) for internal web applications? | If so, it is a hardware interface the SRS must specify in section 8.2, and it affects the security requirements in section 9.3 and the deployment design. No document addresses it yet. | Sumalee Rodolph | 2026-10-07 |
 
 ## Resolved
 
