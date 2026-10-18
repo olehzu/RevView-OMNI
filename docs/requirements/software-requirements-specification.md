@@ -171,7 +171,7 @@ Notification delivery itself is specified in `CI-review-notification` (section 8
 
 ## 6. Business Rules
 
-Business rules are maintained in [business-rules.md](business-rules.md) and are cited by identifier above rather than restated. Note for whoever next edits [use-cases.md](use-cases.md): as of this writing, its Business Rules fields cite `BR-review-package-required`, `BR-platform-section-required`, `BR-review-evidence-retained`, `BR-notification-timeliness`, and `BR-reviewer-assessment-based-on-checklist`, none of which exist in business-rules.md. The rules this specification cites above (`BR-review-package-exportable`, `BR-no-student-prod-access`, `BR-review-nine-parts`) use business-rules.md's actual identifiers. Fixing those citations, either by citing the rules that do exist or by adding the missing rules with a source, is on the team's week 8 build-context preparation list; once it is done this note can be removed.
+Business rules are maintained in [business-rules.md](business-rules.md) and are cited by identifier above rather than restated.
 
 ---
 
