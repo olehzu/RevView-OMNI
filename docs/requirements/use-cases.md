@@ -3,7 +3,7 @@
 **Project:** RevView/OMNI
 **Team:** Team 8
 **Client:** Sumalee Rodolph - Applied Avionics
-**Version:** 0.1
+**Version:** 0.2 (draft for team review)
 
 ---
 
@@ -24,6 +24,7 @@ Use cases are identified as `UC-<AREA>-<slug>`, where the area code groups relat
 | Date | Version | Description | Author |
 |---|---|---|---|
 | 2026-09-25 | 0.1 | Initial use cases for RevView/OMNI review-preparation, review, and closure workflow | Cong Le |
+| 2026-09-28 | 0.2 draft | Add export use case, remove undefined rule citations, and correct scenario flow; subject to team and client review | Ralph Castilleja (proposed revision) |
 
 ---
 
@@ -35,7 +36,7 @@ This document defines the primary goals users can accomplish with RevView/OMNI i
 
 ### 1.2 Scope
 
-This document covers the feature areas identified in [vision-and-scope.md](vision-and-scope.md): review initiation, context assembly, diff and source preparation, checklist mapping, integrity validation, review notification, and evidence retention. It does not cover production deployment beyond the internal system boundary or details of a final production network configuration.
+This document covers the feature areas identified in [vision-and-scope.md](vision-and-scope.md): review initiation, context assembly, diff and source preparation, checklist mapping, integrity validation, review notification, export of existing review records and checklists, and evidence retention. It does not cover production deployment beyond the internal system boundary or details of a final production network configuration.
 
 ---
 
@@ -82,11 +83,13 @@ This document covers the feature areas identified in [vision-and-scope.md](visio
 | `REV` | Review package creation and validation | `UC-REV-create-review`, `UC-REV-assemble-materials`, `UC-REV-validate-package` |
 | `NOT` | Review notification and coordination | `UC-NOT-notify-reviewers` |
 | `ASS` | Reviewer assessment and findings | `UC-ASS-assess-review-section`, `UC-ASS-record-findings` |
-| `CLS` | Review closure and evidence retention | `UC-CLS-close-review` |
+| `CLS` | Review closure and evidence retention | `UC-CLS-close-review`, `UC-CLS-export-review-artifacts` |
 
 ---
 
 ## 4. Use Cases
+
+The flows below are a working specification, not a record of client approval. In particular, reviewer assignment, mandatory sections, exception handling, finding disposition, closure authorization, and export access/format details still require confirmation. No project-specific business rule is yet defined in [business-rules.md](business-rules.md); do not implement a policy inferred only from a use case draft.
 
 ### `UC-REV-create-review`: Create a review package
 
@@ -121,16 +124,16 @@ This document covers the feature areas identified in [vision-and-scope.md](visio
 
 **Extensions:**
 
-- **4a. The change record is missing or incomplete:**
-    - 4a1. The system prompts the author to add or correct the Jira ticket or description.
-    - 4a2. The author updates the required metadata and returns to step 4.
+- **1a. The change record is missing or incomplete:**
+    - 1a1. The system identifies the missing Jira ticket or description.
+    - 1a2. The author corrects the change reference and returns to step 1.
 - **3a. The author chooses a platform or section not supported by the configuration:**
     - 3a1. The system rejects the invalid selection and lists valid options.
-    - 3a2. The author chooses a valid combination and resumes at step 4.
+    - 3a2. The author chooses a valid combination and resumes at step 3.
 
 **Priority:** High
 **Frequency of Use:** Frequent; each review begins with this flow.
-**Business Rules:** `BR-review-package-required`, `BR-platform-section-required`
+**Business Rules:** None verified in [business-rules.md](business-rules.md); client policy still to be confirmed.
 
 **Associated Information:**
 
@@ -154,7 +157,7 @@ This document covers the feature areas identified in [vision-and-scope.md](visio
 **Date Created:** 2026-09-25
 **Primary Actor:** author
 **Secondary Actors:** Jira, SVN, Jenkins
-**Trigger:** A review package is created and the system begins package assembly.
+**Trigger:** The author requests assembly of the materials for a review package.
 **Description:** The system gathers the change context, file list, SVN revisions, repository links, diff information, and build/test data needed for review.
 
 **Preconditions:**
@@ -170,29 +173,30 @@ This document covers the feature areas identified in [vision-and-scope.md](visio
 
 **Main Success Scenario:**
 
-1. The system retrieves the associated Jira ticket and change context for the review.
-2. The system queries SVN for the changed files, revision numbers, repository links, and diff output.
-3. The system includes relevant source files or code excerpts tied to the selected review sections.
-4. The system checks whether the selected sections require Jenkins build or test information.
-5. The system attaches the required checklist templates and review-record documents for each section.
-6. The system stores the assembled materials in the review package and marks it as “Materials assembled.”
-7. Use case ends.
+1. The author requests assembly of the review materials.
+2. The system retrieves the associated Jira ticket and change context for the review.
+3. The system queries SVN for the changed files, revision numbers, repository links, and diff output.
+4. The system includes relevant source files or code excerpts tied to the selected review sections.
+5. The system checks whether the selected sections require Jenkins build or test information.
+6. The system attaches the required checklist templates and review-record documents for each section.
+7. The system stores the assembled materials in the review package and marks it as “Materials assembled.”
+8. Use case ends.
 
 **Extensions:**
 
-- **2a. SVN information is incomplete or missing:**
-    - 2a1. The system records the missing file or revision and alerts the author.
-    - 2a2. The author corrects the source information or selects a valid alternate change set.
-- **4a. The selected section requires build output but no Jenkins result is available:**
-    - 4a1. The system marks the item as “Pending build validation.”
-    - 4a2. The author requests or triggers the build and resumes the assembly process once the result is available.
-- **5a. A checklist template is not available for a selected section:**
-    - 5a1. The system shows a warning and keeps the package in an incomplete state.
-    - 5a2. The author confirms the template or requests a missing form before continuing.
+- **3a. SVN information is incomplete or missing:**
+    - 3a1. The system records the missing file or revision and alerts the author.
+    - 3a2. The author corrects the source information or selects a valid alternate change set.
+- **5a. The selected section requires build output but no Jenkins result is available:**
+    - 5a1. The system marks the item as “Pending build validation.”
+    - 5a2. The author requests or triggers the build and resumes the assembly process once the result is available.
+- **6a. A checklist template is not available for a selected section:**
+    - 6a1. The system shows a warning and keeps the package in an incomplete state.
+    - 6a2. The author confirms the template or requests a missing form before continuing.
 
 **Priority:** High
 **Frequency of Use:** Frequent; executed for every review package.
-**Business Rules:** `BR-review-evidence-retained`, `BR-review-package-required`
+**Business Rules:** None verified in [business-rules.md](business-rules.md); client policy still to be confirmed.
 
 **Associated Information:**
 
@@ -236,7 +240,7 @@ This document covers the feature areas identified in [vision-and-scope.md](visio
 2. The system compares the selected review sections to the required sections for the selected platform.
 3. The system checks for missing file descriptions, missing revision numbers, incomplete diff coverage, or missing build/test evidence.
 4. The system checks that every required checklist form has an associated template or record.
-5. The system either marks the package as valid and ready for reviewer notification or lists the issues that must be corrected.
+5. The system marks the package as valid and ready for reviewer notification.
 6. Use case ends.
 
 **Extensions:**
@@ -247,13 +251,13 @@ This document covers the feature areas identified in [vision-and-scope.md](visio
 - **3a. Diff coverage is incomplete:**
     - 3a1. The system lists the files excluded from the diff and warns the author.
     - 3a2. The author updates the review package or documents the reason for exclusion.
-- **5a. Validation fails because of unresolved issues:**
+- **5a. Validation finds unresolved issues:**
     - 5a1. The system keeps the package in a draft or corrective state.
     - 5a2. The author fixes the issues and re-runs validation.
 
 **Priority:** High
 **Frequency of Use:** Frequent; each review is validated before publication.
-**Business Rules:** `BR-review-package-required`, `BR-review-evidence-retained`
+**Business Rules:** None verified in [business-rules.md](business-rules.md); client policy still to be confirmed.
 
 **Associated Information:**
 
@@ -309,7 +313,7 @@ This document covers the feature areas identified in [vision-and-scope.md](visio
 
 **Priority:** High
 **Frequency of Use:** Frequent; occurs for each review once ready for assessment.
-**Business Rules:** `BR-notification-timeliness`, `BR-review-package-required`
+**Business Rules:** None verified in [business-rules.md](business-rules.md); client policy still to be confirmed.
 
 **Associated Information:**
 
@@ -353,7 +357,7 @@ This document covers the feature areas identified in [vision-and-scope.md](visio
 3. The reviewer reviews the evidence and evaluates the section against the checklist criteria.
 4. The reviewer records the result and adds comments or references to the relevant file, line, or checklist item when needed.
 5. The system saves the assessment result and updates the review progress status.
-6. The reviewer repeats the process for other applicable sections until complete or defers remaining sections.
+6. The reviewer may start a separate assessment for another applicable section.
 7. Use case ends.
 
 **Extensions:**
@@ -370,7 +374,7 @@ This document covers the feature areas identified in [vision-and-scope.md](visio
 
 **Priority:** High
 **Frequency of Use:** Frequent; each review section is assessed by one or more reviewers.
-**Business Rules:** `BR-reviewer-assessment-based-on-checklist`, `BR-review-evidence-retained`
+**Business Rules:** None verified in [business-rules.md](business-rules.md); client policy still to be confirmed.
 
 **Associated Information:**
 
@@ -430,7 +434,7 @@ This document covers the feature areas identified in [vision-and-scope.md](visio
 
 **Priority:** High
 **Frequency of Use:** Moderate; each review may generate multiple findings.
-**Business Rules:** `BR-review-evidence-retained`, `BR-reviewer-assessment-based-on-checklist`
+**Business Rules:** None verified in [business-rules.md](business-rules.md); client policy still to be confirmed.
 
 **Associated Information:**
 
@@ -491,7 +495,7 @@ This document covers the feature areas identified in [vision-and-scope.md](visio
 
 **Priority:** Medium
 **Frequency of Use:** Moderate; occurs when a review is complete.
-**Business Rules:** `BR-review-evidence-retained`, `BR-review-package-required`
+**Business Rules:** None verified in [business-rules.md](business-rules.md); client policy still to be confirmed.
 
 **Associated Information:**
 
@@ -505,6 +509,69 @@ This document covers the feature areas identified in [vision-and-scope.md](visio
 **Related Use Cases:** `UC-ASS-record-findings`, `UC-ASS-assess-review-section`
 **Assumptions:** The organization maintains a formal policy for recording review outcomes and retained evidence.
 **Open Issues:** The exact closure criteria and required retention period still need sponsor confirmation.
+
+---
+
+### `UC-CLS-export-review-artifacts`: Export review records and checklists
+
+**UC ID and Name:** `UC-CLS-export-review-artifacts`: Export review records and checklists  
+**Created By:** Ralph Castilleja (proposed revision)  
+**Date Created:** 2026-09-28  
+**Primary Actor:** Author (provisional; confirm which roles may export)  
+**Secondary Actors:** Reviewer, moderator  
+**Trigger:** An authorized participant requests a copy of an existing review's record or checklist in the organization's current format.  
+**Description:** The participant obtains a review record or checklist populated from RevView/OMNI so the existing review and audit process can continue using its established files. The client explicitly requested that these artifacts remain exportable in the same Excel/CSV formats used today (see [September 9 client meeting notes](client-meeting/client-interview-2026-09-09.md), section 6); the exact templates have not yet been supplied.
+
+**Preconditions:**
+
+- PRE-1. A review package exists and the participant can access it.
+- PRE-2. The requested review record or checklist is available for that review.
+
+**Postconditions:**
+
+- POST-1. The participant receives the selected export containing the information stored for that review at the time of the request.
+- POST-2. The review package and its recorded assessments are not changed by the export.
+
+**Main Success Scenario:**
+
+1. The participant opens an existing review package and requests an export.
+2. The system presents the available review record and checklists for that review and their supported Excel/CSV export formats.
+3. The participant selects an artifact and format.
+4. The system populates the artifact from the review's stored information, preserving the association between review sections, checklist entries, and recorded findings where those fields exist in the established format.
+5. The system provides the generated file to the participant.
+6. Use case ends.
+
+**Extensions:**
+
+- **2a. No record or checklist is available for this review:**
+    - 2a1. The system identifies what is missing and does not present a nonexistent artifact for export.
+    - 2a2. The participant returns to the review or ends the request.
+- **3a. The selected artifact does not support the requested format:**
+    - 3a1. The system identifies the supported formats and asks the participant to choose one.
+    - 3a2. The participant returns to step 3 or ends the request.
+- **4a. Required export fields are missing:**
+    - 4a1. The system identifies the missing information and does not present the file as a complete review record.
+    - 4a2. The participant corrects the record and retries, or ends the request. Whether a clearly marked draft export is allowed remains an open client decision.
+- **5a. File generation fails:**
+    - 5a1. The system reports the failure without changing the review data.
+    - 5a2. The participant may retry or end the request.
+
+**Priority:** High; existing formats must remain available.  
+**Frequency of Use:** To be measured or confirmed with the client.  
+**Business Rules:** None verified in [business-rules.md](business-rules.md); export access and retention policies still need client confirmation.
+
+**Associated Information:**
+
+| Property name | Data type | Validation rule | Security or access concerns | Glossary reference |
+|---|---|---|---|---|
+| review_id | String | Identifies the review being exported | Export only to a participant authorized to access that review; exact roles to confirm | Review Record |
+| artifact_type | Enum | Review record or an applicable checklist | May contain source and review information | Review Artifact |
+| export_format | Enum | Must be a format supported by the selected artifact; exact Excel/CSV templates to confirm | The generated file must be handled according to client policy | Review Artifact |
+| export_content | File | Reflects the stored review information at export time | May include sensitive source or review information | Review Checklist |
+
+**Related Use Cases:** `UC-REV-create-review`, `UC-ASS-assess-review-section`, `UC-ASS-record-findings`, `UC-CLS-close-review`.  
+**Assumptions:** The client can provide representative existing export templates for validation.  
+**Open Issues:** Confirm who may export; whether draft and closed reviews can both be exported; exact Excel/CSV templates and field mapping; whether exports need timestamps, version identifiers, or an audit record; and whether incomplete records can be exported as clearly marked drafts. These are not settled by this draft.
 
 ---
 
