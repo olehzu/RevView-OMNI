@@ -293,6 +293,8 @@ _Due: Checkpoint 2. [One sequence diagram, for the use case your proving slice b
 
 _Draw it as a mermaid `sequenceDiagram`, and name the participants exactly as the containers in section 5.1 name them. If the use case calls an external system, show what happens when that system fails or does not answer; arc42 counts error scenarios among the most useful runtime views. Under the diagram, a sentence or two on anything a reader would not guess from it. Cite the use case by its `UC-*` identifier; do not restate its steps.]_
 
+**Proving slice:** `UC-REV-assemble-materials`. It is the riskiest use case because it is the only one that reads from all three external systems, Jira, SVN, and Jenkins, through the Integration Gateway, so it is the first to expose `RISK-sandbox-integration-unproven` and `RISK-svn-from-python` (section 11). The sequence diagram is drawn here once the slice runs.
+
 ## 7. Deployment View
 
 _Due: Checkpoint 3. [Filled in once your pipeline exists, after week 11. Three things:_
@@ -346,9 +348,25 @@ _One short subsection each: the rule in one sentence, why, and the file that sho
 | _Auditing_ | _Who changed what, and when?_ | _The first "who did this?"_ |
 | _Testing_ | _Which kinds of test, at which layer, with what data?_ | _The first pull request_ |
 
-_Example, from the Cafeteria Ordering System:_
+**8.2.1 Error handling.** Every application failure is translated once at the trust boundary into a stable error code and safe message, while integration failures retain the name of the unavailable source; this prevents exception details from leaking and lets every screen handle failures consistently. An unavailable Jira, SVN, or Jenkins result is reported as unavailable, never as empty or passing (`SI-jira-read`, `SI-svn-read`, `SI-jenkins-read`). Shown in: not yet implemented.
 
-**8.2.1 Error handling.** _Every endpoint returns `{ "ok": false, "error": { "code", "message" } }` on failure, produced by one exception handler; no controller builds its own error body, and no response carries an exception's own message. Why: the ordering screen and the menu screen share one error display, and an exception's message can reveal the database behind it. Shown in: `ApiExceptionHandler`._
+**8.2.2 Time and time zones.** Persist timestamps in UTC, display them in one configured organization time zone, and obtain current time through a replaceable clock; this keeps audit ordering deterministic and tests independent of a developer's machine. Shown in: not yet implemented.
+
+**8.2.3 API conventions.** Browser-to-application APIs use versioned JSON resources and one success/error envelope, with nouns representing review resources and HTTP methods representing actions; this prevents each use case area from inventing an incompatible interface. Shown in: not yet implemented.
+
+**8.2.4 Code conventions.** Organize application code by the use case areas in section 5.2 and require external tools to be reached through adapter interfaces in the Integration Gateway; this keeps production-only details out of workflow logic. Shown in: not yet implemented.
+
+**8.2.5 Validation.** The Application performs the authoritative validation before state changes or export, while browser checks are convenience only; this prevents direct API calls from bypassing completeness and authorization rules (`ROB-incomplete-package-blocked`, `SEC-role-based-review-access`). Shown in: not yet implemented.
+
+**8.2.6 Configuration and secrets.** Load environment-specific endpoints, feature settings, and secret references at startup, reject missing required settings, and never commit credential values; this supports sandbox/production separation and one-maintainer operation (`CO-sandbox-development`, `SEC-no-production-credentials-in-development`, `CO-public-repository`). Shown in: not yet implemented.
+
+**8.2.7 Logging.** Emit structured operational logs with request and review correlation identifiers, but never log credentials, tokens, source or diff content, or exported artifacts; this supports diagnosis without creating a second evidence leak. Shown in: not yet implemented.
+
+**8.2.8 Persistence and concurrency.** Complete each workflow state change in one application transaction and reject an update based on a stale review version; this prevents two participants from silently overwriting review state. Shown in: not yet implemented.
+
+**8.2.9 Auditing.** Record the authenticated actor, action, review identifier, result, and UTC time for every assignment, readiness, assessment, finding, export, and closure transition; this preserves who changed what without placing sensitive artifact content in the audit event (`FR-AUDIT-action-log`). Shown in: not yet implemented.
+
+**8.2.10 Testing.** Test workflow rules against synthetic data, contract-test each external adapter against its sandbox, and keep production validation with AppliedAvionics personnel; this respects the production-access constraint while exposing interface mismatches early (`CO-sandbox-development`, `INT-sandbox-tool-integration`). Shown in: not yet implemented.
 
 ## 9. Architecture Decisions
 
@@ -414,7 +432,9 @@ _A risk written as a category ("security", "performance") is not a risk. Write t
 
 | ID | Type | What could go wrong, and what it breaks | Mitigation or fix | Cites |
 |---|---|---|---|---|
-| _`RISK-payroll-api-unavailable`_ | _Risk_ | _Nobody has seen the Payroll System's interface. If it only accepts a nightly batch file, ordering cannot confirm payment at order time._ | _Ask for the interface document at the next client meeting; build Payment against a stub until then._ | _`DE-payroll-integration`, `OI-4`_ |
+| `RISK-sandbox-integration-unproven` | Risk | The sandbox Jira, SVN, and Jenkins are not set up yet, and nobody on the team has called any of their interfaces. If one is missing, unstable, or returns data in a different shape than the adapters assume, `UC-REV-assemble-materials` cannot produce a complete package, and the Integration Gateway adapters need redesigning after the workflow code is built on them. | Build the proving slice against the sandbox before any other use case; contract-test each adapter against its sandbox (section 8.2.10); report unavailable evidence explicitly rather than as empty (section 8.2.1). | `RI-integration-failure`, `SI-jira-read`, `SI-svn-read`, `SI-jenkins-read`, `DE-sandbox-self-hosted-svn-jenkins`, `OI-11` |
+| `RISK-svn-from-python` | Risk | SVN's native API is C. If the Python bindings cannot list changed files, look up revisions, and generate diffs reliably, the SVN adapter in the Application cannot meet `SI-svn-read` under `CO-backend-language`, and the stack decision would have to be reopened. | In the first days of the proving slice, spike all three operations from Python against the sandbox SVN; if the bindings fall short, try the SVN command-line client wrapped inside the adapter; if both fail, tell Sumalee, who said the stack can change. | `CO-backend-language`, `SI-svn-read`, `OI-22` |
+| `RISK-identity-protocol-unknown` | Risk | AppliedAvionics has a sign-on mechanism, but which one and over what protocol is unknown. Until it is, the Identity component cannot be built for real, and `SEC-authenticated-access` cannot be verified against the system users will actually sign on with. | Keep authentication behind the Identity component's interface and develop against a sandbox identity stub; ask AppliedAvionics IT through Sumalee for the mechanism and protocol. | `SEC-authenticated-access`, `SI-identity-provider`, `DE-identity-interface`, `OI-21`, `OI-23` |
 
 ## 12. Glossary
 

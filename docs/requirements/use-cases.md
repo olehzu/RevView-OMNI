@@ -24,6 +24,7 @@ Use cases are identified as `UC-<AREA>-<slug>`, where the area code groups relat
 | Date | Version | Description | Author |
 |---|---|---|---|
 | 2026-09-25 | 0.1 | Initial use cases for RevView/OMNI review-preparation, review, and closure workflow | Cong Le |
+| 2026-10-18 | 0.1 | Business Rules fields cite only rules defined in business-rules.md | Oleh Zubariev |
 
 ---
 
@@ -130,7 +131,7 @@ This document covers the feature areas identified in [vision-and-scope.md](visio
 
 **Priority:** High
 **Frequency of Use:** Frequent; each review begins with this flow.
-**Business Rules:** `BR-review-package-required`, `BR-platform-section-required`
+**Business Rules:** `BR-review-package-required`, `BR-review-nine-parts`
 
 **Associated Information:**
 
@@ -192,7 +193,7 @@ This document covers the feature areas identified in [vision-and-scope.md](visio
 
 **Priority:** High
 **Frequency of Use:** Frequent; executed for every review package.
-**Business Rules:** `BR-review-evidence-retained`, `BR-review-package-required`
+**Business Rules:** `BR-review-package-required`, `BR-svn-diff-required`, `BR-diff-checklist-match`
 
 **Associated Information:**
 
@@ -253,7 +254,7 @@ This document covers the feature areas identified in [vision-and-scope.md](visio
 
 **Priority:** High
 **Frequency of Use:** Frequent; each review is validated before publication.
-**Business Rules:** `BR-review-package-required`, `BR-review-evidence-retained`
+**Business Rules:** `BR-review-package-required`, `BR-diff-checklist-match`, `BR-review-nine-parts`
 
 **Associated Information:**
 
@@ -309,7 +310,7 @@ This document covers the feature areas identified in [vision-and-scope.md](visio
 
 **Priority:** High
 **Frequency of Use:** Frequent; occurs for each review once ready for assessment.
-**Business Rules:** `BR-notification-timeliness`, `BR-review-package-required`
+**Business Rules:** `BR-review-package-required`
 
 **Associated Information:**
 
@@ -370,7 +371,7 @@ This document covers the feature areas identified in [vision-and-scope.md](visio
 
 **Priority:** High
 **Frequency of Use:** Frequent; each review section is assessed by one or more reviewers.
-**Business Rules:** `BR-reviewer-assessment-based-on-checklist`, `BR-review-evidence-retained`
+**Business Rules:** `BR-reviewer-assessment-based-on-checklist`, `BR-ai-human-override`
 
 **Associated Information:**
 
@@ -430,7 +431,7 @@ This document covers the feature areas identified in [vision-and-scope.md](visio
 
 **Priority:** High
 **Frequency of Use:** Moderate; each review may generate multiple findings.
-**Business Rules:** `BR-review-evidence-retained`, `BR-reviewer-assessment-based-on-checklist`
+**Business Rules:** `BR-reviewer-assessment-based-on-checklist`, `BR-ai-human-override`
 
 **Associated Information:**
 
@@ -491,7 +492,7 @@ This document covers the feature areas identified in [vision-and-scope.md](visio
 
 **Priority:** Medium
 **Frequency of Use:** Moderate; occurs when a review is complete.
-**Business Rules:** `BR-review-evidence-retained`, `BR-review-package-required`
+**Business Rules:** `BR-review-package-required`, `BR-review-package-exportable`
 
 **Associated Information:**
 
