@@ -35,7 +35,7 @@ This clause is about how work moves.
 
 Branch per sub-issue, named **<convention, e.g. feat/42-short-slug>**.
 Never push to `main`. Every change arrives as a pull request.
-A pull request needs 2 approving review(s) from someone who does not own the use case.
+A pull request needs 1 approving review from someone who does not own the use case.
 A reviewer reads the issue before the diff. Blocking a merge: if produces bugs or unsufficient fix.
 
 ## 6. Working with AI
