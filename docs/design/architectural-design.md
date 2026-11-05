@@ -1,9 +1,11 @@
 # Architectural Design
 
-**Project:** _[Your project name]_
-**Team:** _[Team NN]_
-**Client:** _[Client name and organization]_
-**Version:** 0.1
+**Project:** RevView/OMNI
+**Team:** Team 8
+**Client:** Sumalee Rodolph, AppliedAvionics
+**Version:** 0.2
+
+**Status:** Proposed Block 6 revision. Stack selection remains deferred (`OI-26`); named technologies reflect the current SRS baseline.
 
 ---
 
@@ -35,6 +37,7 @@ _[These are slugs, like every other identifier in your project, so an inserted d
 | Version | Date | Author | Change |
 |---|---|---|---|
 | 0.1 | | | Initial draft for Checkpoint 1 |
+| 0.2 | 2026-11-05 | Ralph Castilleja | Proposed Block 6 architecture revision; stack selection remains deferred |
 
 ---
 
@@ -44,33 +47,27 @@ _Due: Checkpoint 1._
 
 ### 1.1 Requirements overview
 
-_[Your [specification](../requirements/software-requirements-specification.md) and your [use cases](../requirements/use-cases.md) are the requirements overview. Link them here; do not summarize them.]_
+[Software Requirements Specification](../requirements/software-requirements-specification.md) and [use cases](../requirements/use-cases.md).
 
 ### 1.2 Quality goals
 
-_[The **three** quality attributes that most shape your system, in priority order. Pick them from section 9 of your [specification](../requirements/software-requirements-specification.md) and cite their identifiers. If you cannot rank them, ask your client which one they would give up first; that answer is the ranking._
-
-_These are usually the top rows of the table in section 9.1, and the two do different jobs. Here, say why each goal matters to your client. There, say which decision it forces._
-
-_Example, from the Cafeteria Ordering System:]_
-
 | Priority | Quality goal | Specification handles | Why it shapes the architecture |
 |---|---|---|---|
-| 1 | _Payroll data stays confidential_ | _`SEC-payroll-auth`, `SEC-employee-own-orders`_ | _Orders are paid by payroll deduction, so an order record carries an employee's pay account. A leak is a legal problem, not a bug._ |
-| 2 | _Orders placed before 10:00 are not lost_ | _`ROB-order-persisted`, `AVL-lunch-window`_ | _The lunch rush is the only load that matters, and a lost order is a hungry employee with a payroll charge._ |
-| 3 | _Cafeteria staff can run it without IT_ | _`CO-no-dedicated-ops`, `MNT-menu-self-service`_ | _Nobody on the cafeteria side can deploy, restart, or patch anything._ |
+| 1 | Only assigned review participants can access review materials | `SEC-role-based-review-access`, `SEC-authenticated-access` | Authorization must be enforced centrally for every request and across every review-data component, so identity and role checks belong in the Application. |
+| 2 | Incomplete packages cannot become ready for review | `ROB-incomplete-package-blocked` | Readiness depends on evidence assembled from several sources; the Application must validate one package state before notifying reviewers. |
+| 3 | The system integrates with sandbox and production engineering tools | `INT-sandbox-tool-integration` | Jira, SVN, and Jenkins interfaces vary by environment, so the architecture isolates them behind the Integration Gateway. |
+
+**Block 1 handoff — proposed rankings (§§1.2 and 9.1):** ask the team/client to confirm both priority orders, or ask which quality attribute they would give up first. Both rankings remain proposed until that confirmation is recorded.
 
 ### 1.3 Stakeholders
 
-_[Your stakeholders are profiled in section 3.1 of [vision and scope](../requirements/vision-and-scope.md). Link it here; do not copy it.]_
+[Stakeholders, Vision and Scope §3.1](../requirements/vision-and-scope.md).
 
 ## 2. Architecture Constraints
 
 _Due: Checkpoint 1._
 
-_[The constraints the architecture has to honor. They are already written as `CO-*` in section 2.4 of your specification, and `OE-*` in section 2.3; **list the identifiers here, do not restate them.** Add one sentence only where a constraint narrows an architectural choice in a way that is not obvious from its text._
-
-_Your technology stack is a constraint only if something external fixes it: the client's IT department, an existing system, or the person who maintains this after you graduate. A stack your team chose is a decision, and it goes in section 9 with the alternative you rejected.]_
+`CO-backend-language`, `CO-frontend-language`, `CO-database`, `CO-sandbox-development`, `CO-export-format-preserved`, and `CO-public-repository` (SRS §2.4). `CO-database` places both structured review data and code review files in PostgreSQL, which informs the persistence container in §5.1. `CO-public-repository` makes separation of sandbox and production credentials an architectural security boundary; this also supports `MNT-single-maintainer` (SRS §9.7).
 
 ## 3. Context and Scope
 
@@ -150,15 +147,11 @@ RevView/OMNI owns review workflow state, assembled evidence references, assessme
 
 _Due: Checkpoint 1._
 
-_[Three to five bullets: the few moves that shape everything else. arc42 suggests four kinds: the technology you build on, how the system is divided at the top level, how the quality goals in section 1.2 are met, and any organizational choice that shapes the code (who maintains what, what you buy instead of build)._
-
-_Each bullet is one sentence, and it cites what explains it: the key decision in section 9.2 where one exists, and otherwise the quality goal and the building block in section 5 it shapes. Keep it short; the reasoning lives in section 9. A bullet that cites nothing is either not load-bearing, or it is a decision you have not written down yet._
-
-_Example:]_
-
-- _**One deployable with one managed database** (`KD-deployment-shape`), because nobody on the cafeteria side can operate infrastructure (quality goal 3)._
-- _**Payment is the only component that talks to the Payroll System** (section 5.2), so payroll data crosses the trust boundary in exactly one place (quality goal 1)._
-- _**Divided by use case area**, Ordering, Menu, and Delivery, each owning its own rules, so a menu change never touches ordering code (quality goal 3, `MNT-menu-self-service`)._
+- **One versioned application deployable** serves the browser interface and API, with one persistence container using the PostgreSQL baseline (stack selection deferred) (`KD-deployment-shape`, §5.1).
+- **Keep review workflow areas as internal components** for preparation, coordination, assessment, and closure, with shared cross-cutting integration and artifact handling (§5.2 Review Preparation, Review Coordination, Review Assessment, Review Closure, Integration Gateway, and Artifact Management).
+- **Enforce participant access and package readiness in the Application** to meet `SEC-role-based-review-access` and `ROB-incomplete-package-blocked` (§5.2 Review Preparation and Identity).
+- **Isolate Jira, SVN, and Jenkins behind the Integration Gateway** so sandbox and production endpoints can be configured independently (`INT-sandbox-tool-integration`, §5.2 Integration Gateway).
+- **Keep the SRS's client-suggested React/TypeScript, Python, and PostgreSQL stack as a tentative baseline**; the team agreed to defer Block 4 package choices because the discussion was confusing, so framework and tool versions remain unspecified for now (`CO-frontend-language`, `CO-backend-language`, `CO-database`, `OI-26`, `MNT-single-maintainer`, `KD-deployment-shape`; §5.2 Integration Gateway).
 
 ## 5. Building Block View
 
@@ -204,27 +197,22 @@ C4Container
     Rel(app, email, "Sends confirmations", "SMTP")
 ```
 
-_The system is one application and one database because nobody on the cafeteria side can operate more (`KD-deployment-shape`). The front end is a separate container only because it runs in the browser; it ships inside the application's package._
+The proposed deployment uses one versioned application deployable. The browser interface remains a runtime container because it runs in each user's browser, and its assets ship with the application (KD-deployment-shape).
 
-RevView/OMNI's containers are:
+RevView/OMNI's proposed containers are shown below. **Folding the Artifact Store into PostgreSQL is a proposal pending team confirmation and recording of the decision on [issue #28](https://github.com/olehzu/RevView-OMNI/issues/28).** The combined storage container depicts that proposal, not a finalized storage decision.
 
 ```mermaid
 %%{init: {"flowchart": {"nodeSpacing": 70, "rankSpacing": 80, "curve": "stepAfter"}}}%%
 flowchart LR
-    team(["Project Team Member<br/>[Person]<br/>Author, reviewer, or moderator/coordinator"])
-
+    team(["Project Team Member<br/>[Person]<br/>Author, Reviewer, or Moderator"])
     subgraph omni["RevView/OMNI — System Boundary"]
         direction LR
-        web["Web Interface<br/>[Container: HTML / CSS / JavaScript]<br/>Review screens in the browser"]
-        app["Application<br/>[Container: Python; framework TBD]<br/>Review workflow and integrations"]
-        db[("Review Database<br/>[Container: Relational database; engine TBD]<br/>Structured review data")]
-        store["Artifact Store<br/>[Container: File or object storage; engine TBD]<br/>Review evidence and exports"]
-
-        web -->|"API<br/>[JSON / HTTPS]"| app
-        app -->|"Data<br/>[TBD]"| db
-        app -->|"Files<br/>[TBD]"| store
+        web["Web Interface<br/>[Container: React with TypeScript; baseline, selection deferred]<br/>Review screens in the browser"]
+        app["Application<br/>[Container: Python; framework deferred by team]<br/>Review workflow and integrations"]
+        db[("Review Database and Artifact Storage (proposed)<br/>[Container: PostgreSQL; baseline, selection deferred]<br/>Structured review data, code review files, and exports")]
+        web -->|"API [JSON / HTTPS]"| app
+        app -->|"Queries and files [PostgreSQL protocol]"| db
     end
-
     subgraph external["External Systems"]
         direction TB
         jira["Jira<br/>[Software System]<br/>Tickets"]
@@ -233,26 +221,24 @@ flowchart LR
         identity["Identity Service<br/>[Software System]<br/>Provider TBD"]
         notification["Notification Service<br/>[Software System]<br/>Provider TBD"]
     end
-
-    team -->|"Uses<br/>[HTTPS]"| web
-    app -->|"Tickets<br/>[TBD]"| jira
-    app -->|"Revisions<br/>[TBD]"| svn
-    app -->|"Results<br/>[TBD]"| jenkins
-    app -->|"Login<br/>[TBD]"| identity
-    app -->|"Alerts<br/>[TBD]"| notification
-
+    team -->|"Uses [HTTPS]"| web
+    app -->|"Tickets [TBD]"| jira
+    app -->|"Revisions [TBD]"| svn
+    app -->|"Results [TBD]"| jenkins
+    app -->|"Login [TBD]"| identity
+    app -->|"Alerts [TBD]"| notification
     classDef person fill:#08427b,stroke:#052e56,color:#fff,stroke-width:2px
     classDef container fill:#438dd5,stroke:#2e6295,color:#fff,stroke-width:2px
     classDef externalSystem fill:#999,stroke:#666,color:#fff,stroke-width:2px
     class team person
-    class web,app,db,store container
+    class web,app,db container
     class jira,svn,jenkins,identity,notification externalSystem
     style omni fill:transparent,stroke:#777,stroke-width:2px,stroke-dasharray:5 5
     style external fill:transparent,stroke:#888,stroke-dasharray:5 5
     linkStyle default stroke:#444,stroke-width:1.5px
 ```
 
-The Web Interface is separate because it executes in each user's browser. Workflow, authorization, validation, and external integrations remain together in the Application, while structured review state and potentially large review artifacts have separate persistence responsibilities. External connections trace to the same `SI-*`, `CI-*`, `DE-*`, and `SEC-*` identifiers named under the context diagram. The team must record the final single-versus-multiple-deployable decision in section 9.2 after confirming the client's hosting constraints.
+The browser interface is separate because it executes on each user's device; the React assets ship with the single application release (`KD-deployment-shape`). The proposed interpretation of `CO-database` folds the Artifact Store into PostgreSQL for structured review data, code review files, and exports, with Artifact Management in §5.2 retaining workflow and provenance responsibilities. This storage consolidation remains pending team confirmation and recording of the decision on [issue #28](https://github.com/olehzu/RevView-OMNI/issues/28); stack finality remains open under `OI-26`. **Stack status:** the SRS reflects the client's suggested Python, React with TypeScript, and PostgreSQL stack. The team agreed to defer Block 4 package choices because the discussion was confusing; the Python framework and tool versions therefore remain unspecified for now (`OI-26`). The React and PostgreSQL labels reflect the SRS baseline, not a final team package selection. External interface protocols remain TBD pending the applicable integration and identity decisions.
 
 ### 5.2 Use case areas and components
 
@@ -276,14 +262,14 @@ _Example:]_
 | Use case area | Component | Responsibility | Depends on | Status |
 |---|---|---|---|---|
 | `REV` | Review Preparation | Owns review creation, evidence assembly, and package-readiness validation | Integration Gateway, Artifact Management, Identity, Jira, SVN, Jenkins | provisional |
-| `NOT` | Review Coordination | Owns reviewer assignment state and notification attempts | Notification, Identity, Review Database | provisional |
-| `ASS` | Review Assessment | Owns section assessments and findings tied to review evidence | Artifact Management, Identity, Review Database | provisional |
-| `CLS` | Review Closure | Owns closure state and the retained evidence set for a completed review | Artifact Management, Export, Identity, Review Database | provisional |
+| `NOT` | Review Coordination | Owns reviewer assignment state and notification attempts | Notification, Identity, Review Database and Artifact Storage | provisional |
+| `ASS` | Review Assessment | Owns section assessments and findings tied to review evidence | Artifact Management, Identity, Review Database and Artifact Storage | provisional |
+| `CLS` | Review Closure | Owns closure state and the retained evidence set for a completed review | Artifact Management, Export, Identity, Review Database and Artifact Storage | provisional |
 | (cross-cutting) | Integration Gateway | Isolates workflow code from sandbox- and production-specific engineering-tool interfaces | Jira, SVN, Jenkins | provisional |
 | (cross-cutting) | Identity | Maps an authenticated internal identity to application roles and review assignments | Approved Identity Service | provisional |
 | (cross-cutting) | Notification | Sends reviewer and moderator notifications and records their delivery outcome | Approved Notification Service | provisional |
-| (cross-cutting) | Artifact Management | Stores and retrieves diffs, checklists, review records, and build evidence with provenance | Artifact Store, Review Database | provisional |
-| (cross-cutting) | Export | Produces client-compatible Excel/CSV review records and checklists | Artifact Management, Review Database | provisional |
+| (cross-cutting) | Artifact Management | Stores and retrieves diffs, checklists, review records, and build evidence with provenance | Review Database and Artifact Storage | provisional |
+| (cross-cutting) | Export | Produces client-compatible Excel/CSV review records and checklists | Artifact Management, Review Database and Artifact Storage | provisional |
 
 _[Check before Checkpoint 1: every area in your use case file appears in the first column, and every external system in section 3 appears in some Depends on cell.]_
 
@@ -311,23 +297,19 @@ _[arc42 leaves this section an open list of concepts. This template fixes its fi
 
 ### 8.1 Security
 
-The trust boundary for RevView-OMNI is the line between the user’s browser and the internal application environment. Browser-side code, client devices, and public network traffic are treated as untrusted; the web application server, authentication provider, and database are treated as trusted system components. Review data and authorization decisions are never accepted solely because they arrived from the client; every request is validated before it can access protected data.
+The trust boundary is the Application's HTTPS interface: browsers and client devices are outside it, as are Jira, SVN, Jenkins, the identity service, and the notification service. Every request for review data is authenticated, and the Application authorizes it before reading or changing protected data (`SEC-authenticated-access`).
 
-`SEC-authentication`: Users authenticate through the client’s enterprise identity system rather than by creating a separate local account store for the application. The application relies on the organization’s sign-on infrastructure to verify employee identity, and access to non-public review data is denied unless a valid authenticated session or token is present. This keeps authentication aligned with the company’s existing security controls and avoids duplicating credential management.
+Users authenticate through the AppliedAvionics identity service; the provider and protocol remain to be confirmed (`SEC-authenticated-access`). The Application maps the authenticated identity to the review's assigned Author, Reviewer, or Moderator role and enforces least privilege on each operation (`SEC-role-based-review-access`). Authors create and maintain their review package, assigned Reviewers read package materials and record assessments, and Moderators resolve participant issues, check completion, and close reviews. The Moderator's complete permissions and role overlap are unresolved under `OI-15`; until confirmed, access beyond documented role duties is denied.
 
-`SEC-authorization`: Authorization is enforced at the application layer using the authenticated user’s identity and role, with least-privilege access by default. Reviewers can access only the review data needed for their assigned work, managers can see the records relevant to their responsibilities, and administrators can manage configuration or review structure only when explicitly permitted. Any action not explicitly allowed is denied, and role checks are applied before data is returned or updated.
+The database and browser are not trusted to make authorization decisions. The Application checks the authenticated participant and role on every request, including framework-provided endpoints, before returning source, diff, checklist, finding, or review-record data (`SEC-role-based-review-access`).
 
-`SEC-sensitive-data`: RevView-OMNI stores peer-review records and associated evaluation data in the application database, which is treated as a protected internal system. Sensitive values such as API keys, database credentials, and service-to-service tokens are stored in the client-managed deployment environment or secret store rather than in the repository or application source files. All data in transit is protected with TLS, and review records are retained only for the period required by the client’s review and accountability policies. This ensures that confidential employee and review information is not exposed to the browser or unauthorized internal users.
-_Due: named at Checkpoint 1, detailed at Checkpoint 2._
+Development uses only sandbox credentials; production credentials are excluded from the public repository and development environment (`SEC-no-production-credentials-in-development`, `CO-sandbox-development`, `CO-public-repository`). Secrets are supplied through the deployment environment or its approved secret store, never committed to source.
 
-_[Four short paragraphs. The last three each cite the `SEC-*` requirement they answer:_
+**Sensitive data:** the proposed Review Database and Artifact Storage container holds diff, source context, checklist, findings, and review records. The Application authenticates every review-data request and restricts read and write access to the assigned author, reviewer(s), and moderator (`SEC-authenticated-access`, `SEC-role-based-review-access`, SRS §9.3).
 
-- _**Trust boundary:** the line between what you control and what you do not. Name the container that is the boundary and what sits outside it (the browser, every external system). Every request that crosses it is authenticated and authorized, and it covers every path your deployable answers, framework endpoints included. Project Pulse's Security & Compliance section shows the shape in three sentences._
-- _**Authentication:** how a user proves who they are, and who issues the credential (your system, the client's sign-on, a third party)._
-- _**Authorization:** the roles, and the rule for what a user may see beyond their role (a patron sees only their own orders). The second part is where most real breaches happen._
-- _**Sensitive data:** what personal or regulated data the system stores, in which container, and which external systems receive any of it. How long it is kept and how it is disposed of are already in section 7.4 of your specification; cite them._
+**TLS — requirement unresolved:** HTTPS on the browser-to-Application arrows is an architectural proposal; the SRS supplies no explicit TLS requirement or identifier. Ask the team/client to confirm the required transport protection for browser, external-tool, and database connections.
 
-_Secrets (passwords, API keys, connection strings) never appear in this document or in the repository. Say where they will live, not what they are.]_
+**Retention and disposal — unresolved (`OI-24`, SRS §7.4):** ask the client how long closed review packages must be kept and whether they may ever be disposed of; no retention period or disposal policy is approved here. Permitted disclosure of review content to AI tools also remains a client question (`OI-1`, SRS §7.4).
 
 ### 8.2 Other concepts
 
@@ -374,6 +356,8 @@ _Due: the table and one decision at Checkpoint 1; more as they are made._
 
 ### 9.1 Architecturally significant requirements
 
+**Block 1 handoff — proposed ranking:** ask the team/client to confirm this priority order together with §1.2, or ask which quality attribute they would give up first. Record the confirmed order before treating either ranking as approved.
+
 _[Not every requirement shapes the architecture. The **architecturally significant requirements** are the few that do: quality attributes and constraints where a wrong guess costs a redesign, not a bug fix. Functionality can be delivered by many structures; these are what choose among them._
 
 _Your quality goals from section 1.2 are usually the top rows; cite them by identifier and do not explain them again. This table can also hold what is nobody's goal but still forces structure, such as a `CO-*` constraint._
@@ -382,7 +366,10 @@ _List three to six, ranked by importance to your client times difficulty to achi
 
 | Rank | Requirement | Specification handles | Importance × difficulty | Drives |
 |---|---|---|---|---|
-| 1 | _Payroll data confidential_ | _`SEC-payroll-auth`_ | _High × Medium_ | _`KD-payment-isolated`_ |
+| 1 | Review data is accessible only to assigned participants | `SEC-role-based-review-access`, `SEC-authenticated-access` | High × High | Identity and authorization in the Application (§5.2) |
+| 2 | Incomplete packages are blocked from readiness | `ROB-incomplete-package-blocked` | High × High | Review Preparation validation (§5.2) |
+| 3 | Integrations work with both sandbox and production tools | `INT-sandbox-tool-integration` | High × Medium | Integration Gateway (§5.2) |
+| 4 | One maintainer can operate and extend the system | `MNT-single-maintainer` | High × Medium | One application deployable and the constrained stack (`KD-deployment-shape`, §5.1) |
 
 ### 9.2 Key decisions
 
@@ -398,7 +385,7 @@ _Decision record:]_
 
 - **Driving requirements:** `SEC-authenticated-access`; `SI-jira-read`, `SI-svn-read`, `SI-jenkins-read`; `BR-no-student-prod-access`, `BR-review-package-exportable`; `UC-REV-validate-package`, `UC-CLS-close-review`; `BR-sprint-handoff-cadence`, `BR-build-tagging`. These correspond to the evidence, security, integration, and handoff drivers in section 9.1.
 - **Context:** The [concept document](../../team-08-revview-omni.pdf), sections 7–8 and 11–13, calls for a unified internal review workspace, preserved audit artifacts, isolated development against real sandbox tools, and incremental client-run production verification. The [2026-09-18 client interview](../requirements/client-meeting/client-interview-2026-09-18.md), sections 7 and 11, identifies five to six daily users and Sumalee as the future maintainer. Largest diff size and review volume remain unresolved (`OI-5`); current evidence does not require independently deployed workflow services.
-- **Decision:** Package the Web Interface assets and Python Application together as one versioned release. Serve the browser assets and application API from that deployment, keeping the section 5.2 components as internal modules with explicit responsibilities. The browser remains a runtime container in section 5.1 even though its assets ship with the Application. Persist structured review state in the Review Database and evidence and exports in the Artifact Store, independently of application restarts or replacement; these storage containers are infrastructure dependencies, not additional application releases. Keep identity enforcement and package-readiness validation in the Application, and external-tool access behind Integration Gateway and Notification. Deploy the same release to the isolated sandbox and, by the client software team, inside the production network, changing environment configuration and credentials. Hand off tagged releases with setup and demonstration documentation for incremental verification. Database and storage engines, packaging format, host topology, and approved identity and notification protocols remain to be confirmed.
+- **Proposed decision:** Package the Web Interface assets and Python Application together as one versioned release. Serve the browser assets and application API from that deployment, keeping the section 5.2 components as internal modules with explicit responsibilities. The browser remains a runtime container in section 5.1 even though its assets ship with the Application. Propose folding the Artifact Store into PostgreSQL alongside structured review state and code review files, interpreting the `CO-database` baseline as shown in §5.1; Artifact Management would own file operations and provenance as a logical component. This storage consolidation is pending team confirmation and recording of the decision on [issue #28](https://github.com/olehzu/RevView-OMNI/issues/28), and is not finalized. Keep identity enforcement and package-readiness validation in the Application, and external-tool access behind Integration Gateway and Notification. Deploy the same release to the isolated sandbox and, by the client software team, inside the production network, changing environment configuration and credentials. Hand off tagged releases with setup and demonstration documentation for incremental verification. Stack selection remains deferred under `OI-26`; Python, React with TypeScript, and PostgreSQL describe the current SRS baseline. The Python framework, packaging format, host topology, and approved identity and notification protocols remain to be confirmed.
 - **Rejected:** Independently deployed services for preparation, assessment, closure, integrations, and export, or an independently released front end. For the known user population, these add deployment coordination, network failure modes, and consistency work across review state and evidence without an established requirement for independent scaling or release schedules. A browser-only application talking directly to engineering tools is also rejected because it would distribute integration credentials and authoritative validation across untrusted clients.
 - **Trade-off:** Workflow components are released and scaled together, and an application outage affects the whole workspace. Large diff generation, exports, or slow external tools can compete with interactive work; representative sandbox workloads must establish whether bounded background execution within the deployment is sufficient before introducing a separate worker. Separate persistent storage still requires backup and restore procedures that keep review records and artifacts consistent. A passing sandbox demonstration does not establish production compatibility, so client verification remains necessary before rollout. Revisit this decision if measured workloads or confirmed hosting constraints require a different deployment shape.
 
@@ -406,7 +393,7 @@ _Decision record:]_
 
 ### 10.1 Quality requirements overview
 
-_[Section 9 of your [specification](../requirements/software-requirements-specification.md) is the overview. Link it here; do not copy it.]_
+[SRS §9, Quality Attributes](../requirements/software-requirements-specification.md#9-quality-attributes).
 
 ### 10.2 Quality scenarios
 
@@ -418,7 +405,7 @@ _**Verified by** names the test, or the repeatable manual check, that shows the 
 
 | ID | Source and stimulus | Environment | Response | Measure | Verified by |
 |---|---|---|---|---|---|
-| _`QS-cross-employee-order-denied`_ | _A signed-on patron requests another patron's order by its ID_ | _Normal operation_ | _Refused before any order data is read_ | _Every such request is refused and returns no order fields (`SEC-employee-own-orders`)_ | _An integration test that signs in as one patron and requests another patron's order_ |
+| `QS-svn-unavailable-during-assembly` | SVN is unavailable during assembly | Normal operation | Package reported unavailable, not marked ready | `SI-svn-read`: SVN failure is surfaced and readiness remains blocked | |
 
 ## 11. Risks and Technical Debt
 
@@ -438,6 +425,8 @@ _A risk written as a category ("security", "performance") is not a risk. Write t
 
 ## 12. Glossary
 
+[Project glossary](../requirements/project-glossary.md).
+
 _[Domain terms live in your [project glossary](../requirements/project-glossary.md). Link it and add nothing here unless you need an architecture term your team uses in a special sense.]_
 
 ---
@@ -449,3 +438,4 @@ _[Delegate: drawing the C4 diagrams in mermaid from your use case list and your 
 _Keep human: the ranking in section 9.1 and every `KD-*`. The decisions are the part of this document your client and the team that inherits this system will hold you to, and they depend on facts about your client that are not in any file._
 
 _**The specific failure to watch for: over-engineering.** Ask an agent for an architecture and it will propose the one it has seen most often in writing, which is built for a company a thousand times your size: microservices, a message queue, Kubernetes, a cache in front of a database that holds ten thousand rows. Every one of those is a real answer to a problem you do not have, and each one adds something that can break at 2 a.m. with nobody to fix it. For every container and every decision the agent proposes, ask which requirement in section 9.1 forces it. If the answer is none, cut it.]_
+
