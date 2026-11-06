@@ -8,15 +8,18 @@ version = "0.0.1"
 description = "RevView/OMNI application API"
 # 3.13 is the team's development version until the client's server version is known (OI-18).
 requires-python = ">=3.13"
+# Exact versions, so the pull request checks install what each laptop runs.
 dependencies = [
-    "fastapi",
-    "uvicorn",
+    "fastapi==0.162.0",
+    "uvicorn==0.54.0",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "pytest",
-    "httpx2",
+    "pytest==9.2.0",
+    "httpx2==2.16.0",
+    "ruff==0.17.4",
+    "mypy==2.4.1",
 ]
 
 [tool.setuptools]
