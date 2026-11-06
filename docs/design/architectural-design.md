@@ -305,6 +305,14 @@ _Due: Checkpoint 3. [Filled in once your pipeline exists, after week 11. Three t
 
 _Section 4.4 of [vision and scope](../requirements/vision-and-scope.md) says who can operate the system and where its users are. Cite it; this section says how the deployment meets it.]_
 
+### Open deployment question
+
+**Status:** Open; settle by Checkpoint 3. **Owner:** Ethan Nguyen, tracking the answer with the team. Client questions go through Francisco Lugo Gonzales to Sumalee Rodolph and AppliedAvionics IT, following the [team contract](../team-contract.md#2-communication).
+
+Where will the application and PostgreSQL run in staging and production, under whose account and budget, and what happens if student credits expire? Who owns access and operations after December and after May? What will staging be, what data may each environment hold, who owns backups and recovery, and how will a checked release reach each environment and be rolled back?
+
+Hosting and operating constraints remain unanswered in [OI-18](../requirements/OPEN-ISSUES.md#open); post-handoff maintainability is also tracked in OI-26. Ethan will record the confirmed answers here and update those issues, without assuming a provider, cost, or production access. This question follows [CI/CD section 4.10](https://washingtonwei.github.io/cosc-40943/modules/ci-cd/#410-where-will-your-project-run); it does not select or provision a deployment environment.
+
 ## 8. Crosscutting Concepts
 
 _[arc42 leaves this section an open list of concepts. This template fixes its first entry, 8.1 Security, because Checkpoint 1 asks for the trust boundary; 8.2 holds every other concept.]_
