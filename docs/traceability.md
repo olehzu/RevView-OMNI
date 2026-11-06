@@ -3,7 +3,7 @@
 **Project:** RevView/OMNI
 **Team:** Team 8
 **Version:** 0.2
-**Last checked:** 2026-11-05, Codex (source cross-check; teammate review pending)
+**Last checked:** 2026-11-06, Ethan Nguyen (teammate review pending)
 
 ---
 
@@ -80,22 +80,22 @@ One row tracks each of the seven use cases and each of the three functional requ
 
 **Release:** the allowed assignments are `v0.1.0`, `v0.2.0`, `v1.0.0`, `Spring`, or `Out`. Assembly is assigned `v0.1.0` as the proving slice ([architecture section 6](design/architectural-design.md#6-runtime-view) and the Block 7 instruction). “Pending team (Block 8)” is an unresolved decision, not a release assignment. The remaining nine rows need team agreement; no release commitment is inferred from MVP scope alone.
 
-**Build / Verify:** track implementation and verification separately. Replace “Not built” with “Built” only when linked code implements the requirement; replace “Not verified” with “Verified” only when linked test/run evidence supports it. A release assignment or documentation PR does not establish either state.
+**Build / Verify:** use the status words expected by `/design` and `/implement`. Build starts at `❌ Not started`; `/design` sets it to `📐 Designed`, and `/implement` advances it to `🟡 In progress` or `✅ Built`. Verify starts at `🔎 None`; use `🟡 Partial` for incomplete coverage and `✅ Verified` only when tests cover the main flow and every extension and pass. A release assignment or documentation PR does not establish implementation or verification.
 
-**Design / Code / Tests:** link existing artifacts only. The Design cells below point to provisional architecture responsibilities, not completed detailed designs. Code and Tests cells are empty because current main contains no implementation or executable tests for these requirements. Local, uncommitted proposals and paths suggested in build-context issues are not evidence of merged work.
+**Design / Code / Tests:** leave Design empty until `/design` fills it with `design/<area>.md`. `/implement` fills Code and Tests with the implementation and test links. Local, uncommitted proposals and paths suggested in build-context issues are not evidence of merged work.
 
 | Use case / functional requirement | Release | Build | Design | Code | Tests | Verify |
 |---|---|---|---|---|---|---|
-| [`UC-REV-create-review`](requirements/use-cases.md#uc-rev-create-review-create-a-review-package) | Pending team (Block 8) | Not built | [Architecture: Review Preparation](design/architectural-design.md#52-use-case-areas-and-components); detailed design pending | | | Not verified |
-| [`UC-REV-assemble-materials`](requirements/use-cases.md#uc-rev-assemble-materials-assemble-review-materials) | `v0.1.0` | Not built | [Architecture: Review Preparation](design/architectural-design.md#52-use-case-areas-and-components); detailed design pending | | | Not verified |
-| [`UC-REV-validate-package`](requirements/use-cases.md#uc-rev-validate-package-validate-review-package-completeness) | Pending team (Block 8) | Not built | [Architecture: Review Preparation](design/architectural-design.md#52-use-case-areas-and-components); detailed design pending | | | Not verified |
-| [`UC-NOT-notify-reviewers`](requirements/use-cases.md#uc-not-notify-reviewers-notify-reviewers) | Pending team (Block 8) | Not built | [Architecture: Review Coordination](design/architectural-design.md#52-use-case-areas-and-components); detailed design pending | | | Not verified |
-| [`UC-ASS-assess-review-section`](requirements/use-cases.md#uc-ass-assess-review-section-assess-a-review-section) | Pending team (Block 8) | Not built | [Architecture: Review Assessment](design/architectural-design.md#52-use-case-areas-and-components); detailed design pending | | | Not verified |
-| [`UC-ASS-record-findings`](requirements/use-cases.md#uc-ass-record-findings-record-review-findings) | Pending team (Block 8) | Not built | [Architecture: Review Assessment](design/architectural-design.md#52-use-case-areas-and-components); detailed design pending | | | Not verified |
-| [`UC-CLS-close-review`](requirements/use-cases.md#uc-cls-close-review-close-a-review-and-retain-evidence) | Pending team (Block 8) | Not built | [Architecture: Review Closure](design/architectural-design.md#52-use-case-areas-and-components); detailed design pending | | | Not verified |
-| [`FR-EXPORT-legacy-format`](requirements/software-requirements-specification.md#52-non-use-case-functional-requirements) | Pending team (Block 8) | Not built | [Architecture: Export](design/architectural-design.md#52-use-case-areas-and-components); detailed design pending | | | Not verified |
-| [`FR-AUDIT-action-log`](requirements/software-requirements-specification.md#52-non-use-case-functional-requirements) | Pending team (Block 8) | Not built | [Architecture: Auditing, section 8.2.9](design/architectural-design.md#82-other-concepts); detailed design pending | | | Not verified |
-| [`FR-SYNC-reviewer-bidirectional`](requirements/software-requirements-specification.md#52-non-use-case-functional-requirements) | Pending team (Block 8) | Not built | [Architecture: Review Coordination and Integration Gateway](design/architectural-design.md#52-use-case-areas-and-components); detailed design pending | | | Not verified |
+| [`UC-REV-create-review`](requirements/use-cases.md#uc-rev-create-review-create-a-review-package) | Pending team (Block 8) | ❌ Not started | | | | 🔎 None |
+| [`UC-REV-assemble-materials`](requirements/use-cases.md#uc-rev-assemble-materials-assemble-review-materials) | `v0.1.0` | ❌ Not started | | | | 🔎 None |
+| [`UC-REV-validate-package`](requirements/use-cases.md#uc-rev-validate-package-validate-review-package-completeness) | Pending team (Block 8) | ❌ Not started | | | | 🔎 None |
+| [`UC-NOT-notify-reviewers`](requirements/use-cases.md#uc-not-notify-reviewers-notify-reviewers) | Pending team (Block 8) | ❌ Not started | | | | 🔎 None |
+| [`UC-ASS-assess-review-section`](requirements/use-cases.md#uc-ass-assess-review-section-assess-a-review-section) | Pending team (Block 8) | ❌ Not started | | | | 🔎 None |
+| [`UC-ASS-record-findings`](requirements/use-cases.md#uc-ass-record-findings-record-review-findings) | Pending team (Block 8) | ❌ Not started | | | | 🔎 None |
+| [`UC-CLS-close-review`](requirements/use-cases.md#uc-cls-close-review-close-a-review-and-retain-evidence) | Pending team (Block 8) | ❌ Not started | | | | 🔎 None |
+| [`FR-EXPORT-legacy-format`](requirements/software-requirements-specification.md#52-non-use-case-functional-requirements) | Pending team (Block 8) | ❌ Not started | | | | 🔎 None |
+| [`FR-AUDIT-action-log`](requirements/software-requirements-specification.md#52-non-use-case-functional-requirements) | Pending team (Block 8) | ❌ Not started | | | | 🔎 None |
+| [`FR-SYNC-reviewer-bidirectional`](requirements/software-requirements-specification.md#52-non-use-case-functional-requirements) | Pending team (Block 8) | ❌ Not started | | | | 🔎 None |
 
 **Block 8 decision checklist:**
 
@@ -104,7 +104,7 @@ One row tracks each of the seven use cases and each of the three functional requ
 - Assign owners for the six rule-citation gaps; record agreed requirement or process links without inventing new policy.
 - Confirm the proving slice can demonstrate assembly with an existing package fixture before other workflow use cases are built.
 
-**Checks (2026-11-05):** exactly ten distinct rows cover all seven use cases and all three defined `FR-*` requirements; assembly is `v0.1.0`. No row is marked built or verified. Remaining release decisions and teammate approval are pending.
+**Checks (2026-11-06):** exactly ten distinct rows cover all seven use cases and all three defined `FR-*` requirements; assembly is `v0.1.0`. All rows start at Build `❌ Not started` and Verify `🔎 None`, with Design empty. Remaining release decisions and teammate approval are pending.
 
 ---
 
