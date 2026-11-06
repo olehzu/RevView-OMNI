@@ -1,78 +1,113 @@
 # Traceability Matrix
 
-**Project:** _[Your project name]_
-**Team:** _[Team NN]_
-**Version:** 0.1
-**Last checked:** _[YYYY-MM-DD, by whom]_
+**Project:** RevView/OMNI
+**Team:** Team 8
+**Version:** 0.2
+**Last checked:** 2026-11-05, Codex (source cross-check; teammate review pending)
 
 ---
 
-_**How to use this template.** Instructions appear in italic square brackets. Fill in underneath them and leave them in place until the document is stable._
-
-_**What this file is.** The map of your project, from the reason something exists to the thing that does it. Every other document owns its own contents; this one owns the **links between them**, so nobody has to restate anything to find out what connects to what._
-
-_**Why it exists before any code does.** The question it answers in week 4 is "did we specify everything we promised, and nothing we did not?" The question it answers in week 12 is "this broke, what was it supposed to do, and who asked for it?" Those are the same question, and the file that answers the second one is the file you started in week 4. Starting it later means reconstructing links from memory, which is the same work done worse._
-
-_**It grows.** Week 4 fills in two tables. Week 8 adds the columns for design, code, and tests once those exist, and the tables below leave room for them. Do not add empty columns now._
-
-_**Run the checks by hand this week.** Each table below ends with two checks. They are cheap, and they fail loudly. Hand the whole file to your agent and ask it to run them, then verify what it tells you, because a check reported as passing by the thing that also wrote the table is not evidence._
-
----
+_**How to use this file.** Maintain links from business objectives and features to requirements, design, code, and tests. Cite identifiers instead of copying requirement text. An empty cell is an unresolved link, not evidence of completion._
 
 ## 1. Feature to use case area
 
-_[Your vision and scope lists product **features** (`FEAT-<slug>`), each a capability a stakeholder can see. Your use case file groups behavior into **use case areas** (`UC-<AREA>-*`). This table connects them, and it is where **business objectives attach**: the objective hangs on the feature, and every use case underneath inherits it. That is why the objective is named here once, rather than repeated on forty use cases._
+Features and MVP inclusion come from [vision and scope section 4.3](requirements/vision-and-scope.md#43-mvp-scope); descriptions are in section 4.2 and business objectives in section 2.2. Areas are defined in [the use-case list](requirements/use-cases.md#3-use-case-list).
 
-_Features and areas are deliberately many-to-many. A feature that lands on exactly one area is probably too narrow, and a feature that reads "create, edit, and delete X" is a list of use cases wearing a feature's clothes._
-
-_Worked example, from Project Pulse:]_
+The objective and area mappings below are proposed trace links based on those descriptions and the existing use cases. `REV` prepares the materials that `ASS` consumes; `NOT` coordinates notification; `CLS` retains evidence at closure. Team review must confirm these mappings.
 
 | Feature | Business objectives | Use case areas |
 |---|---|---|
-| `FEAT-performance-tracking` | `BO-PERF-instructor-efficiency`, `BO-PERF-student-participation` | `WAR`, `EVA` |
-| `FEAT-administration` | (enabling, serves no objective directly) | `SEC`, `TEA`, `STU`, `INS`, `ACC`, `RUB` |
+| `FEAT-review-initiation` | `BO-review-setup-time`, `BO-review-completion-rate` | `REV` |
+| `FEAT-context-assembly` | `BO-review-setup-time`, `BO-review-consistency` | `REV`, `ASS` |
+| `FEAT-diff-and-source-prep` | `BO-review-setup-time`, `BO-review-consistency`, `BO-audit-readiness` | `REV`, `ASS` |
+| `FEAT-checklist-mapping` | `BO-review-completion-rate`, `BO-review-consistency` | `REV`, `ASS` |
+| `FEAT-integrity-validation` | `BO-review-completion-rate`, `BO-review-consistency` | `REV` |
+| `FEAT-review-notification` | `BO-review-awareness` | `NOT` |
+| `FEAT-evidence-retention` | `BO-audit-readiness` | `CLS` |
+| `FEAT-admin-and-configuration` |  |  |
 
-_[An enabling feature that serves no measurable objective on its own says so, as the second row does. That is different from forgetting to fill the column in.]_
+`FEAT-admin-and-configuration` is explicitly outside the MVP. Its empty cells record that no business-objective or use-case-area assignment is currently specified; no administration use case is invented here. This is a known coverage gap for team disposition, rather than a completed feature mapping.
 
-**Checks.**
+**Checks (2026-11-05):**
 
-1. **Every feature has at least one area.** A feature with none means your vision promises something nobody has specified.
-2. **Every area is reached by a feature.** An area no feature points at means you have use cases no stakeholder asked for.
+1. All eight named features in section 4.3 are present. All seven MVP features have an area; the deferred administration feature has none, as noted above.
+2. All four defined areas (`REV`, `NOT`, `ASS`, `CLS`) are reached by an MVP feature. Every objective identifier used above is defined in vision and scope section 2.2.
 
 ---
 
 ## 2. Business rule to what enforces it
 
-_[A business rule is a property of your client's business, so it has no implementation of its own. What it has is a set of requirements that enforce it, and this table is how you find them. Rules are **cited, never restated**: the rule's text lives in `business-rules.md` and nowhere else, and this table holds only the identifier and the links._
-
-_The **Source** column is duplicated here from `business-rules.md` on purpose, and it is the one exception in this file. It is the column reviewers and clients actually read, and a rule whose source is one click away is a rule nobody checks._
-
-_Worked example, from Project Pulse:]_
+This table includes every rule defined in [business-rules.md section 2](requirements/business-rules.md#2-rules). Sources are copied from that document, expanding “same document” to its title. “Enforced by” lists only use cases whose **Business Rules** field explicitly cites the rule; a citation is a specification link, not proof that enforcement is implemented.
 
 | Business rule | Source | Enforced by |
 |---|---|---|
-| `BR-evaluation-submission-window` | Not recorded | `UC-EVA-submit-evaluation` step 7 and extension 1b |
-| `BR-section-admin-only` | Not recorded | `UC-RUB-assign-rubric`, `UC-SEC-create-section`, `UC-SEC-edit-section`, `UC-SEC-setup-active-weeks` |
+| `BR-svn-diff-required` | RevView/OMNI Review Helper Application Concept document, Section 8. | [`UC-REV-assemble-materials`](requirements/use-cases.md#uc-rev-assemble-materials-assemble-review-materials) |
+| `BR-review-package-exportable` | RevView/OMNI Review Helper Application Concept document, Sections 7–8. | [`UC-CLS-close-review`](requirements/use-cases.md#uc-cls-close-review-close-a-review-and-retain-evidence) |
+| `BR-diff-checklist-match` | RevView/OMNI Review Helper Application Concept document, Section 7.3. | [`UC-REV-assemble-materials`](requirements/use-cases.md#uc-rev-assemble-materials-assemble-review-materials), [`UC-REV-validate-package`](requirements/use-cases.md#uc-rev-validate-package-validate-review-package-completeness) |
+| `BR-review-nine-parts` | RevView/OMNI Review Helper Application Concept document, Section 2.3. | [`UC-REV-create-review`](requirements/use-cases.md#uc-rev-create-review-create-a-review-package), [`UC-REV-validate-package`](requirements/use-cases.md#uc-rev-validate-package-validate-review-package-completeness) |
+| `BR-review-package-required` | RevView/OMNI Review Helper Application Concept document, Section 7. | [`UC-REV-create-review`](requirements/use-cases.md#uc-rev-create-review-create-a-review-package), [`UC-REV-assemble-materials`](requirements/use-cases.md#uc-rev-assemble-materials-assemble-review-materials), [`UC-REV-validate-package`](requirements/use-cases.md#uc-rev-validate-package-validate-review-package-completeness), [`UC-NOT-notify-reviewers`](requirements/use-cases.md#uc-not-notify-reviewers-notify-reviewers), [`UC-CLS-close-review`](requirements/use-cases.md#uc-cls-close-review-close-a-review-and-retain-evidence) |
+| `BR-reviewer-assessment-based-on-checklist` | RevView/OMNI Review Helper Application Concept document, Sections 2.1 and 2.3. | [`UC-ASS-assess-review-section`](requirements/use-cases.md#uc-ass-assess-review-section-assess-a-review-section), [`UC-ASS-record-findings`](requirements/use-cases.md#uc-ass-record-findings-record-review-findings) |
+| `BR-review-record-fields` | RevView/OMNI Review Helper Application Concept document, Section 7.1. **Flagged:Needs_Review** the source document marks this information as possibly automatable, so which fields stay human-entered vs. system-derived may change — confirm with the client before treating the field list as fixed. |  |
+| `BR-ai-human-override` | RevView/OMNI Review Helper Application Concept document, Sections 5, 5.3. | [`UC-ASS-assess-review-section`](requirements/use-cases.md#uc-ass-assess-review-section-assess-a-review-section), [`UC-ASS-record-findings`](requirements/use-cases.md#uc-ass-record-findings-record-review-findings) |
+| `BR-author-owns-change-rationale` | RevView/OMNI Review Helper Application Concept document, Section 5. |  |
+| `BR-no-student-prod-access` | RevView/OMNI Review Helper Application Concept document, Section 12. **Flagged:Needs_Review** confirm this is still current IT policy directly with the client/IT, since it drives the sandbox architecture for the whole project. |  |
+| `BR-sprint-handoff-cadence` | RevView/OMNI Review Helper Application Concept document, Section 13. |  |
+| `BR-build-tagging` | RevView/OMNI Review Helper Application Concept document, Section 13.1. |  |
+| `BR-discrepancy-next-sprint` | RevView/OMNI Review Helper Application Concept document, Section 13.1. |  |
 
-**Checks.**
+The following six rules have no citation in any use case's Business Rules field, so their enforcement cells are intentionally empty:
 
-1. **Every rule is enforced by something.** A rule with an empty third column is a policy your software ignores. That may be the right answer, and it is only the right answer if you decided it on purpose. Write the decision in `OPEN-ISSUES.md` rather than leaving the cell blank.
-2. **Every requirement that cites a rule cites one that exists.** Search your use cases and specification for every `BR-` identifier and confirm each one is defined in `business-rules.md`. This is the check that catches a draft citing `BR-late-penalty` because a late penalty is the kind of thing a course usually has. A generated document cites plausible identifiers with complete confidence, and nothing else in your process will notice.
+- `BR-review-record-fields`.
+- `BR-author-owns-change-rationale`.
+- `BR-no-student-prod-access`.
+- `BR-sprint-handoff-cadence`.
+- `BR-build-tagging`.
+- `BR-discrepancy-next-sprint`.
+
+An empty cell does not mean the team has decided to ignore a rule. In particular, `FR-EXPORT-legacy-format` also cites `BR-review-package-exportable`, and the SRS cites `BR-no-student-prod-access` through the sandbox-development constraint and `BR-review-nine-parts` in its domain model. These are additional specification links, not use-case Business Rules citations. Delivery-process rules may need process evidence rather than application use cases; the team must decide ownership and record any policy decision in [OPEN-ISSUES.md](requirements/OPEN-ISSUES.md).
+
+**Checks (2026-11-05):**
+
+1. All 13 defined rules appear exactly once; seven have explicit use-case citations and six have empty enforcement cells.
+2. Every rule identifier cited in the seven use cases' Business Rules fields exists in business-rules.md. All concrete `BR-*` citations in the SRS also resolve. Template examples and identifier-pattern instructions are excluded from this check.
+3. `BR-review-record-fields` and `BR-no-student-prod-access` retain their source document's **Flagged:Needs_Review** qualifications; this matrix does not resolve them.
 
 ---
 
-## 3. From here (week 8)
+## 3. Release plan and implementation traceability
 
-_[Leave this section as it is until week 8. It says what the two tables above grow into, so that nobody restructures the file in the meantime._
+One row tracks each of the seven use cases and each of the three functional requirements defined in [SRS section 5.2](requirements/software-requirements-specification.md#52-non-use-case-functional-requirements). Template examples such as `FR-SAVE-autosave-active` are not project requirements.
 
-_In week 8 the spine extends past the use case: **business objective → feature → use case area → use case → design → code → test.** A third table arrives with one row per use case and columns for the design element, the source files, and the tests, tracked as two separate states, built and verified, so that a use case which is built but untested stays visibly unverified rather than being absorbed into a single "done".]_
+**Release:** the allowed assignments are `v0.1.0`, `v0.2.0`, `v1.0.0`, `Spring`, or `Out`. Assembly is assigned `v0.1.0` as the proving slice ([architecture section 6](design/architectural-design.md#6-runtime-view) and the Block 7 instruction). “Pending team (Block 8)” is an unresolved decision, not a release assignment. The remaining nine rows need team agreement; no release commitment is inferred from MVP scope alone.
+
+**Build / Verify:** track implementation and verification separately. Replace “Not built” with “Built” only when linked code implements the requirement; replace “Not verified” with “Verified” only when linked test/run evidence supports it. A release assignment or documentation PR does not establish either state.
+
+**Design / Code / Tests:** link existing artifacts only. The Design cells below point to provisional architecture responsibilities, not completed detailed designs. Code and Tests cells are empty because current main contains no implementation or executable tests for these requirements. Local, uncommitted proposals and paths suggested in build-context issues are not evidence of merged work.
+
+| Use case / functional requirement | Release | Build | Design | Code | Tests | Verify |
+|---|---|---|---|---|---|---|
+| [`UC-REV-create-review`](requirements/use-cases.md#uc-rev-create-review-create-a-review-package) | Pending team (Block 8) | Not built | [Architecture: Review Preparation](design/architectural-design.md#52-use-case-areas-and-components); detailed design pending | | | Not verified |
+| [`UC-REV-assemble-materials`](requirements/use-cases.md#uc-rev-assemble-materials-assemble-review-materials) | `v0.1.0` | Not built | [Architecture: Review Preparation](design/architectural-design.md#52-use-case-areas-and-components); detailed design pending | | | Not verified |
+| [`UC-REV-validate-package`](requirements/use-cases.md#uc-rev-validate-package-validate-review-package-completeness) | Pending team (Block 8) | Not built | [Architecture: Review Preparation](design/architectural-design.md#52-use-case-areas-and-components); detailed design pending | | | Not verified |
+| [`UC-NOT-notify-reviewers`](requirements/use-cases.md#uc-not-notify-reviewers-notify-reviewers) | Pending team (Block 8) | Not built | [Architecture: Review Coordination](design/architectural-design.md#52-use-case-areas-and-components); detailed design pending | | | Not verified |
+| [`UC-ASS-assess-review-section`](requirements/use-cases.md#uc-ass-assess-review-section-assess-a-review-section) | Pending team (Block 8) | Not built | [Architecture: Review Assessment](design/architectural-design.md#52-use-case-areas-and-components); detailed design pending | | | Not verified |
+| [`UC-ASS-record-findings`](requirements/use-cases.md#uc-ass-record-findings-record-review-findings) | Pending team (Block 8) | Not built | [Architecture: Review Assessment](design/architectural-design.md#52-use-case-areas-and-components); detailed design pending | | | Not verified |
+| [`UC-CLS-close-review`](requirements/use-cases.md#uc-cls-close-review-close-a-review-and-retain-evidence) | Pending team (Block 8) | Not built | [Architecture: Review Closure](design/architectural-design.md#52-use-case-areas-and-components); detailed design pending | | | Not verified |
+| [`FR-EXPORT-legacy-format`](requirements/software-requirements-specification.md#52-non-use-case-functional-requirements) | Pending team (Block 8) | Not built | [Architecture: Export](design/architectural-design.md#52-use-case-areas-and-components); detailed design pending | | | Not verified |
+| [`FR-AUDIT-action-log`](requirements/software-requirements-specification.md#52-non-use-case-functional-requirements) | Pending team (Block 8) | Not built | [Architecture: Auditing, section 8.2.9](design/architectural-design.md#82-other-concepts); detailed design pending | | | Not verified |
+| [`FR-SYNC-reviewer-bidirectional`](requirements/software-requirements-specification.md#52-non-use-case-functional-requirements) | Pending team (Block 8) | Not built | [Architecture: Review Coordination and Integration Gateway](design/architectural-design.md#52-use-case-areas-and-components); detailed design pending | | | Not verified |
+
+**Block 8 decision checklist:**
+
+- Assign the remaining nine releases from the allowed values above and record the meeting/date supporting the decisions.
+- Confirm feature/objective/area mappings and disposition of the deferred administration feature.
+- Assign owners for the six rule-citation gaps; record agreed requirement or process links without inventing new policy.
+- Confirm the proving slice can demonstrate assembly with an existing package fixture before other workflow use cases are built.
+
+**Checks (2026-11-05):** exactly ten distinct rows cover all seven use cases and all three defined `FR-*` requirements; assembly is `v0.1.0`. No row is marked built or verified. Remaining release decisions and teammate approval are pending.
 
 ---
 
-## Working this document with your agent
+## Maintaining the matrix
 
-_[Delegate: running both checks and reporting what fails; finding every `BR-`, `FEAT-`, and `UC-` identifier cited anywhere in `docs/` and listing the ones with no definition; regenerating the second table from the Business Rules fields of your use cases after you have edited them._
-
-_Keep human: whether an area with no feature is a missing feature or a use case that should not exist, and whether an unenforced rule is an oversight or a decision. Both are questions about your client's business, and the answer is not in your repository._
-
-_**The specific failure to watch for:** an agent asked to "fill in the traceability matrix" produces a complete, well-formed table in which every cell is populated and some of the links are invented. A blank cell is information. A confidently wrong link is worse than no link, because it makes the check pass. Verify every row you did not write yourself by opening the document at the other end.]_
+When a requirement is implemented, update its Design, Code, and Tests links in the same pull request. Record verification evidence separately from build completion and keep failed or unexecuted checks visible. When source requirements change, rerun the feature coverage, rule citation, and requirement-row checks before updating the last-checked date.
