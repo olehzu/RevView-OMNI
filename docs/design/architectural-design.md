@@ -368,6 +368,38 @@ _One short subsection each: the rule in one sentence, why, and the file that sho
 
 **8.2.10 Testing.** Test workflow rules against synthetic data, contract-test each external adapter against its sandbox, and keep production validation with AppliedAvionics personnel; this respects the production-access constraint while exposing interface mismatches early (`CO-sandbox-development`, `INT-sandbox-tool-integration`). Shown in: not yet implemented.
 
+### 8.2.11 Static analysis
+
+The pull request gate runs formatting, lint, and type checks before tests and the production build. The tools are the team's choices adopted in [PR #38](https://github.com/olehzu/RevView-OMNI/pull/38); they run locally and on GitHub's Linux runner without a separate analysis service. Keeping the gate in the existing Python/TypeScript toolchains supports `MNT-single-maintainer`. It catches mechanical defects; passing it does not establish use-case correctness.
+
+| Tool | Why it was chosen | Command and working directory |
+|---|---|---|
+| Ruff formatter | Gives Python one consistent format, checked without modifying files. | `ruff format --check .`, from `backend/` |
+| Ruff linter | Catches Python bug patterns such as undefined names and unused imports. | `ruff check .`, from `backend/` |
+| mypy | Checks Python type consistency before runtime. | `mypy app tests`, from `backend/` |
+| Prettier | Applies one frontend formatting policy; the gate checks it without writing changes. | `npm run format:check`, from `frontend/` |
+| oxlint | Checks frontend bug patterns and treats warnings as failures. | `npm run lint`, from `frontend/` |
+| TypeScript compiler | Checks TypeScript and React types; also owns unused-variable reporting. | `npm run typecheck`, from `frontend/` |
+
+The team rejected ESLint for this setup because its proposed TypeScript integration did not support the project's compiler version, and rejected Biome as less familiar for handoff (PR #38). oxlint's overlapping `no-unused-vars` rule is disabled in [frontend/.oxlintrc.json](../../frontend/.oxlintrc.json); PR #38 records the reason: TypeScript remains responsible for that check.
+
+**Gate commands.** With the approved dependencies installed and the backend environment active, run these command sequences from the repository root. Each chain stops at its first failure; both must succeed.
+
+```bash
+(cd backend && ruff format --check . && ruff check . && mypy app tests && pytest)
+(cd frontend && npm run format:check && npm run lint && npm run typecheck && npm test && npm run build)
+```
+
+The commands match [the pull request workflow](../../.github/workflows/pull-request.yml) and [README checks](../../README.md#checks-before-pushing). Backend checks use Python 3.13 in CI; frontend checks use Node.js 24. The gate runs in checking mode, with no automatic fixes or `continue-on-error`. The `backend` and `frontend` jobs are required by the active Protect main ruleset.
+
+**Settling a finding.** Read the rule, location, and affected behavior before changing code. Fix real defects and rerun the same check. A false-positive suppression must be narrow, carry a written reason beside the code or configuration, and receive teammate review. A project-wide rule change needs a reason beside its configuration and an explicit explanation in the PR. Formatting changes belong in a separate commit. Never weaken a check to make it pass without saying so in the pull request.
+
+No analyzer baseline is configured. If the team later introduces one for existing findings, record its counts and debt in section 11; a baseline only shrinks and must not absorb a new finding to make a PR pass. Dependency upgrades are reviewed separately with findings compared before and after.
+
+**Observed gate failure.** [Demo PR #39](https://github.com/olehzu/RevView-OMNI/pull/39), commit `a23f8e8`, deliberately references an undefined `gate_demo_status` in the health response. In [the backend job](https://github.com/olehzu/RevView-OMNI/actions/runs/42266990876/job/128061366391), formatting passed, Ruff reported `F821` at `app/main.py:9:23` and exited 1, and later backend checks were skipped. The frontend passed. GitHub reported the PR as merge-blocked, and the ruleset requires the failed backend check. Keep that PR unmerged for the studio demonstration.
+
+Shown in: [backend/pyproject.toml](../../backend/pyproject.toml), [frontend/package.json](../../frontend/package.json), [frontend/.oxlintrc.json](../../frontend/.oxlintrc.json), and [the workflow](../../.github/workflows/pull-request.yml).
+
 ## 9. Architecture Decisions
 
 _Due: the table and one decision at Checkpoint 1; more as they are made._
