@@ -352,7 +352,7 @@ _One short subsection each: the rule in one sentence, why, and the file that sho
 
 **8.2.2 Time and time zones.** Persist timestamps in UTC, display them in one configured organization time zone, and obtain current time through a replaceable clock; this keeps audit ordering deterministic and tests independent of a developer's machine. Shown in: not yet implemented.
 
-**8.2.3 API conventions.** Browser-to-application APIs use versioned JSON resources and one success/error envelope, with nouns representing review resources and HTTP methods representing actions; this prevents each use case area from inventing an incompatible interface. Shown in: not yet implemented.
+**8.2.3 API conventions.** Browser-to-application APIs use versioned JSON resources and one success/error envelope, with nouns representing review resources and HTTP methods representing actions; this prevents each use case area from inventing an incompatible interface. The envelope is `{"data": …}` on success and `{"error": {"code", "message", "source"}}` on failure, where `code` is a stable upper-case identifier and `source` names the unavailable external system when there is one (section 8.2.1); first used by [`design/rev.md`](rev.md). Shown in: not yet implemented.
 
 **8.2.4 Code conventions.** Organize application code by the use case areas in section 5.2 and require external tools to be reached through adapter interfaces in the Integration Gateway; this keeps production-only details out of workflow logic. Shown in: not yet implemented.
 
