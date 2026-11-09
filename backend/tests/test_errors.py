@@ -79,6 +79,14 @@ def test_unknown_route_is_not_found_in_the_envelope():
     assert response.json()["error"]["code"] == "NOT_FOUND"
 
 
+def test_method_not_allowed_keeps_its_allow_header():
+    response = client.post("/app-error")
+
+    assert response.status_code == 405
+    assert response.json()["error"]["code"] == "METHOD_NOT_ALLOWED"
+    assert response.headers["allow"] == "GET"
+
+
 def test_unexpected_error_is_internal_error_and_leaks_no_detail():
     response = client.get("/crash")
 

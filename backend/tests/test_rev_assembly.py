@@ -14,7 +14,7 @@ from app.rev.assembly import (
     UnclassifiablePath,
     classify,
 )
-from app.rev.models import Category, Platform, ReviewPackageStatus
+from app.rev.models import Category, Evidence, Platform, ReviewPackageStatus
 from app.rev.repository import ReviewPackageRepository
 
 
@@ -61,7 +61,7 @@ def _service(
     return service, repository, jenkins
 
 
-def _assert_refused_with_nothing_stored(
+def _assert_refused_with_no_materials_stored(
     service: AssemblyService, repository: ReviewPackageRepository, gap: str
 ) -> None:
     with pytest.raises(AssemblyIncomplete) as raised:
@@ -70,26 +70,30 @@ def _assert_refused_with_nothing_stored(
     assert raised.value.status_code == 409
     assert raised.value.code == "ASSEMBLY_INCOMPLETE"
     assert gap in raised.value.message
-    assert repository.get(fixtures.REVIEW_ID) == fixtures.review_package()
+    # Status unchanged, no materials, and the evidence as observed: SVN answered,
+    # Jenkins was not asked.
+    assert repository.get(fixtures.REVIEW_ID) == fixtures.review_package().model_copy(
+        update={"svn_evidence": Evidence.AVAILABLE}
+    )
 
 
 def test_no_matching_svn_branch_is_assembly_incomplete():
     service, repository, jenkins = _service({"OTHER-2-docs": [], "SYN-10-x": []})
 
-    _assert_refused_with_nothing_stored(service, repository, "No SVN Branch")
+    _assert_refused_with_no_materials_stored(service, repository, "No SVN Branch")
     assert jenkins.calls == []
 
 
 def test_several_matching_svn_branches_is_assembly_incomplete_naming_them():
     service, repository, _ = _service({"SYN-1-a": [], "SYN-1-b": []})
 
-    _assert_refused_with_nothing_stored(service, repository, "SYN-1-a, SYN-1-b")
+    _assert_refused_with_no_materials_stored(service, repository, "SYN-1-a, SYN-1-b")
 
 
 def test_a_branch_with_no_changed_files_is_assembly_incomplete():
     service, repository, _ = _service({"SYN-1-timer-fix": []})
 
-    _assert_refused_with_nothing_stored(service, repository, "no Changed Files")
+    _assert_refused_with_no_materials_stored(service, repository, "no Changed Files")
 
 
 def test_an_unclassifiable_path_is_assembly_incomplete_naming_the_path():
@@ -105,7 +109,7 @@ def test_an_unclassifiable_path_is_assembly_incomplete_naming_the_path():
         }
     )
 
-    _assert_refused_with_nothing_stored(service, repository, path)
+    _assert_refused_with_no_materials_stored(service, repository, path)
 
 
 def test_the_fixture_assembles_one_diff_per_platform_and_category_touched():

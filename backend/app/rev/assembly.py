@@ -117,28 +117,20 @@ class AssemblyService:
         # Step 1: v0.1.0 reads the Jira Ticket key from the package, with no Jira call.
         ticket_key = package.jira_ticket_key
 
-        # Step 2.
+        # Steps 2 and 3. Whether SVN fails or leaves nothing to assemble, the stored
+        # package keeps no materials from an earlier run, and records SVN as observed.
         try:
-            branch = self._one_branch(ticket_key)
-            svn_files = self._svn.changed_files(branch)
+            branch, diffs, missing = self._svn_materials(ticket_key)
         except IntegrationUnavailable:
             self._repository.save(
                 _without_materials(package, svn=Evidence.UNAVAILABLE, jenkins=None)
             )
             raise
-        if not svn_files:
-            raise AssemblyIncomplete(f"The SVN Branch {branch} has no Changed Files.")
-
-        # 2a1: a Changed File without a Revision is flagged, and still goes into its
-        # Diff and its Review Checklist tab.
-        missing = [
-            MissingMaterial(path=f.path, missing="revision")
-            for f in sorted(svn_files, key=lambda f: f.path)
-            if not f.revision
-        ]
-
-        # Step 3.
-        diffs = _diffs(svn_files)
+        except AssemblyIncomplete:
+            self._repository.save(
+                _without_materials(package, svn=Evidence.AVAILABLE, jenkins=None)
+            )
+            raise
 
         # Step 4: Jenkins evidence for the package, newest first, newest preselected.
         try:
@@ -210,6 +202,24 @@ class AssemblyService:
         )
         self._repository.save(assembled)
         return assembled
+
+    def _svn_materials(
+        self, ticket_key: str
+    ) -> tuple[str, list[Diff], list[MissingMaterial]]:
+        """Step 2 (the SVN Branch and its Changed Files), 2a1, and step 3 (the Diffs)."""
+        branch = self._one_branch(ticket_key)
+        svn_files = self._svn.changed_files(branch)
+        if not svn_files:
+            raise AssemblyIncomplete(f"The SVN Branch {branch} has no Changed Files.")
+
+        # 2a1: a Changed File without a Revision is flagged, and still goes into its
+        # Diff and its Review Checklist tab.
+        missing = [
+            MissingMaterial(path=f.path, missing="revision")
+            for f in sorted(svn_files, key=lambda f: f.path)
+            if not f.revision
+        ]
+        return branch, _diffs(svn_files), missing
 
     def _one_branch(self, ticket_key: str) -> str:
         branches = self._svn.find_branches(ticket_key)
@@ -289,4 +299,4 @@ def _without_materials(
 
 def _log(review_id: str, outcome: str, code: str | None) -> None:
     """One line per assembly; never diff or source content (section 8.2.7)."""
-    logger.info("assembly review_id=%s outcome=%s code=%s", review_id, outcome, code)
+    logger.info("assembly review_id=%r outcome=%s code=%s", review_id, outcome, code)

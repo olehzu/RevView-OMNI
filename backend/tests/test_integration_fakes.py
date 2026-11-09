@@ -17,6 +17,9 @@ from app.integration.svn import FakeSvnAdapter, SvnChangedFile
         ("fix-SYN-1", True),
         ("SYN-10-cleanup", False),
         ("syn-1-timer-fix", False),
+        ("ASYN-1-refactor", False),
+        ("7SYN-1-refactor", False),
+        ("fix_SYN-1", True),
         ("SYN-2-other", False),
     ],
 )
@@ -32,7 +35,12 @@ def _file(path: str) -> SvnChangedFile:
 
 def test_svn_fake_finds_only_branches_matching_the_ticket_key():
     svn = FakeSvnAdapter(
-        branches={"SYN-1-timer-fix": [], "SYN-10-cleanup": [], "OTHER-2": []}
+        branches={
+            "SYN-1-timer-fix": [],
+            "SYN-10-cleanup": [],
+            "ASYN-1-refactor": [],
+            "OTHER-2": [],
+        }
     )
 
     assert svn.find_branches("SYN-1") == ["SYN-1-timer-fix"]
@@ -74,6 +82,8 @@ def test_jenkins_fake_matches_key_in_name_or_description_and_the_branch_paramete
             _build(2, "nightly", "SYN-1-timer-fix", description="for SYN-1"),
             _build(3, "SYN-1 timer fix", "trunk"),
             _build(4, "SYN-10 cleanup", "SYN-1-timer-fix"),
+            _build(5, "ASYN-1 refactor", "SYN-1-timer-fix"),
+            _build(6, "nightly", "SYN-1-timer-fix", description="for ASYN-1"),
         ]
     )
 

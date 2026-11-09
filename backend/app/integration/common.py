@@ -16,8 +16,11 @@ class IntegrationUnavailable(Exception):
 
 
 def contains_ticket_key(text: str, ticket_key: str) -> bool:
-    """True when ``text`` contains the Jira Ticket key, case-sensitive, not followed by a digit.
+    """True when ``text`` contains the Jira Ticket key, case-sensitive, not preceded by a
+    letter or digit and not followed by a digit.
 
-    "SYN-1-timer-fix" contains "SYN-1"; "SYN-10-cleanup" does not (design/rev.md).
+    "SYN-1-timer-fix" contains "SYN-1"; "SYN-10-cleanup" and "ASYN-1-refactor" do not
+    (design/rev.md).
     """
-    return re.search(re.escape(ticket_key) + r"(?!\d)", text) is not None
+    pattern = r"(?<![A-Za-z0-9])" + re.escape(ticket_key) + r"(?!\d)"
+    return re.search(pattern, text) is not None

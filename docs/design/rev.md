@@ -114,11 +114,11 @@ sequenceDiagram
         R-->>A: 503
     end
     alt no SVN Branch, or several, match
-        S-->>R: ASSEMBLY_INCOMPLETE (branch), nothing stored
+        S-->>R: ASSEMBLY_INCOMPLETE (branch), stored with no materials
     end
     S->>SVN: changed_files(branch): path, Revision, repository link, diff (step 2)
     alt no Changed Files
-        S-->>R: ASSEMBLY_INCOMPLETE (changed files), nothing stored
+        S-->>R: ASSEMBLY_INCOMPLETE (changed files), stored with no materials
     end
     opt a Changed File has no Revision (2a1)
         S->>S: record it as missing, to alert the author
@@ -197,7 +197,7 @@ All responses use the section 8.2.3 envelope: `{"data": …}` or `{"error": {"co
 
 - Statuses are the use case's display strings exactly. Field names are snake_case. `platform` and `category` are lowercase, spelled exactly as the path segment. Paths are full repository paths, and the same string appears in the Diff, the checklist tab, and `missing`.
 - `missing` entries read `{"path": …, "missing": "revision"}`. `preselected_build` is `null` under 4a1. `svn_evidence` and `jenkins_evidence` are `"available"`, `"unavailable"`, or `null` when that system has not been asked yet: before the first assembly, and `jenkins_evidence` after an SVN outage, since Jenkins is not queried then.
-- After an SVN or Jenkins outage the stored package has no materials (no branch, Diffs, builds, checklist, or record), with each system's evidence as observed: a Jenkins outage stores `svn_evidence: "available"`, `jenkins_evidence: "unavailable"`. Nothing half-assembled is stored.
+- After an SVN or Jenkins outage, or an `ASSEMBLY_INCOMPLETE`, the stored package has no materials (no branch, Diffs, builds, checklist, record, or `missing`), with each system's evidence as observed: a Jenkins outage stores `svn_evidence: "available"`, `jenkins_evidence: "unavailable"`; an `ASSEMBLY_INCOMPLETE` stores `svn_evidence: "available"`, `jenkins_evidence: null`. Nothing half-assembled or left over from an earlier run is stored.
 - The Review Checklist has a tab for each Platform the change touches, in common, falcon, phoenix order; Diffs are in Platform then Category order, and files within a Diff by path. The Review Record id is the review id with `rev-` replaced by `rr-`.
 - Errors: `source` is `null` when no external system is involved. `ASSEMBLY_INCOMPLETE` names the gap in `message` only. `reviewId` is an opaque string, and any unknown one gives `404`.
 
@@ -222,7 +222,7 @@ _[Only the decisions a reader could not recover from the code. **Each one names 
 **Implementation rules** (from the questions test):
 
 - The SVN Branch is a name, and `changed_files` searches every `<category>/<platform>/branches/<name>` root.
-- Key match: case-sensitive, and the key must not be followed by a digit.
+- Key match: case-sensitive, and the key must not be preceded by a letter or digit nor followed by a digit (`SYN-10-cleanup` and `ASYN-1-refactor` do not match `SYN-1`).
 - Any adapter failure on any call → `503 <SOURCE>_UNAVAILABLE`, evidence recorded as `unavailable`, status unchanged.
 - An unclassifiable path → `409 ASSEMBLY_INCOMPLETE` naming the path.
 - A 2a1 file still goes into its Diff and its checklist tab.
@@ -262,7 +262,8 @@ _[One row per flow: the main success scenario and **every** extension this docum
 | 2a1 and 4a1 together | integration | Status stays "In preparation" (2a1 wins), no build preselected |
 | SVN unavailable (`SI-svn-read`, 8.2.1) | integration | A failing SVN fake gives `503 SVN_UNAVAILABLE` with `source: "SVN"`; the GET shows "In preparation", SVN evidence `unavailable`, and no Diffs; Jenkins was not called |
 | Jenkins unavailable (`SI-jenkins-read`, 8.2.1) | integration | A failing Jenkins fake gives `503 JENKINS_UNAVAILABLE` with `source: "Jenkins"`; the GET shows "In preparation" and `jenkins_evidence` `unavailable`, never "Pending build validation" |
-| No branch, several branches, no Changed Files | unit | Each gives `409 ASSEMBLY_INCOMPLETE` naming the gap, and the status is unchanged |
+| No branch, several branches, no Changed Files | unit | Each gives `409 ASSEMBLY_INCOMPLETE` naming the gap; the status is unchanged, no materials are stored, and `svn_evidence` reads `available` |
+| Re-run that hits `409` | integration | After an outage, or after 2a1, a re-run giving `ASSEMBLY_INCOMPLETE` leaves no stale materials and `svn_evidence` `available` |
 | PRE-1 | integration | A second POST on an assembled package gives `409 REVIEW_PACKAGE_NOT_IN_PREPARATION` |
 | Unknown package | integration | `404 REVIEW_PACKAGE_NOT_FOUND` on the POST and the GET |
 

@@ -6,6 +6,7 @@ external system keeps its name in ``source`` and is never reported as empty or p
 """
 
 import logging
+from collections.abc import Mapping
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
@@ -28,12 +29,17 @@ class AppError(Exception):
 
 
 def error_response(
-    status_code: int, code: str, message: str, source: str | None = None
+    status_code: int,
+    code: str,
+    message: str,
+    source: str | None = None,
+    headers: Mapping[str, str] | None = None,
 ) -> JSONResponse:
     """Build the section 8.2.3 error envelope."""
     return JSONResponse(
         status_code=status_code,
         content={"error": {"code": code, "message": message, "source": source}},
+        headers=headers,
     )
 
 
@@ -73,6 +79,7 @@ async def _http_error(_: Request, exc: Exception) -> JSONResponse:
         exc.status_code,
         _HTTP_CODES.get(exc.status_code, "REQUEST_FAILED"),
         _HTTP_MESSAGES.get(exc.status_code, "The request could not be completed."),
+        headers=exc.headers,  # for example the Allow header of a 405
     )
 
 

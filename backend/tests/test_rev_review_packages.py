@@ -279,6 +279,43 @@ def test_rerun_after_an_outage_overwrites_the_unavailable_evidence(world: World)
     assert world.package()["jenkins_evidence"] == "available"
 
 
+def _assert_no_materials_and_svn_available(data: dict[str, Any]) -> None:
+    assert data["status"] == "In preparation"
+    assert data["svn_branch"] is None
+    assert data["svn_evidence"] == "available"
+    assert data["jenkins_evidence"] is None
+    assert data["diffs"] == []
+    assert data["jenkins_builds"] == []
+    assert data["preselected_build"] is None
+    assert data["review_checklist"] is None
+    assert data["review_record"] is None
+    assert data["missing"] == []
+
+
+def test_rerun_after_an_outage_that_hits_409_keeps_no_stale_evidence(world: World):
+    world.use(svn_fails_on=["changed_files"])
+    assert world.assemble().status_code == 503
+    assert world.package()["svn_evidence"] == "unavailable"
+
+    world.use(branches={"SYN-1-timer-fix": []})
+    response = world.assemble()
+
+    assert response.status_code == 409
+    assert response.json()["error"]["code"] == "ASSEMBLY_INCOMPLETE"
+    _assert_no_materials_and_svn_available(world.package())
+
+
+def test_rerun_after_2a1_that_hits_409_keeps_no_stale_materials(world: World):
+    world.use(branches=_branch_with_missing_revision())
+    assert world.assemble().json()["data"]["diffs"] != []
+
+    world.use(branches={"OTHER-2-docs": []})
+    response = world.assemble()
+
+    assert response.status_code == 409
+    _assert_no_materials_and_svn_available(world.package())
+
+
 # --- Nothing to assemble, through the API ----------------------------------------
 
 
@@ -344,7 +381,7 @@ def test_assembly_logs_one_line_without_diff_content(
 
     lines = [r.getMessage() for r in caplog.records if r.name == "app.rev.assembly"]
     assert lines == [
-        "assembly review_id=rev-0001 outcome=Materials assembled code=None"
+        "assembly review_id='rev-0001' outcome=Materials assembled code=None"
     ]
     assert "SYNTHETIC_TIMEOUT" not in caplog.text
 
