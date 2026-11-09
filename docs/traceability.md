@@ -87,7 +87,7 @@ One row tracks each of the seven use cases and each of the three functional requ
 | Use case / functional requirement | Release | Build | Design | Code | Tests | Verify |
 |---|---|---|---|---|---|---|
 | [`UC-REV-create-review`](requirements/use-cases.md#uc-rev-create-review-create-a-review-package) | Pending team (Block 8) | ❌ Not started | | | | 🔎 None |
-| [`UC-REV-assemble-materials`](requirements/use-cases.md#uc-rev-assemble-materials-assemble-review-materials) | `v0.1.0` | 📐 Designed | [design/rev.md](design/rev.md) | | | 🔎 None |
+| [`UC-REV-assemble-materials`](requirements/use-cases.md#uc-rev-assemble-materials-assemble-review-materials) | `v0.1.0` | 🟡 In progress (v0.1.0 slice built: main, 2a1, 4a1; fake SVN and Jenkins adapters) | [design/rev.md](design/rev.md) | `backend/app/rev/`, `backend/app/integration/`, `backend/app/errors.py` | `backend/tests/test_rev_review_packages.py` (main, 2a1, 4a1, SVN and Jenkins unavailable, PRE-1, unknown package), `backend/tests/test_rev_assembly.py` (step 3 classify; no branch, several branches, no Changed Files, unclassifiable path). Untested: 2a2, 4a2, 5a (not built); real sandbox adapters | 🟡 Partial |
 | [`UC-REV-validate-package`](requirements/use-cases.md#uc-rev-validate-package-validate-review-package-completeness) | Pending team (Block 8) | ❌ Not started | | | | 🔎 None |
 | [`UC-NOT-notify-reviewers`](requirements/use-cases.md#uc-not-notify-reviewers-notify-reviewers) | Pending team (Block 8) | ❌ Not started | | | | 🔎 None |
 | [`UC-ASS-assess-review-section`](requirements/use-cases.md#uc-ass-assess-review-section-assess-a-review-section) | Pending team (Block 8) | ❌ Not started | | | | 🔎 None |

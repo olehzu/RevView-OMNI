@@ -82,10 +82,11 @@ classDiagram
 - `backend/app/rev/models.py` (new): Review Package, Changed File, Diff, Jenkins Build, Review Checklist (Platform tabs), Review Record.
 - `backend/app/rev/repository.py` (new): the in-memory store.
 - `backend/app/rev/fixtures.py` (new): one synthetic review package in "In preparation", with a placeholder ticket key.
-- `backend/app/integration/svn.py` (new): `SvnAdapter`, `FakeSvnAdapter`, and `IntegrationUnavailable(source)`, which every adapter raises when its system does not answer.
+- `backend/app/integration/common.py` (new): `IntegrationUnavailable(source)`, which every adapter raises when its system does not answer, and `contains_ticket_key`, the key match every adapter uses.
+- `backend/app/integration/svn.py` (new): `SvnAdapter` and `FakeSvnAdapter`.
 - `backend/app/integration/jenkins.py` (new): `JenkinsAdapter` and `FakeJenkinsAdapter`. It is **read only and has no method that starts a build** (`OI-35`).
 - `backend/app/errors.py` (new): turns `IntegrationUnavailable`, the area's errors, request validation errors, unknown routes, and unexpected exceptions into the section 8.2.3 envelope at the trust boundary (section 8.2.1). It is registered in `backend/app/main.py` (reused).
-- The adapters and the repository are FastAPI dependencies, so tests swap in fakes that fail or return other data. No new packages.
+- The adapters and the repository are FastAPI dependencies, declared in `router.py`, so tests swap in fakes that fail or return other data. No new packages. `backend/pyproject.toml` now finds `app*` packages, so the new subpackages are installed.
 
 ## Sequence
 
@@ -113,11 +114,11 @@ sequenceDiagram
         R-->>A: 503
     end
     alt no SVN Branch, or several, match
-        S-->>R: ASSEMBLY_INCOMPLETE (branch), nothing stored
+        S-->>R: ASSEMBLY_INCOMPLETE (branch), stored with no materials
     end
     S->>SVN: changed_files(branch): path, Revision, repository link, diff (step 2)
     alt no Changed Files
-        S-->>R: ASSEMBLY_INCOMPLETE (changed files), nothing stored
+        S-->>R: ASSEMBLY_INCOMPLETE (changed files), stored with no materials
     end
     opt a Changed File has no Revision (2a1)
         S->>S: record it as missing, to alert the author
@@ -195,7 +196,9 @@ All responses use the section 8.2.3 envelope: `{"data": …}` or `{"error": {"co
 ```
 
 - Statuses are the use case's display strings exactly. Field names are snake_case. `platform` and `category` are lowercase, spelled exactly as the path segment. Paths are full repository paths, and the same string appears in the Diff, the checklist tab, and `missing`.
-- `missing` entries read `{"path": …, "missing": "revision"}`. `preselected_build` is `null` under 4a1. `svn_evidence` and `jenkins_evidence` are `"available"` or `"unavailable"`.
+- `missing` entries read `{"path": …, "missing": "revision"}`. `preselected_build` is `null` under 4a1. `svn_evidence` and `jenkins_evidence` are `"available"`, `"unavailable"`, or `null` when that system has not been asked yet: before the first assembly, and `jenkins_evidence` after an SVN outage, since Jenkins is not queried then.
+- After an SVN or Jenkins outage, or an `ASSEMBLY_INCOMPLETE`, the stored package has no materials (no branch, Diffs, builds, checklist, record, or `missing`), with each system's evidence as observed: a Jenkins outage stores `svn_evidence: "available"`, `jenkins_evidence: "unavailable"`; an `ASSEMBLY_INCOMPLETE` stores `svn_evidence: "available"`, `jenkins_evidence: null`. Nothing half-assembled or left over from an earlier run is stored.
+- The Review Checklist has a tab for each Platform the change touches, in common, falcon, phoenix order; Diffs are in Platform then Category order, and files within a Diff by path. The Review Record id is the review id with `rev-` replaced by `rr-`.
 - Errors: `source` is `null` when no external system is involved. `ASSEMBLY_INCOMPLETE` names the gap in `message` only. `reviewId` is an opaque string, and any unknown one gives `404`.
 
 ## Key decisions
@@ -219,14 +222,15 @@ _[Only the decisions a reader could not recover from the code. **Each one names 
 **Implementation rules** (from the questions test):
 
 - The SVN Branch is a name, and `changed_files` searches every `<category>/<platform>/branches/<name>` root.
-- Key match: case-sensitive, and the key must not be followed by a digit.
+- Key match: case-sensitive, and the key must not be preceded by a letter or digit nor followed by a digit (`SYN-10-cleanup` and `ASYN-1-refactor` do not match `SYN-1`).
 - Any adapter failure on any call → `503 <SOURCE>_UNAVAILABLE`, evidence recorded as `unavailable`, status unchanged.
 - An unclassifiable path → `409 ASSEMBLY_INCOMPLETE` naming the path.
 - A 2a1 file still goes into its Diff and its checklist tab.
 - Builds are listed with their result; the newest is preselected whatever its result.
 - Timestamps are UTC ISO 8601 with `Z`.
-- Envelope handlers for validation errors (`VALIDATION_FAILED`), unknown routes (`NOT_FOUND`), and unexpected errors (`INTERNAL_ERROR`), with safe messages.
+- Envelope handlers for validation errors (`VALIDATION_FAILED`), unknown routes (`NOT_FOUND`), a method a route does not allow (`405 METHOD_NOT_ALLOWED`), any other HTTP error (`REQUEST_FAILED`), and unexpected errors (`INTERNAL_ERROR`), with safe messages.
 - Log one line per assembly (review id, outcome, code), never diff or source content.
+- Assemblies run one at a time (a lock), so two requests cannot both pass PRE-1 and overwrite each other (section 8.2.8); the in-memory store has no transactions.
 
 ## Data model
 
@@ -255,9 +259,11 @@ _[One row per flow: the main success scenario and **every** extension this docum
 | UC-REV-assemble-materials step 3 | unit | `classify` maps each Platform × Category path to the right pair, for example `tools/common/branches/<ticket>/…` to common, tools |
 | UC-REV-assemble-materials 2a1 | integration | A Changed File without a Revision returns `200` with that file in `missing`, and the status stays "In preparation" |
 | UC-REV-assemble-materials 4a1 | integration | No matching Jenkins Build returns `200` with status "Pending build validation" and no build preselected |
+| 2a1 and 4a1 together | integration | Status stays "In preparation" (2a1 wins), no build preselected |
 | SVN unavailable (`SI-svn-read`, 8.2.1) | integration | A failing SVN fake gives `503 SVN_UNAVAILABLE` with `source: "SVN"`; the GET shows "In preparation", SVN evidence `unavailable`, and no Diffs; Jenkins was not called |
 | Jenkins unavailable (`SI-jenkins-read`, 8.2.1) | integration | A failing Jenkins fake gives `503 JENKINS_UNAVAILABLE` with `source: "Jenkins"`; the GET shows "In preparation" and `jenkins_evidence` `unavailable`, never "Pending build validation" |
-| No branch, several branches, no Changed Files | unit | Each gives `409 ASSEMBLY_INCOMPLETE` naming the gap, and the status is unchanged |
+| No branch, several branches, no Changed Files | unit | Each gives `409 ASSEMBLY_INCOMPLETE` naming the gap; the status is unchanged, no materials are stored, and `svn_evidence` reads `available` |
+| Re-run that hits `409` | integration | After an outage, or after 2a1, a re-run giving `ASSEMBLY_INCOMPLETE` leaves no stale materials and `svn_evidence` `available` |
 | PRE-1 | integration | A second POST on an assembled package gives `409 REVIEW_PACKAGE_NOT_IN_PREPARATION` |
 | Unknown package | integration | `404 REVIEW_PACKAGE_NOT_FOUND` on the POST and the GET |
 
@@ -272,6 +278,7 @@ _[List each change to the architecture-of-record in one line, or "None".]_
 _[What this design could not settle and who can, and what could go wrong that you are accepting.]_
 
 - **The fakes do not retire `RISK-sandbox-integration-unproven` or `RISK-svn-from-python`.** Those were the reasons this use case is the proving slice. The Integration Gateway stays `provisional` until the real sandbox adapters pass the same tests.
+- **The assembly log line is not emitted by the running app yet.** No logging configuration exists, so `app.*` INFO messages are dropped at the root's default level; the test reads them directly. Configuring logging for the application (section 8.2.7, with a request correlation id) is a follow-up.
 - **`SEC-authenticated-access` is deferred.** There is no Identity component yet, so v0.1.0 runs on a developer's machine only and must not be exposed on a network.
 - **Unclassifiable paths.** A path outside the `<category>/<platform>/…` pattern has no rule. The fixture avoids it. It goes to Sumalee with the `OI-32` confirmation.
 - **Assumptions to confirm with Sumalee Rodolph** (the team's readings of the 2026-11-06 meeting, treated as decided for this slice): `OI-29` (match the ticket key in the branch name; several → the author picks; none → blank), `OI-31` and `OI-36` (the package shape above), `OI-32` (the path rule), `OI-33` and `OI-34` (every section needs build evidence; newest first, most recent preselected), `OI-35` (prompt, never start a build), `OI-38` (SVN will have the information). Also, a Review Section in this shape is a Platform tab of the one Review Checklist.
