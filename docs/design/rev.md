@@ -84,7 +84,7 @@ classDiagram
 - `backend/app/rev/fixtures.py` (new): one synthetic review package in "In preparation", with a placeholder ticket key.
 - `backend/app/integration/svn.py` (new): `SvnAdapter`, `FakeSvnAdapter`, and `IntegrationUnavailable(source)`, which every adapter raises when its system does not answer.
 - `backend/app/integration/jenkins.py` (new): `JenkinsAdapter` and `FakeJenkinsAdapter`. It is **read only and has no method that starts a build** (`OI-35`).
-- `backend/app/errors.py` (new): turns `IntegrationUnavailable` and the area's errors into the section 8.2.3 envelope at the trust boundary (section 8.2.1). It is registered in `backend/app/main.py` (reused).
+- `backend/app/errors.py` (new): turns `IntegrationUnavailable`, the area's errors, request validation errors, unknown routes, and unexpected exceptions into the section 8.2.3 envelope at the trust boundary (section 8.2.1). It is registered in `backend/app/main.py` (reused).
 - The adapters and the repository are FastAPI dependencies, so tests swap in fakes that fail or return other data. No new packages.
 
 ## Sequence
@@ -124,6 +124,12 @@ sequenceDiagram
     end
     S->>S: classify each path, group into one Diff per Platform x Category (step 3)
     S->>J: find_builds(ticketKey, branch) (step 4)
+    alt Jenkins unavailable (SI-jenkins-read, 8.2.1)
+        J-->>S: IntegrationUnavailable(Jenkins)
+        S->>DB: record Jenkins evidence unavailable, status stays "In preparation"
+        S-->>R: JENKINS_UNAVAILABLE
+        R-->>A: 503
+    end
     alt no matching Jenkins Build (4a1)
         S->>S: status "Pending build validation"
     else
@@ -144,8 +150,53 @@ All responses use the section 8.2.3 envelope: `{"data": …}` or `{"error": {"co
 
 | Endpoint or job | Caller (who may) | Request | Success | Errors, by extension |
 |---|---|---|---|---|
-| `POST /api/v1/review-packages/{reviewId}/assembly` | The package's Author. v0.1.0 has no authentication (see Open questions) | None | `200`: the package, with its status, SVN Branch, Diffs (each with its Platform, Category, and Changed Files with Revision and repository link), candidate Jenkins Builds newest first with one preselected, the Review Checklist tabs, the Review Record, and `missing` (the Changed Files without a Revision, 2a1). 4a1: status "Pending build validation", no build preselected | SVN unavailable: `503 SVN_UNAVAILABLE`, `source: "SVN"`. No branch, several branches, or no Changed Files: `409 ASSEMBLY_INCOMPLETE`, the message naming which. Package not "In preparation" (PRE-1, which also refuses a re-run): `409 REVIEW_PACKAGE_NOT_IN_PREPARATION`. Unknown id: `404 REVIEW_PACKAGE_NOT_FOUND` |
-| `GET /api/v1/review-packages/{reviewId}` | Same | None | `200`: the stored package as above. After an SVN outage, SVN evidence reads `unavailable` | `404 REVIEW_PACKAGE_NOT_FOUND` |
+| `POST /api/v1/review-packages/{reviewId}/assembly` | The package's Author. v0.1.0 has no authentication (see Open questions) | None | `200`: the package, with its status, SVN Branch, Diffs (each with its Platform, Category, and Changed Files with Revision and repository link), candidate Jenkins Builds newest first with one preselected, the Review Checklist tabs, the Review Record, and `missing` (the Changed Files without a Revision, 2a1). 4a1: status "Pending build validation", no build preselected | SVN unavailable: `503 SVN_UNAVAILABLE`, `source: "SVN"`. Jenkins unavailable: `503 JENKINS_UNAVAILABLE`, `source: "Jenkins"`. No branch, several branches, no Changed Files, or an unclassifiable path: `409 ASSEMBLY_INCOMPLETE`, the message naming which (and the path). Package not "In preparation" (PRE-1, which also refuses a re-run once past "In preparation"): `409 REVIEW_PACKAGE_NOT_IN_PREPARATION`. Unknown id: `404 REVIEW_PACKAGE_NOT_FOUND` |
+| `GET /api/v1/review-packages/{reviewId}` | Same | None | `200`: the stored package as above. After an SVN or Jenkins outage, that evidence reads `unavailable` | `404 REVIEW_PACKAGE_NOT_FOUND` |
+
+**Example `200` body** (main success scenario, Synthetic Data):
+
+```json
+{
+  "data": {
+    "review_id": "rev-0001",
+    "status": "Materials assembled",
+    "jira_ticket_key": "SYN-1",
+    "svn_branch": "SYN-1-timer-fix",
+    "svn_evidence": "available",
+    "jenkins_evidence": "available",
+    "diffs": [
+      {
+        "platform": "common",
+        "category": "tools",
+        "diff": "Index: tools/common/branches/SYN-1-timer-fix/src/timer.py\n...",
+        "changed_files": [
+          {
+            "path": "tools/common/branches/SYN-1-timer-fix/src/timer.py",
+            "revision": "1042",
+            "repository_link": "https://svn.example.invalid/repo/tools/common/branches/SYN-1-timer-fix/src/timer.py?p=1042"
+          }
+        ]
+      }
+    ],
+    "jenkins_builds": [
+      { "build_number": 57, "name": "SYN-1 timer fix", "result": "SUCCESS", "built_at": "2026-11-05T14:02:11Z" },
+      { "build_number": 55, "name": "SYN-1 timer fix", "result": "FAILURE", "built_at": "2026-11-04T09:40:03Z" }
+    ],
+    "preselected_build": 57,
+    "review_checklist": {
+      "tabs": [
+        { "platform": "common", "changed_files": ["tools/common/branches/SYN-1-timer-fix/src/timer.py"] }
+      ]
+    },
+    "review_record": { "id": "rr-0001", "review_id": "rev-0001", "jira_ticket_key": "SYN-1" },
+    "missing": []
+  }
+}
+```
+
+- Statuses are the use case's display strings exactly. Field names are snake_case. `platform` and `category` are lowercase, spelled exactly as the path segment. Paths are full repository paths, and the same string appears in the Diff, the checklist tab, and `missing`.
+- `missing` entries read `{"path": …, "missing": "revision"}`. `preselected_build` is `null` under 4a1. `svn_evidence` and `jenkins_evidence` are `"available"` or `"unavailable"`.
+- Errors: `source` is `null` when no external system is involved. `ASSEMBLY_INCOMPLETE` names the gap in `message` only. `reviewId` is an opaque string, and any unknown one gives `404`.
 
 ## Key decisions
 
@@ -164,6 +215,18 @@ _[Only the decisions a reader could not recover from the code. **Each one names 
 **Assembly proceeds only on exactly one SVN Branch whose name contains the ticket key.** None, or several, gives `409 ASSEMBLY_INCOMPLETE` (branch). When several match, the author should choose (`OI-29`); that choice is not built in v0.1.0, and the fixture has exactly one match. Rejected: taking the first match, which would silently assemble evidence from the wrong branch.
 
 **The store is in memory.** Rejected: PostgreSQL in v0.1.0, because the slice proves the assembly flow and the adapters, not persistence. The repository interface is the seam the database replaces.
+
+**Implementation rules** (from the questions test):
+
+- The SVN Branch is a name, and `changed_files` searches every `<category>/<platform>/branches/<name>` root.
+- Key match: case-sensitive, and the key must not be followed by a digit.
+- Any adapter failure on any call → `503 <SOURCE>_UNAVAILABLE`, evidence recorded as `unavailable`, status unchanged.
+- An unclassifiable path → `409 ASSEMBLY_INCOMPLETE` naming the path.
+- A 2a1 file still goes into its Diff and its checklist tab.
+- Builds are listed with their result; the newest is preselected whatever its result.
+- Timestamps are UTC ISO 8601 with `Z`.
+- Envelope handlers for validation errors (`VALIDATION_FAILED`), unknown routes (`NOT_FOUND`), and unexpected errors (`INTERNAL_ERROR`), with safe messages.
+- Log one line per assembly (review id, outcome, code), never diff or source content.
 
 ## Data model
 
@@ -193,6 +256,7 @@ _[One row per flow: the main success scenario and **every** extension this docum
 | UC-REV-assemble-materials 2a1 | integration | A Changed File without a Revision returns `200` with that file in `missing`, and the status stays "In preparation" |
 | UC-REV-assemble-materials 4a1 | integration | No matching Jenkins Build returns `200` with status "Pending build validation" and no build preselected |
 | SVN unavailable (`SI-svn-read`, 8.2.1) | integration | A failing SVN fake gives `503 SVN_UNAVAILABLE` with `source: "SVN"`; the GET shows "In preparation", SVN evidence `unavailable`, and no Diffs; Jenkins was not called |
+| Jenkins unavailable (`SI-jenkins-read`, 8.2.1) | integration | A failing Jenkins fake gives `503 JENKINS_UNAVAILABLE` with `source: "Jenkins"`; the GET shows "In preparation" and `jenkins_evidence` `unavailable`, never "Pending build validation" |
 | No branch, several branches, no Changed Files | unit | Each gives `409 ASSEMBLY_INCOMPLETE` naming the gap, and the status is unchanged |
 | PRE-1 | integration | A second POST on an assembled package gives `409 REVIEW_PACKAGE_NOT_IN_PREPARATION` |
 | Unknown package | integration | `404 REVIEW_PACKAGE_NOT_FOUND` on the POST and the GET |
@@ -211,7 +275,9 @@ _[What this design could not settle and who can, and what could go wrong that yo
 - **`SEC-authenticated-access` is deferred.** There is no Identity component yet, so v0.1.0 runs on a developer's machine only and must not be exposed on a network.
 - **Unclassifiable paths.** A path outside the `<category>/<platform>/…` pattern has no rule. The fixture avoids it. It goes to Sumalee with the `OI-32` confirmation.
 - **Assumptions to confirm with Sumalee Rodolph** (the team's readings of the 2026-11-06 meeting, treated as decided for this slice): `OI-29` (match the ticket key in the branch name; several → the author picks; none → blank), `OI-31` and `OI-36` (the package shape above), `OI-32` (the path rule), `OI-33` and `OI-34` (every section needs build evidence; newest first, most recent preselected), `OI-35` (prompt, never start a build), `OI-38` (SVN will have the information). Also, a Review Section in this shape is a Platform tab of the one Review Checklist.
-- **Out of scope for v0.1.0:** 2a2 (alternate change set, `OI-38`), 4a2 (the author running a build), 5a (missing checklist template), the author choosing among several branches or builds, merged-in work (`OI-30`), test and tools reviews (`OI-37`), a Jenkins outage, real Jira, SVN, and Jenkins, re-running assembly, and exporting the Review Checklist and Review Record.
+- **Re-running while "In preparation" is allowed.** A POST on a package still "In preparation" (after 2a1 or an outage) runs assembly again and overwrites the stored result, including any `unavailable` evidence. PRE-1 refuses only a package past "In preparation".
+- **PRE-2 and PRE-3 are not checked in v0.1.0.** PRE-2 (the author's permission) needs the Identity component, which is deferred with `SEC-authenticated-access`. PRE-3 (a section needing evidence) cannot be checked before assembly, because a section is a Platform tab and the tabs are built by assembly; every section needs build evidence anyway (`OI-33`).
+- **Out of scope for v0.1.0:** 2a2 (alternate change set, `OI-38`), 4a2 (the author running a build), 5a (missing checklist template), the author choosing among several branches or builds, merged-in work (`OI-30`), test and tools reviews (`OI-37`), real Jira, SVN, and Jenkins, re-running assembly once past "In preparation", and exporting the Review Checklist and Review Record.
 
 ---
 
