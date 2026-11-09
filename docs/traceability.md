@@ -87,7 +87,7 @@ One row tracks each of the seven use cases and each of the three functional requ
 | Use case / functional requirement | Release | Build | Design | Code | Tests | Verify |
 |---|---|---|---|---|---|---|
 | [`UC-REV-create-review`](requirements/use-cases.md#uc-rev-create-review-create-a-review-package) | Pending team (Block 8) | ❌ Not started | | | | 🔎 None |
-| [`UC-REV-assemble-materials`](requirements/use-cases.md#uc-rev-assemble-materials-assemble-review-materials) | `v0.1.0` | ❌ Not started | | | | 🔎 None |
+| [`UC-REV-assemble-materials`](requirements/use-cases.md#uc-rev-assemble-materials-assemble-review-materials) | `v0.1.0` | 📐 Designed | [design/rev.md](design/rev.md) | | | 🔎 None |
 | [`UC-REV-validate-package`](requirements/use-cases.md#uc-rev-validate-package-validate-review-package-completeness) | Pending team (Block 8) | ❌ Not started | | | | 🔎 None |
 | [`UC-NOT-notify-reviewers`](requirements/use-cases.md#uc-not-notify-reviewers-notify-reviewers) | Pending team (Block 8) | ❌ Not started | | | | 🔎 None |
 | [`UC-ASS-assess-review-section`](requirements/use-cases.md#uc-ass-assess-review-section-assess-a-review-section) | Pending team (Block 8) | ❌ Not started | | | | 🔎 None |
