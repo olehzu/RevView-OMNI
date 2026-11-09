@@ -78,7 +78,7 @@ An empty cell does not mean the team has decided to ignore a rule. In particular
 
 One row tracks each of the seven use cases and each of the three functional requirements defined in [SRS section 5.2](requirements/software-requirements-specification.md#52-non-use-case-functional-requirements). Template examples such as `FR-SAVE-autosave-active` are not project requirements.
 
-**Release:** the allowed assignments are `v0.1.0`, `v0.2.0`, `v1.0.0`, `Spring`, or `Out`. Assembly is assigned `v0.1.0` as the proving slice ([architecture section 6](design/architectural-design.md#6-runtime-view) and the Block 7 instruction). “Pending team (Block 8)” is an unresolved decision, not a release assignment. The remaining nine rows need team agreement; no release commitment is inferred from MVP scope alone.
+**Release:** the allowed assignments are `v0.1.0`, `v0.2.0`, `v1.0.0`, `Spring`, or `Out`. Assembly is assigned `v0.1.0` as the proving slice ([architecture section 6](design/architectural-design.md#6-runtime-view) and the Block 7 instruction). The other nine were set by the team on 2026-11-09 (Oleh Zubariev, deciding for the team), following the client's roadmap in the concept document: the author side first (`v0.2.0`), then export, notification, and auditing to complete this semester's MVP (`v1.0.0`), and the reviewer side next semester (`Spring`).
 
 **Build / Verify:** use the status words expected by `/design` and `/implement`. Build starts at `❌ Not started`; `/design` sets it to `📐 Designed`, and `/implement` advances it to `🟡 In progress` or `✅ Built`. Verify starts at `🔎 None`; use `🟡 Partial` for incomplete coverage and `✅ Verified` only when tests cover the main flow and every extension and pass. A release assignment or documentation PR does not establish implementation or verification.
 
@@ -86,25 +86,25 @@ One row tracks each of the seven use cases and each of the three functional requ
 
 | Use case / functional requirement | Release | Build | Design | Code | Tests | Verify |
 |---|---|---|---|---|---|---|
-| [`UC-REV-create-review`](requirements/use-cases.md#uc-rev-create-review-create-a-review-package) | Pending team (Block 8) | ❌ Not started | | | | 🔎 None |
+| [`UC-REV-create-review`](requirements/use-cases.md#uc-rev-create-review-create-a-review-package) | `v0.2.0` | ❌ Not started | | | | 🔎 None |
 | [`UC-REV-assemble-materials`](requirements/use-cases.md#uc-rev-assemble-materials-assemble-review-materials) | `v0.1.0` | 🟡 In progress (v0.1.0 slice built: main, 2a1, 4a1; fake SVN and Jenkins adapters) | [design/rev.md](design/rev.md) | `backend/app/rev/`, `backend/app/integration/`, `backend/app/errors.py` | `backend/tests/test_rev_review_packages.py` (main, 2a1, 4a1, SVN and Jenkins unavailable, PRE-1, unknown package), `backend/tests/test_rev_assembly.py` (step 3 classify; no branch, several branches, no Changed Files, unclassifiable path). Untested: 2a2, 4a2, 5a (not built); real sandbox adapters | 🟡 Partial |
-| [`UC-REV-validate-package`](requirements/use-cases.md#uc-rev-validate-package-validate-review-package-completeness) | Pending team (Block 8) | ❌ Not started | | | | 🔎 None |
-| [`UC-NOT-notify-reviewers`](requirements/use-cases.md#uc-not-notify-reviewers-notify-reviewers) | Pending team (Block 8) | ❌ Not started | | | | 🔎 None |
-| [`UC-ASS-assess-review-section`](requirements/use-cases.md#uc-ass-assess-review-section-assess-a-review-section) | Pending team (Block 8) | ❌ Not started | | | | 🔎 None |
-| [`UC-ASS-record-findings`](requirements/use-cases.md#uc-ass-record-findings-record-review-findings) | Pending team (Block 8) | ❌ Not started | | | | 🔎 None |
-| [`UC-CLS-close-review`](requirements/use-cases.md#uc-cls-close-review-close-a-review-and-retain-evidence) | Pending team (Block 8) | ❌ Not started | | | | 🔎 None |
-| [`FR-EXPORT-legacy-format`](requirements/software-requirements-specification.md#52-non-use-case-functional-requirements) | Pending team (Block 8) | ❌ Not started | | | | 🔎 None |
-| [`FR-AUDIT-action-log`](requirements/software-requirements-specification.md#52-non-use-case-functional-requirements) | Pending team (Block 8) | ❌ Not started | | | | 🔎 None |
-| [`FR-SYNC-reviewer-bidirectional`](requirements/software-requirements-specification.md#52-non-use-case-functional-requirements) | Pending team (Block 8) | ❌ Not started | | | | 🔎 None |
+| [`UC-REV-validate-package`](requirements/use-cases.md#uc-rev-validate-package-validate-review-package-completeness) | `v0.2.0` | ❌ Not started | | | | 🔎 None |
+| [`UC-NOT-notify-reviewers`](requirements/use-cases.md#uc-not-notify-reviewers-notify-reviewers) | `v1.0.0` | ❌ Not started | | | | 🔎 None |
+| [`UC-ASS-assess-review-section`](requirements/use-cases.md#uc-ass-assess-review-section-assess-a-review-section) | `Spring` | ❌ Not started | | | | 🔎 None |
+| [`UC-ASS-record-findings`](requirements/use-cases.md#uc-ass-record-findings-record-review-findings) | `Spring` | ❌ Not started | | | | 🔎 None |
+| [`UC-CLS-close-review`](requirements/use-cases.md#uc-cls-close-review-close-a-review-and-retain-evidence) | `Spring` | ❌ Not started | | | | 🔎 None |
+| [`FR-EXPORT-legacy-format`](requirements/software-requirements-specification.md#52-non-use-case-functional-requirements) | `v1.0.0` | ❌ Not started | | | | 🔎 None |
+| [`FR-AUDIT-action-log`](requirements/software-requirements-specification.md#52-non-use-case-functional-requirements) | `v1.0.0` | ❌ Not started | | | | 🔎 None |
+| [`FR-SYNC-reviewer-bidirectional`](requirements/software-requirements-specification.md#52-non-use-case-functional-requirements) | `Spring` | ❌ Not started | | | | 🔎 None |
 
 **Block 8 decision checklist:**
 
-- Assign the remaining nine releases from the allowed values above and record the meeting/date supporting the decisions.
+- ~~Assign the remaining nine releases from the allowed values above and record the meeting/date supporting the decisions.~~ Done 2026-11-09.
 - Confirm feature/objective/area mappings and disposition of the deferred administration feature.
 - Assign owners for the six rule-citation gaps; record agreed requirement or process links without inventing new policy.
 - Confirm the proving slice can demonstrate assembly with an existing package fixture before other workflow use cases are built.
 
-**Checks (2026-11-06):** exactly ten distinct rows cover all seven use cases and all three defined `FR-*` requirements; assembly is `v0.1.0`. All rows start at Build `❌ Not started` and Verify `🔎 None`, with Design empty. Remaining release decisions and teammate approval are pending.
+**Checks (2026-11-06):** exactly ten distinct rows cover all seven use cases and all three defined `FR-*` requirements; assembly is `v0.1.0`. All rows start at Build `❌ Not started` and Verify `🔎 None`, with Design empty. Every row has a release value (2026-11-09).
 
 ---
 
