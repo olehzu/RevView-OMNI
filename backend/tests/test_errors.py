@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from app.errors import AppError, register_error_handlers
-from app.integration.svn import IntegrationUnavailable
+from app.integration.common import IntegrationUnavailable
 
 
 def _app() -> FastAPI:

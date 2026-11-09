@@ -4,13 +4,9 @@ from datetime import UTC, datetime
 
 import pytest
 
+from app.integration.common import IntegrationUnavailable, contains_ticket_key
 from app.integration.jenkins import FakeJenkinsAdapter, JenkinsAdapter, JenkinsBuild
-from app.integration.svn import (
-    FakeSvnAdapter,
-    IntegrationUnavailable,
-    SvnChangedFile,
-    contains_ticket_key,
-)
+from app.integration.svn import FakeSvnAdapter, SvnChangedFile
 
 
 @pytest.mark.parametrize(
@@ -52,10 +48,10 @@ def test_svn_fake_returns_the_branch_files():
 
 @pytest.mark.parametrize("method", ["find_branches", "changed_files"])
 def test_svn_fake_outage_raises_unavailable_naming_svn(method: str):
-    svn = FakeSvnAdapter(branches={}, fail_on={method})
+    call = getattr(FakeSvnAdapter(branches={}, fail_on={method}), method)
 
     with pytest.raises(IntegrationUnavailable) as raised:
-        getattr(svn, method)("SYN-1")
+        call("SYN-1")
 
     assert raised.value.source == "SVN"
 

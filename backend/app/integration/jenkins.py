@@ -9,7 +9,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Protocol
 
-from app.integration.svn import IntegrationUnavailable, contains_ticket_key
+from app.integration.common import IntegrationUnavailable, contains_ticket_key
 
 
 @dataclass(frozen=True)
