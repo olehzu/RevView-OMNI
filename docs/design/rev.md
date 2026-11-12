@@ -407,7 +407,7 @@ _[One row per flow: the main success scenario and **every** extension this docum
 _[List each change to the architecture-of-record in one line, or "None".]_
 
 - Section 8.2.3 now defines the success and error envelope it already required, with the `source` field section 8.2.1 calls for.
-- Sections 8.2.1 and 8.2.3 now also cite `frontend/src/api.ts` and `frontend/src/errors.ts` as where the browser reads the envelope (issue #51).
+- None for the review package page. `/implement` adds the frontend files to the "Shown in" lines of sections 8.2.1 and 8.2.3 with the code.
 
 ## Open questions & risks
 
