@@ -200,7 +200,7 @@ sequenceDiagram
     participant API as Application /api/v1
     A->>P: open /?review=rev-0001, or type the review id, Load
     P->>C: getReviewPackage(reviewId)
-    C->>API: GET /review-packages/{reviewId} (PRE-1, the package exists)
+    C->>API: GET /review-packages/{reviewId} (load the package, so the Author sees its state for PRE-1)
     API-->>C: 200, status "In preparation", no materials
     C-->>P: package, Assemble enabled only in "In preparation" (PRE-1, 8.2.5)
     A->>P: Assemble (trigger)
@@ -224,8 +224,10 @@ sequenceDiagram
         API-->>C: 4xx or 5xx, {code, message, source}
         C-->>P: error
         P->>P: messageFor(error), from the Error messages table
-        P->>C: getReviewPackage(reviewId), unless REVIEW_PACKAGE_NOT_FOUND
-        C->>API: GET, unavailable SVN or Jenkins evidence reads "unavailable" (8.2.1)
+        opt SVN_UNAVAILABLE, JENKINS_UNAVAILABLE, ASSEMBLY_INCOMPLETE, or REVIEW_PACKAGE_NOT_IN_PREPARATION
+            P->>C: getReviewPackage(reviewId)
+            C->>API: GET, unavailable SVN or Jenkins evidence reads "unavailable" (8.2.1)
+        end
     end
 ```
 
@@ -301,7 +303,7 @@ What the page shows the Author for each code. The code itself is shown in small 
 | `REVIEW_PACKAGE_NOT_IN_PREPARATION` | Materials can be assembled only while the package is In preparation. This package is already past that. | Reloads, showing its status |
 | `REVIEW_PACKAGE_NOT_FOUND` | There is no review package with the id {reviewId}. Check the id and load it again. | Clears the package |
 | `VALIDATION_FAILED` | The request was not valid. Check the review id. | Nothing more |
-| `INTERNAL_ERROR` | Something went wrong in RevView/OMNI. Try again; if it keeps happening, tell the maintainer. | Nothing more |
+| `INTERNAL_ERROR` | Something went wrong in RevView/OMNI. Try again. If it keeps happening, report the code shown below. | Nothing more |
 | Any other code (`NOT_FOUND`, `METHOD_NOT_ALLOWED`, `REQUEST_FAILED`, or a future one) | The request could not be completed ({code}). | Nothing more |
 | `API_UNREACHABLE` (client-side; no envelope came back) | RevView/OMNI could not be reached. Check that the application is running. | Nothing more |
 
@@ -330,7 +332,7 @@ _[Only the decisions a reader could not recover from the code. **Each one names 
 - **One page, chosen by a query parameter and an input; no router.** `?review=<id>` prefills the review id input, and Load reads it. Rejected: a router library, a dependency for one page; and hand-written path routing, which is scope with no second page to route to.
 - **The page reaches the API through Vite's development proxy.** Rejected: CORS middleware on the backend, which changes a released endpoint and opens a cross-origin path the one-deployable shape (`KD-deployment-shape`) never needs.
 - **The page's logic is in plain functions, unit-tested with Vitest; nothing renders in a test.** Rejected: component tests, which need a testing library and a browser-environment package nobody has confirmed (charter: a person confirms every dependency).
-- **After any error except `REVIEW_PACKAGE_NOT_FOUND`, the page reloads the package.** Rejected: showing only the message, because the stored "unavailable" evidence (section 8.2.1) and the unchanged status would not be visible.
+- **After `SVN_UNAVAILABLE`, `JENKINS_UNAVAILABLE`, `ASSEMBLY_INCOMPLETE`, or `REVIEW_PACKAGE_NOT_IN_PREPARATION`, the page reloads the package; after any other error it does not** (the Error messages table). Those four are the codes after which the stored package may show something new. Rejected: showing only the message, because the stored "unavailable" evidence (section 8.2.1) and the actual status would not be visible; and reloading after every error, because after `API_UNREACHABLE` the reload fails too and after `VALIDATION_FAILED` nothing changed.
 - **Assemble is enabled only while the status is "In preparation".** This is a convenience (section 8.2.5); PRE-1 is enforced by the API, and its `409` is still mapped for a second tab. Rejected: always enabled, which invites a click that can only fail.
 - **Each area keeps its own error messages; the shared codes and the fallback are in the trunk.** Rejected: one table for every area, which each later use case would edit and conflict on. An unknown code gets the fallback with the code, never a blank.
 
@@ -421,6 +423,7 @@ _[What this design could not settle and who can, and what could go wrong that yo
 - **Re-running while "In preparation" is allowed.** A POST on a package still "In preparation" (after 2a1 or an outage) runs assembly again and overwrites the stored result, including any `unavailable` evidence. PRE-1 refuses only a package past "In preparation".
 - **PRE-2 and PRE-3 are not checked in v0.1.0.** PRE-2 (the author's permission) needs the Identity component, which is deferred with `SEC-authenticated-access`. PRE-3 (a section needing evidence) cannot be checked before assembly, because a section is a Platform tab and the tabs are built by assembly; every section needs build evidence anyway (`OI-33`).
 - **The page cannot show 2a1, 4a1, or an SVN or Jenkins outage against the running app,** because the fixture always takes the main path. The backend tests and the page's unit tests cover them; showing them to Sumalee would need another fixture, which is out of scope.
+- **A package in "Pending build validation" (4a1) is a dead end in v0.1.0.** Assemble is disabled, the API refuses a re-run past "In preparation" (PRE-1), and 4a2 (the Author running the build) is not built, so nothing moves the package on. The demo fixture never reaches 4a1. Whether 4a2 comes next is a question for Sumalee.
 - **The page's rendering is not tested automatically** until a component-testing library is confirmed; the manual check covers it.
 - **Which organization time zone to display is unknown** (section 8.2.2, `OI-39`). The page shows UTC, labelled.
 - **The page has no authentication either** (`SEC-authenticated-access` deferred): developer machine only.
