@@ -531,6 +531,7 @@ The export use case below is a proposed elaboration of `FR-EXPORT-legacy-format`
 
 - POST-1. The participant receives the selected export containing the information stored for that review at the time of the request.
 - POST-2. The review package and its recorded assessments are not changed by the export.
+- POST-3. The export outcome is recorded with the authenticated actor, action, review identifier, result, and UTC time, without sensitive artifact content, as required by [architecture section 8.2.9](../design/architectural-design.md#82-other-concepts).
 
 **Main Success Scenario:**
 
@@ -538,7 +539,7 @@ The export use case below is a proposed elaboration of `FR-EXPORT-legacy-format`
 2. The system presents the available review record and checklists for that review and their supported Excel/CSV export formats.
 3. The participant selects an artifact and format.
 4. The system populates the artifact from the review's stored information, preserving the association between review sections, checklist entries, and recorded findings where those fields exist in the established format.
-5. The system provides the generated file to the participant.
+5. The system provides the generated file to the participant and records the export outcome according to architecture section 8.2.9.
 6. Use case ends.
 
 **Extensions:**
@@ -553,7 +554,7 @@ The export use case below is a proposed elaboration of `FR-EXPORT-legacy-format`
     - 4a1. The system identifies the missing information and does not present the file as a complete review record.
     - 4a2. The participant corrects the record and retries, or ends the request. Whether a clearly marked draft export is allowed remains an open client decision.
 - **5a. File generation fails:**
-    - 5a1. The system reports the failure without changing the review data.
+    - 5a1. The system reports the failure without changing the review data and records the failed export outcome according to architecture section 8.2.9.
     - 5a2. The participant may retry or end the request.
 
 **Priority:** High; existing formats must remain available.
@@ -571,7 +572,7 @@ The export use case below is a proposed elaboration of `FR-EXPORT-legacy-format`
 
 **Related Use Cases:** `UC-REV-create-review`, `UC-ASS-assess-review-section`, `UC-ASS-record-findings`, `UC-CLS-close-review`.
 **Assumptions:** The client can provide representative existing export templates for validation.
-**Open Issues:** Confirm who may export; whether draft and closed reviews can both be exported; exact Excel/CSV templates and field mapping; whether exports need timestamps, version identifiers, or an audit record; and whether incomplete records can be exported as clearly marked drafts. These are not settled by this draft.
+**Open Issues:** See `OI-39` through `OI-43` in [OPEN-ISSUES.md](OPEN-ISSUES.md) for export roles, eligible review states, exact Excel/CSV templates and field mapping, timestamps or version identifiers within the exported file, and incomplete-record handling. These client decisions remain open; recording the export outcome in the audit log is already required by architecture section 8.2.9.
 
 ---
 
