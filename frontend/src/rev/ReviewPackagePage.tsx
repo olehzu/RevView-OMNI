@@ -1,4 +1,4 @@
-import { type FormEvent, useState } from "react";
+import { type SubmitEvent, useState } from "react";
 import type { ApiError } from "../api";
 import { messageFor } from "../errors";
 import {
@@ -43,7 +43,7 @@ function ReviewPackagePage() {
   const [errors, setErrors] = useState<ShownError[]>([]);
   const [busy, setBusy] = useState(false);
 
-  async function load(event: FormEvent) {
+  async function load(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     const id = reviewId.trim();
     if (id === "" || busy) {
@@ -61,7 +61,7 @@ function ReviewPackagePage() {
   }
 
   async function assemble() {
-    if (!canAssemble(pkg) || busy || pkg === null) {
+    if (pkg === null || !canAssemble(pkg) || busy) {
       return;
     }
     // Assemble acts on the package shown, not on whatever the input now holds.
@@ -115,7 +115,13 @@ function ReviewPackagePage() {
       ))}
 
       {pkg && (
-        <PackageView pkg={pkg} busy={busy} onAssemble={() => void assemble()} />
+        // Keyed by review id, so another package starts on its first checklist tab.
+        <PackageView
+          key={pkg.review_id}
+          pkg={pkg}
+          busy={busy}
+          onAssemble={() => void assemble()}
+        />
       )}
     </>
   );

@@ -91,6 +91,12 @@ describe("messageFor with the review package messages", () => {
     );
   });
 
+  it("leaves no dangling colon when the server names no gap", () => {
+    expect(shown("ASSEMBLY_INCOMPLETE", "  ")).toBe(
+      "The materials could not be assembled.",
+    );
+  });
+
   it("gives the REVIEW_PACKAGE_NOT_IN_PREPARATION message", () => {
     expect(shown("REVIEW_PACKAGE_NOT_IN_PREPARATION")).toBe(
       "Materials can be assembled only while the package is In preparation. This package is already past that.",
@@ -101,7 +107,7 @@ describe("messageFor with the review package messages", () => {
     expect(
       messageFor(
         error("REVIEW_PACKAGE_NOT_FOUND"),
-        reviewPackageMessages(" rev-9999 "),
+        reviewPackageMessages("rev-9999"),
       ),
     ).toBe(
       "There is no review package with the id rev-9999. Check the id and load it again.",
@@ -234,10 +240,78 @@ describe("getReviewPackage and assembleMaterials", () => {
     ]);
   });
 
-  it("trims and encodes the review id in the path", async () => {
+  it("encodes the review id in the path", async () => {
     const { fetchFn, calls } = recording();
-    await getReviewPackage("  rev/1?x#y  ", fetchFn);
+    await getReviewPackage("rev/1?x#y", fetchFn);
     expect(calls[0][1]).toBe("/api/v1/review-packages/rev%2F1%3Fx%23y");
+  });
+
+  it("returns a well-shaped package as success", async () => {
+    const { fetchFn } = recording();
+    expect(await getReviewPackage("rev-0001", fetchFn)).toEqual({
+      ok: true,
+      data: reviewPackage(),
+    });
+  });
+
+  function respondingWithData(data: unknown): Fetch {
+    return () =>
+      Promise.resolve(new Response(JSON.stringify({ data }), { status: 200 }));
+  }
+
+  // A malformed 2xx is a failure, never success or a blank page (section 8.2.1).
+  it.each([
+    ["null data", null],
+    ["no missing list", { ...reviewPackage(), missing: undefined }],
+    ["no Diffs list", { ...reviewPackage(), diffs: "none" }],
+    ["an unknown status", reviewPackage({ status: "Done" as never })],
+    [
+      "an evidence value that is not one of the three",
+      { ...reviewPackage(), svn_evidence: "passing" },
+    ],
+    [
+      "a Diff without its Changed Files",
+      reviewPackage({
+        diffs: [
+          { ...diff("common", "code"), changed_files: undefined as never },
+        ],
+      }),
+    ],
+    [
+      "a build without a time",
+      reviewPackage({
+        jenkins_builds: [
+          { build_number: 57, name: "SYN-1", result: "SUCCESS" } as never,
+        ],
+      }),
+    ],
+    [
+      "a checklist without tabs",
+      reviewPackage({ review_checklist: {} as never }),
+    ],
+  ])("gives API_UNREACHABLE for %s", async (_, data) => {
+    for (const call of [getReviewPackage, assembleMaterials]) {
+      expect(await call("rev-0001", respondingWithData(data))).toMatchObject({
+        ok: false,
+        error: { code: "API_UNREACHABLE", source: null },
+      });
+    }
+  });
+
+  it("passes an error envelope through unchanged", async () => {
+    const notFound = {
+      code: "REVIEW_PACKAGE_NOT_FOUND",
+      message: "No review package has that id.",
+      source: null,
+    };
+    const fetchFn: Fetch = () =>
+      Promise.resolve(
+        new Response(JSON.stringify({ error: notFound }), { status: 404 }),
+      );
+    expect(await getReviewPackage("rev-9999", fetchFn)).toEqual({
+      ok: false,
+      error: notFound,
+    });
   });
 });
 
@@ -250,7 +324,6 @@ describe("canAssemble (PRE-1, a convenience)", () => {
     expect(
       canAssemble(reviewPackage({ status: "Pending build validation" })),
     ).toBe(false);
-    expect(canAssemble(null)).toBe(false);
   });
 });
 
@@ -315,6 +388,13 @@ describe("formatBuildTime", () => {
       "2026-11-06 04:30:00 UTC",
     );
   });
+
+  it.each(["2026-11-05T14:02:11", "2026-11-05"])(
+    "shows %s, which has no Z or offset, as it came and never labelled UTC",
+    (naive) => {
+      expect(formatBuildTime(naive)).toBe(naive);
+    },
+  );
 
   it("shows an unreadable time as it came", () => {
     expect(formatBuildTime("not a time")).toBe("not a time");
