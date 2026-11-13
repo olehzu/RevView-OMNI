@@ -50,6 +50,12 @@ _[Send the shortlist to your client the day before. A client who has seen the qu
 | OI-37 | Which review types exist besides code review, and which of them need a diff and a changed-file list? | `UC-REV-assemble-materials` requires at least one file and a diff "for a code review" (Associated Information), but no document says what other review types exist; they appear only in `BR-review-record-fields`. Raised by the questions test on issue #28. | Sumalee Rodolph | 2026-10-18 |
 | OI-38 | When SVN information is incomplete, what may the author choose as "a valid alternate change set": a revision range, another branch, or a hand-picked file list? | `UC-REV-assemble-materials` extension 2a2 offers it without defining it, so the recovery path cannot be built. Raised by the questions test on issue #28. | Sumalee Rodolph | 2026-10-18 |
 
+| OI-39 | Which roles may export a review record or checklist, and is access to the review sufficient or is a separate export permission required? | `UC-CLS-export-review-artifacts` has a provisional primary actor; implementation must not invent export permissions. | Sumalee Rodolph | 2026-11-13 |
+| OI-40 | Which review states permit export, including draft and closed reviews? | `UC-CLS-export-review-artifacts` must define eligibility before implementation; the proposal does not settle this policy. | Sumalee Rodolph | 2026-11-13 |
+| OI-41 | Can we have representative existing Excel/CSV review-record and checklist templates, their supported formats, and the mapping from stored review fields to each template? | `FR-EXPORT-legacy-format`, `BR-review-package-exportable`, and `UC-CLS-export-review-artifacts` require preservation of existing formats. Complements the section checklist request in `OI-36`. | Sumalee Rodolph | 2026-11-13 |
+| OI-42 | Must the exported file itself include an export timestamp or review version identifier, and if so in which fields? | `UC-CLS-export-review-artifacts` cannot add fields to the established format without confirmation. This concerns file content; the export audit event is already required by architecture section 8.2.9. | Sumalee Rodolph | 2026-11-13 |
+| OI-43 | May a review record with missing required export fields be exported as a clearly marked draft, and what marking is required? | `UC-CLS-export-review-artifacts` extension 4a must not present an incomplete record as complete; whether a draft file is allowed remains a client decision. | Sumalee Rodolph | 2026-11-13 |
+
 ## Resolved
 
 | ID | Question | Answer | Answered by | Date | Filed in |
