@@ -151,7 +151,7 @@ _Due: Checkpoint 1._
 - **Keep review workflow areas as internal components** for preparation, coordination, assessment, and closure, with shared cross-cutting integration and artifact handling (§5.2 Review Preparation, Review Coordination, Review Assessment, Review Closure, Integration Gateway, and Artifact Management).
 - **Enforce participant access and package readiness in the Application** to meet `SEC-role-based-review-access` and `ROB-incomplete-package-blocked` (§5.2 Review Preparation and Identity).
 - **Isolate Jira, SVN, and Jenkins behind the Integration Gateway** so sandbox and production endpoints can be configured independently (`INT-sandbox-tool-integration`, §5.2 Integration Gateway).
-- **Keep the SRS's client-suggested React/TypeScript, Python, and PostgreSQL stack as a tentative baseline**; the team agreed to defer Block 4 package choices because the discussion was confusing, so framework and tool versions remain unspecified for now (`CO-frontend-language`, `CO-backend-language`, `CO-database`, `OI-26`, `MNT-single-maintainer`, `KD-deployment-shape`; §5.2 Integration Gateway).
+- The stack is TBD; package choices will be made in Block 4 (OI-26).
 
 ## 5. Building Block View
 
@@ -238,7 +238,7 @@ flowchart LR
     linkStyle default stroke:#444,stroke-width:1.5px
 ```
 
-The browser interface is separate because it executes on each user's device; the React assets ship with the single application release (`KD-deployment-shape`). The proposed interpretation of `CO-database` folds the Artifact Store into PostgreSQL for structured review data, code review files, and exports, with Artifact Management in §5.2 retaining workflow and provenance responsibilities. This storage consolidation remains pending team confirmation and recording of the decision on [issue #28](https://github.com/olehzu/RevView-OMNI/issues/28); stack finality remains open under `OI-26`. **Stack status:** the SRS reflects the client's suggested Python, React with TypeScript, and PostgreSQL stack. The team agreed to defer Block 4 package choices because the discussion was confusing; the Python framework and tool versions therefore remain unspecified for now (`OI-26`). The React and PostgreSQL labels reflect the SRS baseline, not a final team package selection. External interface protocols remain TBD pending the applicable integration and identity decisions.
+The browser interface is separate because it executes on each user's device; the React assets ship with the single application release (`KD-deployment-shape`). The proposed interpretation of `CO-database` folds the Artifact Store into PostgreSQL for structured review data, code review files, and exports, with Artifact Management in §5.2 retaining workflow and provenance responsibilities. This storage consolidation remains pending team confirmation and recording of the decision on [issue #28](https://github.com/olehzu/RevView-OMNI/issues/28); stack finality remains open under `OI-26`. **Stack status:** the SRS reflects the client's suggested Python, React with TypeScript, and PostgreSQL stack. The stack is TBD; package choices will be made in Block 4 (OI-26). The React and PostgreSQL labels reflect the SRS baseline, not a final team package selection. External interface protocols remain TBD pending the applicable integration and identity decisions.
 
 ### 5.2 Use case areas and components
 
@@ -438,4 +438,3 @@ _[Delegate: drawing the C4 diagrams in mermaid from your use case list and your 
 _Keep human: the ranking in section 9.1 and every `KD-*`. The decisions are the part of this document your client and the team that inherits this system will hold you to, and they depend on facts about your client that are not in any file._
 
 _**The specific failure to watch for: over-engineering.** Ask an agent for an architecture and it will propose the one it has seen most often in writing, which is built for a company a thousand times your size: microservices, a message queue, Kubernetes, a cache in front of a database that holds ten thousand rows. Every one of those is a real answer to a problem you do not have, and each one adds something that can break at 2 a.m. with nobody to fix it. For every container and every decision the agent proposes, ask which requirement in section 9.1 forces it. If the answer is none, cut it.]_
-
