@@ -307,7 +307,7 @@ What the page shows the Author for each code. The code itself is shown in small 
 | Any other code (`NOT_FOUND`, `METHOD_NOT_ALLOWED`, `REQUEST_FAILED`, or a future one) | The request could not be completed ({code}). | Nothing more |
 | `API_UNREACHABLE` (client-side; no envelope came back) | RevView/OMNI could not be reached. Check that the application is running. | Nothing more |
 
-The first five rows are the area's and live in `src/rev/reviewPackage.ts`; the rest are the trunk's, in `src/errors.ts`. `API_UNREACHABLE` is never sent by the server: it covers a refused connection, or the proxy's own error page when the Application is not running.
+The first five rows are the area's and live in `src/rev/reviewPackage.ts`; the rest are the trunk's, in `src/errors.ts`. The trunk's `VALIDATION_FAILED` message is only "The request was not valid.", because later pages reuse it; "Check the review id." is the page's, added through the area's messages in `src/rev/reviewPackage.ts`, so the row above is what this page shows. `API_UNREACHABLE` is never sent by the server: it covers a refused connection, or the proxy's own error page when the Application is not running.
 
 ## Key decisions
 

@@ -253,10 +253,7 @@ function Builds({ pkg }: { pkg: ReviewPackage }) {
     return (
       <section>
         <h2>Jenkins Builds</h2>
-        <p className="alert">
-          No matching Jenkins Build. Run a build for this SVN Branch, then
-          continue.
-        </p>
+        <p className="alert">No matching Jenkins Build for this SVN Branch.</p>
       </section>
     );
   }
