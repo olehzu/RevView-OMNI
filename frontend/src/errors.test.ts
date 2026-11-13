@@ -8,9 +8,9 @@ function error(code: string, message = "server message"): ApiError {
 
 // Page: every extension's error code (the shared rows of the Error messages table)
 describe("messageFor, shared codes", () => {
-  it("gives the VALIDATION_FAILED message", () => {
+  it("gives the VALIDATION_FAILED message, which names no page's field", () => {
     expect(messageFor(error("VALIDATION_FAILED"))).toBe(
-      "The request was not valid. Check the review id.",
+      "The request was not valid.",
     );
   });
 
@@ -64,7 +64,7 @@ describe("messageFor, area messages", () => {
 
   it("still gives shared messages and the fallback with area messages passed", () => {
     expect(messageFor(error("VALIDATION_FAILED"), area)).toBe(
-      "The request was not valid. Check the review id.",
+      "The request was not valid.",
     );
     expect(messageFor(error("NOT_FOUND"), area)).toBe(
       "The request could not be completed (NOT_FOUND).",

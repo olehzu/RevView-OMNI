@@ -9,7 +9,7 @@ export type AreaMessages = Readonly<
 >;
 
 const SHARED_MESSAGES: AreaMessages = {
-  VALIDATION_FAILED: () => "The request was not valid. Check the review id.",
+  VALIDATION_FAILED: () => "The request was not valid.",
   INTERNAL_ERROR: () =>
     "Something went wrong in RevView/OMNI. Try again. If it keeps happening, report the code shown below.",
   [API_UNREACHABLE]: () =>
@@ -24,12 +24,11 @@ export function messageFor(
   error: ApiError,
   areaMessages: AreaMessages = {},
 ): string {
-  const message = Object.hasOwn(areaMessages, error.code)
-    ? areaMessages[error.code]
-    : Object.hasOwn(SHARED_MESSAGES, error.code)
-      ? SHARED_MESSAGES[error.code]
-      : undefined;
-  return message
-    ? message(error)
-    : `The request could not be completed (${error.code}).`;
+  if (Object.hasOwn(areaMessages, error.code)) {
+    return areaMessages[error.code](error);
+  }
+  if (Object.hasOwn(SHARED_MESSAGES, error.code)) {
+    return SHARED_MESSAGES[error.code](error);
+  }
+  return `The request could not be completed (${error.code}).`;
 }
