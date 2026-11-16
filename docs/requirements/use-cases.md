@@ -572,7 +572,7 @@ The export use case below is a proposed elaboration of `FR-EXPORT-legacy-format`
 
 **Related Use Cases:** `UC-REV-create-review`, `UC-ASS-assess-review-section`, `UC-ASS-record-findings`, `UC-CLS-close-review`.
 **Assumptions:** The client can provide representative existing export templates for validation.
-**Open Issues:** See `OI-39` through `OI-43` in [OPEN-ISSUES.md](OPEN-ISSUES.md) for export roles, eligible review states, exact Excel/CSV templates and field mapping, timestamps or version identifiers within the exported file, and incomplete-record handling. These client decisions remain open; recording the export outcome in the audit log is already required by architecture section 8.2.9.
+**Open Issues:** See `OI-48` (export roles) and `OI-40` through `OI-43` in [OPEN-ISSUES.md](OPEN-ISSUES.md) for export roles, eligible review states, exact Excel/CSV templates and field mapping, timestamps or version identifiers within the exported file, and incomplete-record handling. These client decisions remain open; recording the export outcome in the audit log is already required by architecture section 8.2.9.
 
 ---
 
