@@ -86,6 +86,7 @@ _The Source column is the defense. Every rule traces to a document or a person, 
 | 2026-09-18 | 0.2 | Reviewed rules and clarified questions on project with the client | Valerie Valles |
 | 2026-09-25 | 0.3 | Drafted rules from the RevView/OMNI concept document; pending client confirmation | Valerie Valles |
 | 2026-10-18 | 0.4 | Added `BR-review-package-required` and `BR-reviewer-assessment-based-on-checklist`, which use-cases.md already cited, with their sources | Oleh Zubariev |
+| 2026-11-16 | 0.5 | Apply the 2026-11-06 package organization (issue #45); preserve remaining client questions | Ralph Castilleja |
 
 ---
 
@@ -126,14 +127,14 @@ The following are out of scope for this document because they are not yet confir
   **Source:** same document, Sections 7–8.
 - **`BR-diff-checklist-match`:** Every file included in a review's diff must match the files listed in that review's checklist.
   **Source:** same document, Section 7.3.
-- **`BR-review-nine-parts`:** A single code review may consist of up to nine parts, spanning code/tools/test categories across up to three platforms.
-  **Source:** same document, Section 2.3.
-- **`BR-review-package-required`:** Every formal code review must have a review package containing the review record, the code review checklist(s), the SVN-generated diff file, the build and test results, and any additional files the author supplies.
-  **Source:** same document, Section 7.
+- **`BR-review-nine-parts`:** A single code review has one Diff per Platform and Code/Tools/Tests Category touched by the change, up to nine Diffs across common, falcon, and phoenix.
+  **Source:** Sumalee Rodolph, [2026-11-06 client meeting and written follow-up](client-meeting/client-interview-2026-11-06.md#5-what-is-hard-about-it), `OI-31` and `OI-36`.
+- **`BR-review-package-required`:** Every formal code review must have a review package containing one Review Record without a Platform split, one Review Checklist spreadsheet with Platform tabs (common, falcon, phoenix) and no Code/Tools/Tests Category split, the SVN-generated Diffs, build and test results, and any additional files the Author supplies.
+  **Source:** RevView/OMNI Review Helper Application Concept document, Section 7; package organization revised by Sumalee Rodolph, [2026-11-06 client meeting and written follow-up](client-meeting/client-interview-2026-11-06.md#5-what-is-hard-about-it), `OI-31` and `OI-36`.
 - **`BR-reviewer-assessment-based-on-checklist`:** Each part of a review must be assessed by its reviewer against the review checklist for the platform it belongs to, and a review is not complete while any part is unassessed.
-  **Source:** same document, Sections 2.1 and 2.3.
+  **Source:** RevView/OMNI Review Helper Application Concept document, Sections 2.1 and 2.3.
 - **`BR-review-record-fields`:** A review record must capture, at minimum, the type of review, method, date, return date, and reviewers.
-  **Source:** same document, Section 7.1. **Flagged:Needs_Review** the source document marks this information as possibly automatable, so which fields stay human-entered vs. system-derived may change — confirm with the client before treating the field list as fixed.
+  **Source:** RevView/OMNI Review Helper Application Concept document, Section 7.1. **Flagged:Needs_Review** the source document marks this information as possibly automatable, so which fields stay human-entered vs. system-derived may change — confirm with the client before treating the field list as fixed.
 
 ### 2.2 AI and Human Judgment
 
