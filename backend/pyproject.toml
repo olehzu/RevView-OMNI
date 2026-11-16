@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "revview-omni-backend"
+version = "0.0.1"
+description = "RevView/OMNI application API"
+# 3.13 is the team's development version until the client's server version is known (OI-18).
+requires-python = ">=3.13"
+# Exact versions, so the pull request checks install what each laptop runs.
+dependencies = [
+    "fastapi==0.162.0",
+    "uvicorn==0.54.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==9.2.0",
+    "httpx2==2.16.0",
+    "ruff==0.17.4",
+    "mypy==2.4.1",
+]
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
