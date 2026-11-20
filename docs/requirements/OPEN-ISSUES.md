@@ -50,6 +50,10 @@ _[Send the shortlist to your client the day before. A client who has seen the qu
 | OI-37 | Which review types exist besides code review, and which of them need a diff and a changed-file list? | `UC-REV-assemble-materials` requires at least one file and a diff "for a code review" (Associated Information), but no document says what other review types exist; they appear only in `BR-review-record-fields`. Raised by the questions test on issue #28. | Sumalee Rodolph | 2026-10-18 |
 | OI-38 | When SVN information is incomplete, what may the author choose as "a valid alternate change set": a revision range, another branch, or a hand-picked file list? | `UC-REV-assemble-materials` extension 2a2 offers it without defining it, so the recovery path cannot be built. Raised by the questions test on issue #28. | Sumalee Rodolph | 2026-10-18 |
 
+| OI-49 | Does the team/client confirm the proposed priority orders in architecture sections 1.2 and 9.1; if not, which quality attribute would they give up first? | PR #35 proposes both rankings; neither is approved by its presence in the architecture. | Team and Sumalee Rodolph | 2026-11-20 |
+| OI-50 | What transport protection is required for browser-to-Application, external-tool, and database connections? | PR #35 section 8.1 proposes HTTPS, but the SRS has no explicit TLS requirement or identifier. Confirmation must precede treating the proposal as client policy. | Team and Sumalee Rodolph, via AppliedAvionics IT | 2026-11-20 |
+| OI-51 | Should the Artifact Store be folded into PostgreSQL alongside structured review data, code review files, and exports? | PR #35 sections 5.1 and 9.2 propose storage consolidation under CO-database. The team must confirm and record its decision on [issue #28](https://github.com/olehzu/RevView-OMNI/issues/28); the proposal is not a finalized storage decision. | Team | 2026-11-20 |
+
 ## Resolved
 
 | ID | Question | Answer | Answered by | Date | Filed in |

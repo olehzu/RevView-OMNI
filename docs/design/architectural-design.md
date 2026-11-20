@@ -57,7 +57,7 @@ _Due: Checkpoint 1._
 | 2 | Incomplete packages cannot become ready for review | `ROB-incomplete-package-blocked` | Readiness depends on evidence assembled from several sources; the Application must validate one package state before notifying reviewers. |
 | 3 | The system integrates with sandbox and production engineering tools | `INT-sandbox-tool-integration` | Jira, SVN, and Jenkins interfaces vary by environment, so the architecture isolates them behind the Integration Gateway. |
 
-**Block 1 handoff — proposed rankings (§§1.2 and 9.1):** ask the team/client to confirm both priority orders, or ask which quality attribute they would give up first. Both rankings remain proposed until that confirmation is recorded.
+**Rankings remain proposed:** confirmation of §§1.2 and 9.1 is tracked in [OI-49](../requirements/OPEN-ISSUES.md#open).
 
 ### 1.3 Stakeholders
 
@@ -199,7 +199,7 @@ C4Container
 
 The proposed deployment uses one versioned application deployable. The browser interface remains a runtime container because it runs in each user's browser, and its assets ship with the application (KD-deployment-shape).
 
-RevView/OMNI's proposed containers are shown below. **Folding the Artifact Store into PostgreSQL is a proposal pending team confirmation and recording of the decision on [issue #28](https://github.com/olehzu/RevView-OMNI/issues/28).** The combined storage container depicts that proposal, not a finalized storage decision.
+RevView/OMNI's proposed containers are shown below. **Folding the Artifact Store into PostgreSQL remains proposed ([OI-51](../requirements/OPEN-ISSUES.md#open)).** The combined storage container depicts that proposal, not a finalized storage decision.
 
 ```mermaid
 %%{init: {"flowchart": {"nodeSpacing": 70, "rankSpacing": 80, "curve": "stepAfter"}}}%%
@@ -238,7 +238,7 @@ flowchart LR
     linkStyle default stroke:#444,stroke-width:1.5px
 ```
 
-The browser interface is separate because it executes on each user's device; the React assets ship with the single application release (`KD-deployment-shape`). The proposed interpretation of `CO-database` folds the Artifact Store into PostgreSQL for structured review data, code review files, and exports, with Artifact Management in §5.2 retaining workflow and provenance responsibilities. This storage consolidation remains pending team confirmation and recording of the decision on [issue #28](https://github.com/olehzu/RevView-OMNI/issues/28); stack finality remains open under `OI-26`. **Stack status:** the SRS reflects the client's suggested Python, React with TypeScript, and PostgreSQL stack. The stack is TBD; package choices will be made in Block 4 (OI-26). The React and PostgreSQL labels reflect the SRS baseline, not a final team package selection. External interface protocols remain TBD pending the applicable integration and identity decisions.
+The browser interface is separate because it executes on each user's device; the React assets ship with the single application release (`KD-deployment-shape`). The proposed interpretation of `CO-database` folds the Artifact Store into PostgreSQL for structured review data, code review files, and exports, with Artifact Management in §5.2 retaining workflow and provenance responsibilities. This storage consolidation remains proposed ([OI-51](../requirements/OPEN-ISSUES.md#open)); stack finality remains open under `OI-26`. **Stack status:** the SRS reflects the client's suggested Python, React with TypeScript, and PostgreSQL stack. The stack is TBD; package choices will be made in Block 4 (OI-26). The React and PostgreSQL labels reflect the SRS baseline, not a final team package selection. External interface protocols remain TBD pending the applicable integration and identity decisions.
 
 ### 5.2 Use case areas and components
 
@@ -307,9 +307,9 @@ Development uses only sandbox credentials; production credentials are excluded f
 
 **Sensitive data:** the proposed Review Database and Artifact Storage container holds diff, source context, checklist, findings, and review records. The Application authenticates every review-data request and restricts read and write access to the assigned author, reviewer(s), and moderator (`SEC-authenticated-access`, `SEC-role-based-review-access`, SRS §9.3).
 
-**TLS — requirement unresolved:** HTTPS on the browser-to-Application arrows is an architectural proposal; the SRS supplies no explicit TLS requirement or identifier. Ask the team/client to confirm the required transport protection for browser, external-tool, and database connections.
+**TLS — requirement unresolved:** HTTPS remains an architectural proposal; transport-protection requirements are tracked in [OI-50](../requirements/OPEN-ISSUES.md#open).
 
-**Retention and disposal — unresolved (`OI-24`, SRS §7.4):** ask the client how long closed review packages must be kept and whether they may ever be disposed of; no retention period or disposal policy is approved here. Permitted disclosure of review content to AI tools also remains a client question (`OI-1`, SRS §7.4).
+**Retention and disposal remain unresolved:** see [OI-24](../requirements/OPEN-ISSUES.md#open) and SRS §7.4; no retention period or disposal policy is approved here. Permitted disclosure of review content to AI tools also remains a client question (`OI-1`, SRS §7.4).
 
 ### 8.2 Other concepts
 
@@ -356,7 +356,7 @@ _Due: the table and one decision at Checkpoint 1; more as they are made._
 
 ### 9.1 Architecturally significant requirements
 
-**Block 1 handoff — proposed ranking:** ask the team/client to confirm this priority order together with §1.2, or ask which quality attribute they would give up first. Record the confirmed order before treating either ranking as approved.
+**Ranking remains proposed:** see [OI-49](../requirements/OPEN-ISSUES.md#open).
 
 _[Not every requirement shapes the architecture. The **architecturally significant requirements** are the few that do: quality attributes and constraints where a wrong guess costs a redesign, not a bug fix. Functionality can be delivered by many structures; these are what choose among them._
 
@@ -385,7 +385,7 @@ _Decision record:]_
 
 - **Driving requirements:** `SEC-authenticated-access`; `SI-jira-read`, `SI-svn-read`, `SI-jenkins-read`; `BR-no-student-prod-access`, `BR-review-package-exportable`; `UC-REV-validate-package`, `UC-CLS-close-review`; `BR-sprint-handoff-cadence`, `BR-build-tagging`. These correspond to the evidence, security, integration, and handoff drivers in section 9.1.
 - **Context:** The [concept document](../../team-08-revview-omni.pdf), sections 7–8 and 11–13, calls for a unified internal review workspace, preserved audit artifacts, isolated development against real sandbox tools, and incremental client-run production verification. The [2026-09-18 client interview](../requirements/client-meeting/client-interview-2026-09-18.md), sections 7 and 11, identifies five to six daily users and Sumalee as the future maintainer. Largest diff size and review volume remain unresolved (`OI-5`); current evidence does not require independently deployed workflow services.
-- **Proposed decision:** Package the Web Interface assets and Python Application together as one versioned release. Serve the browser assets and application API from that deployment, keeping the section 5.2 components as internal modules with explicit responsibilities. The browser remains a runtime container in section 5.1 even though its assets ship with the Application. Propose folding the Artifact Store into PostgreSQL alongside structured review state and code review files, interpreting the `CO-database` baseline as shown in §5.1; Artifact Management would own file operations and provenance as a logical component. This storage consolidation is pending team confirmation and recording of the decision on [issue #28](https://github.com/olehzu/RevView-OMNI/issues/28), and is not finalized. Keep identity enforcement and package-readiness validation in the Application, and external-tool access behind Integration Gateway and Notification. Deploy the same release to the isolated sandbox and, by the client software team, inside the production network, changing environment configuration and credentials. Hand off tagged releases with setup and demonstration documentation for incremental verification. Stack selection remains deferred under `OI-26`; Python, React with TypeScript, and PostgreSQL describe the current SRS baseline. The Python framework, packaging format, host topology, and approved identity and notification protocols remain to be confirmed.
+- **Proposed decision:** Package the Web Interface assets and Python Application together as one versioned release. Serve the browser assets and application API from that deployment, keeping the section 5.2 components as internal modules with explicit responsibilities. The browser remains a runtime container in section 5.1 even though its assets ship with the Application. Propose folding the Artifact Store into PostgreSQL alongside structured review state and code review files, interpreting the `CO-database` baseline as shown in §5.1; Artifact Management would own file operations and provenance as a logical component. This storage consolidation remains proposed ([OI-51](../requirements/OPEN-ISSUES.md#open)). Keep identity enforcement and package-readiness validation in the Application, and external-tool access behind Integration Gateway and Notification. Deploy the same release to the isolated sandbox and, by the client software team, inside the production network, changing environment configuration and credentials. Hand off tagged releases with setup and demonstration documentation for incremental verification. Stack selection remains deferred under `OI-26`; Python, React with TypeScript, and PostgreSQL describe the current SRS baseline. The Python framework, packaging format, host topology, and approved identity and notification protocols remain to be confirmed.
 - **Rejected:** Independently deployed services for preparation, assessment, closure, integrations, and export, or an independently released front end. For the known user population, these add deployment coordination, network failure modes, and consistency work across review state and evidence without an established requirement for independent scaling or release schedules. A browser-only application talking directly to engineering tools is also rejected because it would distribute integration credentials and authoritative validation across untrusted clients.
 - **Trade-off:** Workflow components are released and scaled together, and an application outage affects the whole workspace. Large diff generation, exports, or slow external tools can compete with interactive work; representative sandbox workloads must establish whether bounded background execution within the deployment is sufficient before introducing a separate worker. Separate persistent storage still requires backup and restore procedures that keep review records and artifacts consistent. A passing sandbox demonstration does not establish production compatibility, so client verification remains necessary before rollout. Revisit this decision if measured workloads or confirmed hosting constraints require a different deployment shape.
 
@@ -405,7 +405,7 @@ _**Verified by** names the test, or the repeatable manual check, that shows the 
 
 | ID | Source and stimulus | Environment | Response | Measure | Verified by |
 |---|---|---|---|---|---|
-| `QS-svn-unavailable-during-assembly` | SVN is unavailable during assembly | Normal operation | Package reported unavailable, not marked ready | `SI-svn-read`: SVN failure is surfaced and readiness remains blocked | |
+| `QS-svn-unavailable-during-assembly` | SVN is unavailable during assembly | Normal operation | Package reported unavailable, not marked ready | `SI-svn-read`: SVN failure is surfaced and readiness remains blocked | [test_svn_unavailable_is_503_and_recorded_unavailable](../../backend/tests/test_rev_review_packages.py), parametrized for `find_branches` and `changed_files`; fake adapter only. Both cases passed on merged `main` (`062bd2a`), 2026-11-20. Real sandbox adapter verification remains pending. |
 
 ## 11. Risks and Technical Debt
 
