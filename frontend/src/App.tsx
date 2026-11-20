@@ -1,9 +1,11 @@
+import AppLayout from "./AppLayout";
+import ReviewPackagePage from "./rev/ReviewPackagePage";
+
 function App() {
   return (
-    <main>
-      <h1>RevView/OMNI</h1>
-      <p>Code review workspace.</p>
-    </main>
+    <AppLayout>
+      <ReviewPackagePage />
+    </AppLayout>
   );
 }
 
