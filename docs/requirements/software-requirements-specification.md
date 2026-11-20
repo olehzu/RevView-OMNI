@@ -339,6 +339,19 @@ Notification latency (`SM-notification-latency`) is also a performance concern, 
 
 No uptime target or announced-maintenance-window expectation has been stated by AppliedAvionics, and none is assumed here. Tracked as `OI-14` in [OPEN-ISSUES.md](OPEN-ISSUES.md).
 
+`AVL-review-package-read` (**team proposal**, not a client requirement; its target is to be confirmed with Sumalee Rodolph under `OI-14`): an Author who loads a review package shall get it, except within the error budget below. Verified by: the measured SLO below.
+
+| SLO part | Value |
+|---|---|
+| **SLI** (good events ÷ all events) | Probes that load review package `rev-0001` and get an HTTP 200 with that package in the section 8.2.3 envelope ÷ all probes. A refused connection, a timeout, an error status, or another body is a bad event. |
+| **How it is counted** | [`backend/scripts/slo_probe.py`](../../backend/scripts/slo_probe.py), run outside the Application, one probe per minute. |
+| **Window** | Rolling 7 days |
+| **Target** | 99% (team proposal, `OI-14`) |
+| **Error budget** | 1% of probes: about 100 bad probes, roughly 1 hour 40 minutes of failed loads, per 7 days |
+| **Measured** | **60 / 60 = 100%** good loads on 2026-11-20, 06:45 to 06:50 UTC (5 minutes). The probe does record failures: against a stopped Application it reported 0 / 3 (`unreachable`), and against an unknown review id 0 / 2 (`HTTP 404`). |
+| **Where the number comes from** | The probe's summary line, against the Application from `main` plus the observability change, on a developer's laptop, 60 probes 5 seconds apart instead of one a minute. |
+| **What it misses** | It measures only while a developer's laptop runs the Application, so it says nothing about a deployed system; the window measured is minutes, not 7 days; the probe runs on the same machine, so network failures between a user and the Application are not seen; it loads one Synthetic Data package and calls one endpoint, so assembly and the page are not covered; the store is in memory, so a restart is invisible as long as it is quick. |
+
 ### 9.6 Robustness
 
 `ROB-incomplete-package-blocked`: While a review package is being validated, if the required Review Checklist, Platform tab, Review Record, file description, Revision reference, Diff coverage, or checklist item is missing, the system shall flag the specific gap and shall not mark the package ready for reviewer notification, per `UC-REV-validate-package` steps 2 through 5 and its extensions 2a and 3a ([use-cases.md](use-cases.md)). Verified by: the test cases already implied by that use case's extensions, a missing required artifact or Platform tab, and incomplete Diff coverage.
