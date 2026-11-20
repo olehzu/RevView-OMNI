@@ -26,6 +26,7 @@ Read this at the start of every session. Each rule cites where it lives; follow 
 - Error handling: translate every failure once at the trust boundary into a stable error code and a safe message; report unavailable Jira, SVN, or Jenkins evidence as unavailable, never as empty or passing (architecture section 8.2.1).
 - Time: store timestamps in UTC, display them in the configured organization time zone, and get the current time from a replaceable clock so tests can set it (architecture section 8.2.2).
 - API, code layout, validation, configuration, logging, persistence, auditing, and testing follow architecture sections 8.2.3 through 8.2.10.
+- Static analysis: run all commands in [README: Checks before pushing](README.md#checks-before-pushing), from the directories specified there; a baseline only shrinks; never weaken a check to make it pass without saying so in the pull request. See [architecture section 8.2.11](docs/design/architectural-design.md#8211-static-analysis) for setup, tool choices, and finding resolution.
 
 ## Workflow
 
