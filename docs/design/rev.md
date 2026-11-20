@@ -201,34 +201,47 @@ sequenceDiagram
     P->>C: createReview(ticketKey, platforms) (step 3)
     C->>API: POST /review-packages (step 3)
     API->>R: create(request, authenticated Author) (steps 3–4)
-    R->>J: get_ticket(ticketKey), retrieve context for the package snapshot (steps 1, 3)
-    J-->>R: Jira Ticket context or missing/incomplete result (steps 1, 3)
-    R->>DB: atomically create Review Package with template id, one Review Record, Audit Event (step 4)
-    DB-->>R: persisted package (step 4)
-    R-->>API: package with unique review id, status "In preparation" (step 4)
-    API-->>P: 201, package envelope (step 4)
-    P-->>A: display the created package in "In preparation" (step 6)
-    P->>C: assembleMaterials(reviewId), automatically after create (step 5)
-    C->>API: POST /review-packages/{reviewId}/assembly (step 5)
-    API->>AS: assemble(reviewId), using the saved Jira context (step 5)
-    AS-->>API: updated package, or the existing assembly error envelope (step 5)
-    API-->>P: package status and materials (steps 5–6)
-    P-->>A: update the package view; keep its id if assembly needs correction (step 6)
-
-    alt missing or incomplete Jira Ticket (1a)
-        J-->>R: ticket absent or required description missing (step 1a1)
-        R-->>API: 404 JIRA_TICKET_NOT_FOUND or 422 JIRA_TICKET_INCOMPLETE (step 1a1)
-        API-->>P: safe error envelope; no Review Package is created (step 1a1)
-        A->>P: correct the ticket reference and select again (step 1a2)
-        P-->>A: resume ticket search/selection (step 1a2)
-    else Jira unavailable
-        J-->>API: IntegrationUnavailable(Jira) (step 1, SI-jira-read, 8.2.1)
-        API-->>P: 503 JIRA_UNAVAILABLE, source "Jira" (step 1, 8.2.1)
-    else unsupported Platform (3a)
+    R->>R: validate selected Platforms (step 3)
+    alt unsupported Platform (3a)
         R-->>API: 422 PLATFORM_UNSUPPORTED with the supported Platform values (step 3a1)
         API-->>P: safe error envelope; no Review Package is created (step 3a1)
         A->>P: choose a valid Platform combination (step 3a2)
         P-->>A: resume at Platform selection (step 3a2)
+    else supported Platforms
+        R->>J: get_ticket(ticketKey), retrieve context for the package snapshot (steps 1, 3)
+        alt missing or incomplete Jira Ticket (1a)
+            J-->>R: ticket absent or required description missing (step 1a1)
+            R-->>API: 404 JIRA_TICKET_NOT_FOUND or 422 JIRA_TICKET_INCOMPLETE (step 1a1)
+            API-->>P: safe error envelope; no Review Package is created (step 1a1)
+            A->>P: correct the ticket reference and select again (step 1a2)
+            P-->>A: resume ticket search/selection (step 1a2)
+        else Jira unavailable
+            J-->>R: IntegrationUnavailable(Jira) (step 1, SI-jira-read, 8.2.1)
+            R-->>API: JIRA_UNAVAILABLE (step 1, 8.2.1)
+            API-->>P: 503 JIRA_UNAVAILABLE, source "Jira" (step 1, 8.2.1)
+        else valid Jira Ticket
+            J-->>R: verified Jira Ticket context (steps 1, 3)
+            R->>DB: atomically create Review Package with template id, one Review Record, Audit Event (step 4)
+            DB-->>R: persisted package (step 4)
+            R-->>API: package with unique review id, status "In preparation" (step 4)
+            API-->>P: 201, package envelope (step 4)
+            P-->>A: display the created package in "In preparation" (step 6)
+            P->>C: assembleMaterials(reviewId), automatically after create (step 5)
+            C->>API: POST /review-packages/{reviewId}/assembly (step 5)
+            API->>AS: assemble(reviewId), using the saved Jira context (step 5)
+            alt assembly succeeds
+                AS-->>API: updated package (step 5)
+                API-->>P: package status and materials (steps 5–6)
+            else assembly execution fails (SVN/Jenkins outage, ASSEMBLY_INCOMPLETE, or template unavailable)
+                AS->>DB: clear assembly-derived evidence only; preserve created package, Review Record, Platforms, Jira context, and creation Audit Event (step 5)
+                AS-->>API: existing assembly error envelope (step 5)
+                API-->>P: error (step 5)
+                P->>C: getReviewPackage(reviewId) (step 6)
+                C->>API: GET /review-packages/{reviewId} (step 6)
+                API-->>P: created package and Review Record; assembly evidence reflects failure (step 6)
+            end
+            P-->>A: update the package view; keep its id if assembly needs correction (step 6)
+        end
     end
 ```
 
@@ -252,46 +265,61 @@ sequenceDiagram
     S->>SVN: find_branches(ticketKey) (step 2)
     alt SVN unavailable (SI-svn-read, 8.2.1)
         SVN-->>S: IntegrationUnavailable(SVN) (step 2)
-        S->>DB: record SVN evidence unavailable; status stays "In preparation" (step 2)
+        S->>DB: clear assembly-derived evidence and record SVN unavailable; preserve creation data and Audit Event; status stays "In preparation" (step 2)
         S-->>R: SVN_UNAVAILABLE (step 2)
         R-->>P: 503 (step 2)
+    else SVN available
+        SVN-->>S: matching SVN Branches (step 2)
+        alt no SVN Branch, or several, match
+            S->>DB: clear assembly-derived evidence only; preserve creation data and Audit Event; status stays "In preparation" (step 2)
+            S-->>R: ASSEMBLY_INCOMPLETE (branch) (step 2)
+            R-->>P: 409 ASSEMBLY_INCOMPLETE (step 2)
+        else exactly one SVN Branch
+            S->>SVN: changed_files(branch): path, Revision, repository link, diff (step 2)
+            alt no Changed Files
+                S->>DB: clear assembly-derived evidence only; preserve creation data and Audit Event; status stays "In preparation" (step 2)
+                S-->>R: ASSEMBLY_INCOMPLETE (changed files) (step 2)
+                R-->>P: 409 ASSEMBLY_INCOMPLETE (step 2)
+            else Changed Files found
+                opt a Changed File has no Revision (2a1)
+                    S->>S: record it as missing, to alert the author (step 2a1)
+                end
+                S->>S: classify each path, group into one Diff per Platform x Category (step 3)
+                alt unclassifiable path
+                    S->>DB: clear assembly-derived evidence only; preserve creation data and Audit Event; status stays "In preparation" (step 3)
+                    S-->>R: ASSEMBLY_INCOMPLETE (path) (step 3)
+                    R-->>P: 409 ASSEMBLY_INCOMPLETE (step 3)
+                else paths classified
+                    S->>J: find_builds(ticketKey, branch) (step 4)
+                    alt Jenkins unavailable (SI-jenkins-read, 8.2.1)
+                        J-->>S: IntegrationUnavailable(Jenkins) (step 4)
+                        S->>DB: clear assembly-derived evidence and record Jenkins unavailable; preserve creation data and Audit Event; status stays "In preparation" (step 4)
+                        S-->>R: JENKINS_UNAVAILABLE (step 4)
+                        R-->>P: 503 (step 4)
+                    else Jenkins available
+                        J-->>S: matching Jenkins Builds (step 4)
+                        alt no matching Jenkins Build (4a1)
+                            S->>S: status "Pending build validation" (step 4a1)
+                        else matching Jenkins Builds
+                            S->>S: builds newest first, most recent preselected (step 4)
+                        end
+                        S->>CFG: getTemplate(package.template_id) (step 5)
+                        alt Review Checklist template unavailable (5a1)
+                            CFG-->>S: template unavailable (step 5a1)
+                            S->>DB: clear assembly-derived evidence only; preserve creation data and Audit Event; status stays "In preparation" (step 5a1)
+                            S-->>R: REVIEW_TEMPLATE_UNAVAILABLE; keep package incomplete (step 5a1)
+                            R-->>P: 503; package remains "In preparation" (step 5a1)
+                        else template available
+                            CFG-->>S: configured Review Checklist template (step 5)
+                            S->>S: one Review Checklist, a tab per Platform listing its Changed Files; retain the creation-time Review Record (step 5)
+                            S->>DB: save, status "Materials assembled" unless 2a1 or 4a1 applies (step 6)
+                            R-->>P: 200, the package and anything missing (step 6)
+                        end
+                    end
+                end
+            end
+        end
     end
-    alt no SVN Branch, or several, match
-        S-->>R: ASSEMBLY_INCOMPLETE (branch), stored with no materials (step 2)
-        R-->>P: 409 ASSEMBLY_INCOMPLETE (step 2)
-    end
-    S->>SVN: changed_files(branch): path, Revision, repository link, diff (step 2)
-    alt no Changed Files
-        S-->>R: ASSEMBLY_INCOMPLETE (changed files), stored with no materials (step 2)
-        R-->>P: 409 ASSEMBLY_INCOMPLETE (step 2)
-    end
-    opt a Changed File has no Revision (2a1)
-        S->>S: record it as missing, to alert the author (step 2a1)
-    end
-    S->>S: classify each path, group into one Diff per Platform x Category (step 3)
-    S->>J: find_builds(ticketKey, branch) (step 4)
-    alt Jenkins unavailable (SI-jenkins-read, 8.2.1)
-        J-->>S: IntegrationUnavailable(Jenkins) (step 4)
-        S->>DB: record Jenkins evidence unavailable; status stays "In preparation" (step 4)
-        S-->>R: JENKINS_UNAVAILABLE (step 4)
-        R-->>P: 503 (step 4)
-    end
-    alt no matching Jenkins Build (4a1)
-        S->>S: status "Pending build validation" (step 4a1)
-    else
-        S->>S: builds newest first, most recent preselected (step 4)
-    end
-    S->>CFG: getTemplate(package.template_id) (step 5)
-    alt Review Checklist template unavailable (5a1)
-        CFG-->>S: template unavailable (step 5a1)
-        S-->>R: REVIEW_TEMPLATE_UNAVAILABLE; keep package incomplete (step 5a1)
-        R-->>P: safe warning; package remains "In preparation" (step 5a1)
-    else
-        CFG-->>S: configured Review Checklist template (step 5)
-        S->>S: one Review Checklist, a tab per Platform listing its Changed Files, and one Review Record (step 5)
-    end
-    S->>DB: save, status "Materials assembled" unless 2a1 or 4a1 applies (step 6)
-    R-->>P: 200, the package and anything missing (step 6)
 ```
 
 **Status after assembly.** It is "Materials assembled" only when nothing is missing. A missing Revision (2a1) leaves "In preparation" with the gap listed, because POST-2 asks for the gap to be flagged for correction. No matching build (4a1) gives "Pending build validation". When both apply, 2a1 wins, since the package cannot be assembled without its Revisions.
@@ -307,7 +335,7 @@ sequenceDiagram
     A->>P: open /?review=rev-0001, or type the review id, Load (step 1; resume existing package)
     P->>C: getReviewPackage(reviewId) (step 1; PRE-1)
     C->>API: GET /review-packages/{reviewId} (step 1; load state for PRE-1)
-    API-->>C: 200, status "In preparation", no materials (step 1)
+    API-->>C: 200, status "In preparation", no assembly-derived materials; creation-time Review Record exists (step 1)
     C-->>P: package, Assemble enabled only in "In preparation" (step 1, PRE-1, 8.2.5)
     A->>P: Assemble (resume after incomplete materials, step 1)
     P->>C: assembleMaterials(reviewId) (step 1)
@@ -349,8 +377,8 @@ All responses use the section 8.2.3 envelope: `{"data": …}` or `{"error": {"co
 | `GET /api/v1/jira-tickets?query=…` | Authenticated Author authorized to create a review | Search text | `200`: matching Jira Ticket summaries from the configured sandbox Jira | Unauthenticated/unauthorized: `401`/`403`. Jira unavailable: `503 JIRA_UNAVAILABLE`, `source: "Jira"` |
 | `GET /api/v1/jira-tickets/{ticketKey}` | Same | Jira Ticket key | `200`: ticket identity, project association, description, and other fields approved by `OI-51` | Unknown ticket: `404 JIRA_TICKET_NOT_FOUND`. Jira unavailable: `503 JIRA_UNAVAILABLE`, `source: "Jira"` |
 | `POST /api/v1/review-packages` | Authenticated Author authorized to create a review for the selected project/Platform | `project_ticket` (the selected Jira Ticket key), `platforms` (non-empty array) | `201`: full package with an opaque globally unique id (database constraint), authenticated Author, Jira Ticket context snapshot, selected Platforms, configured template id, one Review Record, and status "In preparation"; no SVN/Jenkins evidence yet, empty Diffs/builds/`missing`, and no Review Checklist. Creation and Audit Event commit atomically | Missing ticket: `404 JIRA_TICKET_NOT_FOUND`. Missing description: `422 JIRA_TICKET_INCOMPLETE`, with no package saved. Unsupported or empty Platform selection: `422 PLATFORM_UNSUPPORTED`, listing configured values (common, falcon, phoenix), with no package saved. Template unavailable: `503 REVIEW_TEMPLATE_UNAVAILABLE`, `source: null`. Jira unavailable: `503 JIRA_UNAVAILABLE`, `source: "Jira"`. Unauthenticated/unauthorized: `401`/`403` |
-| `POST /api/v1/review-packages/{reviewId}/assembly` | The package's authenticated Author; called automatically by the page after creation or explicitly to resume | None | `200`: the package, with its status, SVN Branch, Diffs (each with its Platform, Category, and Changed Files with Revision and repository link), candidate Jenkins Builds newest first with one preselected, the Review Checklist tabs, the Review Record, and `missing` (the Changed Files without a Revision, 2a1). 4a1: status "Pending build validation", no build preselected | SVN unavailable: `503 SVN_UNAVAILABLE`, `source: "SVN"`. Jenkins unavailable: `503 JENKINS_UNAVAILABLE`, `source: "Jenkins"`. Template unavailable (5a1): `503 REVIEW_TEMPLATE_UNAVAILABLE`, `source: null`; no materials are marked complete and the package remains "In preparation". No branch, several branches, no Changed Files, or an unclassifiable path: `409 ASSEMBLY_INCOMPLETE`, the message naming which (and the path). Package not "In preparation" (PRE-1, which also refuses a re-run once past "In preparation"): `409 REVIEW_PACKAGE_NOT_IN_PREPARATION`. Unknown id: `404 REVIEW_PACKAGE_NOT_FOUND`. Unauthenticated/unauthorized: `401`/`403` |
-| `GET /api/v1/review-packages/{reviewId}` | The package's authenticated Author or another assigned participant allowed by `SEC-role-based-review-access` | None | `200`: the stored package as above. After an SVN or Jenkins outage, that evidence reads `unavailable` | `404 REVIEW_PACKAGE_NOT_FOUND`. Unauthenticated/unauthorized: `401`/`403` |
+| `POST /api/v1/review-packages/{reviewId}/assembly` | The package's authenticated Author; called automatically by the page after creation or explicitly to resume | None | `200`: the package, with its status, SVN Branch, Diffs (each with its Platform, Category, and Changed Files with Revision and repository link), candidate Jenkins Builds newest first with one preselected, the Review Checklist tabs, the creation-time Review Record, and `missing` (the Changed Files without a Revision, 2a1). 4a1: status "Pending build validation", no build preselected | SVN unavailable: `503 SVN_UNAVAILABLE`, `source: "SVN"`. Jenkins unavailable: `503 JENKINS_UNAVAILABLE`, `source: "Jenkins"`. Template unavailable (5a1): `503 REVIEW_TEMPLATE_UNAVAILABLE`, `source: null`. No branch, several branches, no Changed Files, or an unclassifiable path: `409 ASSEMBLY_INCOMPLETE`, the message naming which (and the path). On SVN/Jenkins outage, `ASSEMBLY_INCOMPLETE`, or template outage, clear only assembly-derived evidence (SVN Branch, Diffs, builds, Review Checklist, `missing`, and preselected build); retain the created package, creation-time Review Record, selected Platforms, Jira Ticket context, and creation Audit Event, with status "In preparation". The evidence fields reflect what was observed. Package not "In preparation" (PRE-1, which also refuses a re-run once past "In preparation"): `409 REVIEW_PACKAGE_NOT_IN_PREPARATION`. Unknown id: `404 REVIEW_PACKAGE_NOT_FOUND`. Unauthenticated/unauthorized: `401`/`403` |
+| `GET /api/v1/review-packages/{reviewId}` | The package's authenticated Author or another assigned participant allowed by `SEC-role-based-review-access` | None | `200`: the stored package as above. After an SVN/Jenkins outage, `ASSEMBLY_INCOMPLETE`, or template outage, returns the same created package, Review Record, selected Platforms, and Jira Ticket context; the creation Audit Event remains persisted, and assembly-derived evidence is cleared. Evidence fields reflect what was observed | `404 REVIEW_PACKAGE_NOT_FOUND`. Unauthenticated/unauthorized: `401`/`403` |
 
 **Example `200` body** (main success scenario, Synthetic Data):
 
@@ -395,7 +423,7 @@ All responses use the section 8.2.3 envelope: `{"data": …}` or `{"error": {"co
 
 - Statuses are the use case's display strings exactly. Field names are snake_case. `platform` and `category` are lowercase, spelled exactly as the path segment. Paths are full repository paths, and the same string appears in the Diff, the checklist tab, and `missing`.
 - `missing` entries read `{"path": …, "missing": "revision"}`. `preselected_build` is `null` under 4a1. `svn_evidence` and `jenkins_evidence` are `"available"`, `"unavailable"`, or `null` when that system has not been asked yet: before the first assembly, and `jenkins_evidence` after an SVN outage, since Jenkins is not queried then.
-- After an SVN or Jenkins outage, or an `ASSEMBLY_INCOMPLETE`, the stored package has no materials (no branch, Diffs, builds, checklist, record, or `missing`), with each system's evidence as observed: a Jenkins outage stores `svn_evidence: "available"`, `jenkins_evidence: "unavailable"`; an `ASSEMBLY_INCOMPLETE` stores `svn_evidence: "available"`, `jenkins_evidence: null`. Nothing half-assembled or left over from an earlier run is stored.
+- After an SVN or Jenkins outage, `ASSEMBLY_INCOMPLETE`, or template outage, clear only assembly-derived evidence (branch, Diffs, builds, checklist, `missing`, and preselected build); preserve the created package, creation-time Review Record, selected Platforms, Jira Ticket context, and creation Audit Event. The status remains "In preparation". Evidence fields record what was observed: a Jenkins outage stores `svn_evidence: "available"`, `jenkins_evidence: "unavailable"`; an `ASSEMBLY_INCOMPLETE` stores `svn_evidence: "available"`, `jenkins_evidence: null`.
 - The Review Checklist has a tab for each Platform the change touches, in common, falcon, phoenix order; Diffs are in Platform then Category order, and files within a Diff by path. The Review Record id is the review id with `rev-` replaced by `rr-`.
 - Errors: `source` is `null` when no external system is involved. `ASSEMBLY_INCOMPLETE` names the gap in `message` only. `reviewId` is an opaque string, and any unknown one gives `404`.
 
@@ -412,9 +440,9 @@ What the page shows the Author for each code. The code itself is shown in small 
 | `JIRA_TICKET_INCOMPLETE` | This Jira Ticket is missing its description. Select a Jira Ticket that includes a description, then try again. | Returns to ticket selection; no package is created |
 | `PLATFORM_UNSUPPORTED` | Choose one or more supported Platforms: {supported values}. | Keeps the form and lists the valid choices; no package is created |
 | `REVIEW_TEMPLATE_UNAVAILABLE` | The configured Review Checklist template is unavailable, so the review cannot be created or its materials completed yet. | Before creation, disables Create. During assembly, keeps the created package in "In preparation", reloads it, and shows an explicit warning; no materials are marked complete |
-| `SVN_UNAVAILABLE` | SVN did not respond, so the Changed Files could not be read. Nothing was assembled and the package is still In preparation. Try Assemble again later. | Reloads the package; SVN evidence shows "unavailable" |
-| `JENKINS_UNAVAILABLE` | Jenkins did not respond, so the Jenkins Builds could not be read. Nothing was assembled and the package is still In preparation. Try Assemble again later. | Reloads; Jenkins evidence shows "unavailable", never passing |
-| `ASSEMBLY_INCOMPLETE` | The materials could not be assembled: {the server's message}. | Reloads. The server's message is the only place the gap is named (no SVN Branch, several, no Changed Files, or the unclassifiable path) |
+| `SVN_UNAVAILABLE` | SVN did not respond, so the Changed Files could not be read. No assembly evidence was saved; the created package and Review Record remain In preparation. Try Assemble again later. | Reloads the package; SVN evidence shows "unavailable" |
+| `JENKINS_UNAVAILABLE` | Jenkins did not respond, so the Jenkins Builds could not be read. No assembly evidence was saved; the created package and Review Record remain In preparation. Try Assemble again later. | Reloads; Jenkins evidence shows "unavailable", never passing |
+| `ASSEMBLY_INCOMPLETE` | The materials could not be assembled: {the server's message}. | Reloads. The created package and Review Record remain; assembly evidence is cleared. The server's message is the only place the gap is named (no SVN Branch, several, no Changed Files, or the unclassifiable path) |
 | `REVIEW_PACKAGE_NOT_IN_PREPARATION` | Materials can be assembled only while the package is In preparation. This package is already past that. | Reloads, showing its status |
 | `REVIEW_PACKAGE_NOT_FOUND` | There is no review package with the id {reviewId}. Check the id and load it again. | Clears the package |
 | `VALIDATION_FAILED` | The request was not valid. Check the form fields and try again. | Nothing more |
@@ -563,7 +591,9 @@ _[One row per flow: the main success scenario and **every** extension this docum
 | UC-REV-create-review 1a1/1a2 | integration | A missing ticket or description returns the specific safe error, creates no package or Audit Event, and lets the Author select a corrected Jira Ticket and complete creation |
 | UC-REV-create-review 3a1/3a2 | integration | An unsupported Platform returns `422 PLATFORM_UNSUPPORTED` with valid options, creates no package or Audit Event, and a valid selection succeeds; an empty selection is rejected because `platforms` is required |
 | `SI-jira-read` unavailable | integration | A failing Jira fake returns `503 JIRA_UNAVAILABLE` with `source: "Jira"`; no ticket is reported as empty/current and no package is created |
-| `SEC-authenticated-access`, `SEC-role-based-review-access` | integration | Unauthenticated requests and authenticated non-participants cannot search or read tickets, create a Review Package, assemble, or read its data |
+| `SEC-authenticated-access`, `UC-REV-create-review PRE-1` | integration | Unauthenticated users cannot search tickets, read ticket details, or create a Review Package. For the selected project/Platform, an authenticated Author authorized for that scope can perform those operations; an authenticated user not authorized for that scope is denied |
+| `SEC-role-based-review-access` | integration | Authenticated users can read an existing Review Package's protected contents only when assigned as its Author, reviewer, or moderator; authenticated non-participants and unauthenticated users are refused |
+| `SEC-authenticated-access`, `UC-REV-assemble-materials` Author authority | integration | Only the authenticated Author of an existing Review Package can assemble it; other authenticated users, including assigned reviewers or moderators, and unauthenticated users cannot invoke assembly |
 | Review Package creation atomicity (`FR-AUDIT-action-log`, 8.2.8–8.2.9) | integration | Package, one Review Record, and creation Audit Event commit together; a failed write leaves none of them; event actor and timestamp come from authenticated identity and the replaceable UTC clock |
 | Review configuration and PRE-3 | integration | Supported Platforms and the configured template are returned; missing template is explicit, disables Create, and never appears as an empty/passing template |
 | UC-REV-assemble-materials 5a1 | integration | If the saved Review Checklist template is unavailable, assembly returns `503 REVIEW_TEMPLATE_UNAVAILABLE`, leaves the created package "In preparation", and stores/displays no empty or complete checklist |
@@ -575,8 +605,9 @@ _[One row per flow: the main success scenario and **every** extension this docum
 | 2a1 and 4a1 together | integration | Status stays "In preparation" (2a1 wins), no build preselected |
 | SVN unavailable (`SI-svn-read`, 8.2.1) | integration | A failing SVN fake gives `503 SVN_UNAVAILABLE` with `source: "SVN"`; the GET shows "In preparation", SVN evidence `unavailable`, and no Diffs; Jenkins was not called |
 | Jenkins unavailable (`SI-jenkins-read`, 8.2.1) | integration | A failing Jenkins fake gives `503 JENKINS_UNAVAILABLE` with `source: "Jenkins"`; the GET shows "In preparation" and `jenkins_evidence` `unavailable`, never "Pending build validation" |
-| No branch, several branches, no Changed Files | unit | Each gives `409 ASSEMBLY_INCOMPLETE` naming the gap; the status is unchanged, no materials are stored, and `svn_evidence` reads `available` |
-| Re-run that hits `409` | integration | After an outage, or after 2a1, a re-run giving `ASSEMBLY_INCOMPLETE` leaves no stale materials and `svn_evidence` `available` |
+| Created package followed by assembly failure, then GET | integration | For SVN outage, Jenkins outage, `ASSEMBLY_INCOMPLETE`, and template outage, create the package successfully, fail assembly, then GET it; the original review id, creation-time Review Record, selected Platforms, and Jira Ticket context remain unchanged, and the creation Audit Event remains persisted. Only assembly-derived evidence is cleared, status remains "In preparation", and evidence fields reflect what was observed |
+| No branch, several branches, no Changed Files | unit | Each gives `409 ASSEMBLY_INCOMPLETE` naming the gap; the status is unchanged, no assembly-derived evidence is stored, and `svn_evidence` reads `available` |
+| Re-run that hits `409` | integration | After an outage, or after 2a1, a re-run giving `ASSEMBLY_INCOMPLETE` leaves no stale assembly-derived evidence and `svn_evidence` `available` |
 | PRE-1 | integration | A second POST on an assembled package gives `409 REVIEW_PACKAGE_NOT_IN_PREPARATION` |
 | Unknown package | integration | `404 REVIEW_PACKAGE_NOT_FOUND` on the POST and the GET |
 | Page: envelope success (8.2.3) | unit (Vitest) | `parseEnvelope` of a `200` with `data` returns the data |
