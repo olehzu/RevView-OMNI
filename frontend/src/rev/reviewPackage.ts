@@ -105,6 +105,22 @@ const STATUSES: readonly unknown[] = [
 ];
 const EVIDENCE: readonly unknown[] = ["available", "unavailable", null];
 
+/** The known Platforms and Categories, in display order (step 3). */
+const PLATFORM_ORDER: readonly Platform[] = ["common", "falcon", "phoenix"];
+const CATEGORY_ORDER: readonly Category[] = ["code", "tools", "tests"];
+
+/**
+ * Only the known values: an unknown Platform or Category would make groupDiffs drop
+ * that Diff and its Changed Files, hiding evidence (section 8.2.1).
+ */
+function isPlatform(value: unknown): value is Platform {
+  return (PLATFORM_ORDER as readonly unknown[]).includes(value);
+}
+
+function isCategory(value: unknown): value is Category {
+  return (CATEGORY_ORDER as readonly unknown[]).includes(value);
+}
+
 function isChangedFile(v: unknown): boolean {
   return (
     isObject(v) &&
@@ -117,8 +133,8 @@ function isChangedFile(v: unknown): boolean {
 function isDiff(v: unknown): boolean {
   return (
     isObject(v) &&
-    isString(v.platform) &&
-    isString(v.category) &&
+    isPlatform(v.platform) &&
+    isCategory(v.category) &&
     isString(v.diff) &&
     isArrayOf(v.changed_files, isChangedFile)
   );
@@ -142,7 +158,7 @@ function isChecklist(v: unknown): boolean {
         v.tabs,
         (t) =>
           isObject(t) &&
-          isString(t.platform) &&
+          isPlatform(t.platform) &&
           isArrayOf(t.changed_files, isString),
       ))
   );
@@ -252,9 +268,6 @@ export function afterAssembleError(code: string): AfterError {
   }
   return code === "REVIEW_PACKAGE_NOT_FOUND" ? "clear" : "nothing";
 }
-
-const PLATFORM_ORDER: readonly Platform[] = ["common", "falcon", "phoenix"];
-const CATEGORY_ORDER: readonly Category[] = ["code", "tools", "tests"];
 
 export interface PlatformDiffs {
   platform: Platform;

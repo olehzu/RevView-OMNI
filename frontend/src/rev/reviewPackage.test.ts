@@ -289,6 +289,27 @@ describe("getReviewPackage and assembleMaterials", () => {
       "a checklist without tabs",
       reviewPackage({ review_checklist: {} as never }),
     ],
+    // An unknown value would make groupDiffs drop the Diff and its files (#54 review).
+    [
+      "a Diff with an unknown Platform",
+      reviewPackage({
+        diffs: [{ ...diff("common", "code"), platform: "typo" as never }],
+      }),
+    ],
+    [
+      "a Diff with an unknown Category",
+      reviewPackage({
+        diffs: [{ ...diff("common", "code"), category: "docs" as never }],
+      }),
+    ],
+    [
+      "a checklist tab with an unknown Platform",
+      reviewPackage({
+        review_checklist: {
+          tabs: [{ platform: "typo" as never, changed_files: [] }],
+        },
+      }),
+    ],
   ])("gives API_UNREACHABLE for %s", async (_, data) => {
     for (const call of [getReviewPackage, assembleMaterials]) {
       expect(await call("rev-0001", respondingWithData(data))).toMatchObject({
