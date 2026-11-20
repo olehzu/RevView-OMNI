@@ -38,4 +38,5 @@ Read this at the start of every session. Each rule cites where it lives; follow 
 ## Working rules
 
 - Use the glossary's terms in code, tests, and messages.
+- Design consistency: before requesting review, cross-check each flow's conditions, actions, status changes, and error behavior across the key decisions, sequence diagrams, API/error tables, and test rows; resolve contradictions before implementation ([source: Ethan's review of #52](https://github.com/olehzu/RevView-OMNI/pull/52#issuecomment-6831149937)).
 - Do not invent a rule, threshold, term, or permission. If the repository does not say it, list it as an assumption and ask; a question only the client can answer goes into `OPEN-ISSUES.md`.

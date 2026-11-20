@@ -2,4 +2,85 @@ body {
   margin: 0;
   padding: 2rem;
   font-family: system-ui, sans-serif;
+  line-height: 1.4;
+}
+
+.app-header {
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.app-name {
+  font-weight: 600;
+}
+
+.review-id-form {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.25rem 1rem;
+}
+
+.facts dd {
+  margin: 0;
+}
+
+.error,
+.alert {
+  border: 1px solid #b00020;
+  background: #fdecee;
+  padding: 0.5rem 1rem;
+  margin: 1rem 0;
+}
+
+.alert {
+  border-color: #a15c00;
+  background: #fff4e0;
+}
+
+.error p {
+  margin: 0;
+}
+
+.evidence-unavailable,
+.missing {
+  color: #b00020;
+  font-weight: 600;
+}
+
+.diff pre {
+  overflow-x: auto;
+  background: #f4f4f4;
+  padding: 0.5rem;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+th,
+td {
+  border: 1px solid #ccc;
+  padding: 0.25rem 0.5rem;
+  text-align: left;
+}
+
+.preselected {
+  font-weight: 600;
+}
+
+.tab {
+  margin-right: 0.25rem;
+}
+
+.tab-selected {
+  font-weight: 600;
+  text-decoration: underline;
 }
