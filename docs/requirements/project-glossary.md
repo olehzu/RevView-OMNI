@@ -51,6 +51,7 @@ _Rules:_
 | Date | Version | Description | Author |
 |---|---|---|---|
 | 2026-09-12 | 0.1 | Initial terms from the client brief and first client meeting | Ethan Nguyen |
+| 2026-11-16 | 0.2 | Apply the 2026-11-06 package organization (issue #45); preserve remaining client questions | Ralph Castilleja |
 
 ---
 
@@ -96,7 +97,7 @@ The event in which a Reviewer submits or updates a Review Checklist. It notifies
 
 ### Code/Tools/Tests Category
 
-One of the three client-used categories for organizing Changed Files and Review Checklist sections: production code, supporting tools, or tests. A Formal Review may contain several of these categories across multiple Platforms.
+One of the three client-used categories for organizing Changed Files and Diffs: production code, supporting tools, or tests. Categories do not split the Review Checklist; its tabs are organized by Platform.
 
 ### Compliance Result
 
@@ -104,7 +105,7 @@ A preliminary or human-confirmed determination for a Checklist Item: **Compliant
 
 ### Diff
 
-A representation of the changes between SVN Revisions that Reviewers use to examine a Formal Review. RevView/OMNI generates the required Diff and prompts the Author to verify that it includes the expected Changed Files.
+A representation of the changes between SVN Revisions that Reviewers use to examine a Formal Review. RevView/OMNI generates one Diff per Platform and Code/Tools/Tests Category touched by the change, up to nine per Formal Review, and prompts the Author to verify coverage of the expected Changed Files.
 
 **Synonyms:** Diff file; SVN-generated Diff.
 
@@ -162,9 +163,9 @@ An alert sent to a Relevant User after a review event, such as Review Start, a n
 
 ### Platform
 
-A client-defined avionics software target or product area for which a separate Review Checklist may be required. A Formal Review may affect up to three Platforms.
+A client-defined avionics software target or product area: common (shared between falcon and phoenix), falcon, or phoenix. A Formal Review may affect up to three Platforms; they are represented as tabs within one Review Checklist spreadsheet, rather than separate checklists.
 
-**Needs client confirmation:** the official Platform names and the rule used to determine which Platforms a Jira Ticket affects.
+**Needs client confirmation:** the rule used to determine which Platforms a Jira Ticket affects (`OI-32`).
 
 ### Production Environment
 
@@ -178,11 +179,11 @@ An Author, Reviewer, Moderator, or other authorized participant who must receive
 
 ### Review Artifact
 
-A file, record, or result that must be captured and possibly preserved for a Formal Review. Review Artifacts include the Review Record, Review Checklists, Diff, Build and test results, and additional files supplied by the Author.
+A file, record, or result that must be captured and possibly preserved for a Formal Review. Review Artifacts include the Review Record, Review Checklist, Diffs, Build and test results, and additional files supplied by the Author.
 
 ### Review Checklist
 
-A structured set of criteria used to evaluate files or changes in a Formal Review. RevView/OMNI may prefill information that can be determined reliably, but judgment-based items remain for a person to complete or approve.
+One spreadsheet of criteria used to evaluate files or changes in a Formal Review, organized into Platform tabs for common, falcon, and phoenix without separate code/tools/tests checklists. RevView/OMNI may prefill information that can be determined reliably, but judgment-based items remain for a person to complete or approve.
 
 **Synonyms:** Checklist; Code Review Checklist.
 
@@ -202,13 +203,13 @@ The process of establishing a Formal Review from a selected Jira Ticket. RevView
 
 ### Review Package
 
-The complete collection of required Review Artifacts assembled at Review Closure. It preserves the information and original file types needed by the client's existing audit process even though users perform the Review through a new interface.
+The collection of Review Artifacts prepared for a Formal Review and retained at Review Closure: one Review Checklist spreadsheet with Platform tabs, one Review Record without a Platform split, up to nine Diffs, build and test results, and any additional files supplied by the Author. It preserves the information and original file types needed by the client's existing audit process even though users perform the Review through a new interface.
 
 **Not to be confused with:** Review Record, which is one artifact within the Review Package.
 
 ### Review Record
 
-The formal record of the identifying, administrative, participant, and outcome information for a Formal Review. RevView/OMNI populates fields automatically where possible while retaining human input for information it cannot determine reliably.
+The single formal record of the identifying, administrative, participant, and outcome information for a Formal Review, without separate records per Platform. RevView/OMNI populates fields automatically where possible while retaining human input for information it cannot determine reliably.
 
 ### Review Round
 

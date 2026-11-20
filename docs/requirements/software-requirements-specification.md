@@ -43,6 +43,7 @@ _Requirements cited from elsewhere keep their own identifiers: `UC-*` from [use-
 | 2026-10-02 | 0.2 | Added identifiers for the C4 context, containers, and external-system interfaces | Ralph Castilleja |
 | 2026-10-04 | 0.3 | Filled in sections 2 through 11; merged with the section 2.5, 8.3, 8.5, and 9.3 content from PR #16 | Oleh Zubariev |
 | 2026-10-16 | 0.4 | Applied the 2026-10-09 client interview answers (`OI-1`, `OI-5`, `OI-13`, `OI-15`, `OI-16`, `OI-17`, `OI-19`, `OI-20`, `OI-21`); adopted the client's suggested tech stack in section 2.4; raised `OI-24` through `OI-28` for what is still assumed | Oleh Zubariev |
+| 2026-11-16 | 0.5 | Apply the 2026-11-06 package organization (issue #45); preserve remaining client questions | Ralph Castilleja |
 
 ---
 
@@ -155,7 +156,7 @@ Most of the system's behavior is specified in [use-cases.md](use-cases.md) and i
 
 **Export**
 
-`FR-EXPORT-legacy-format`: Where a review record or checklist is exported, the system shall produce it in the existing Excel/CSV format AppliedAvionics uses today (`BR-review-package-exportable`, business-rules.md section 2.1; `CO-export-format-preserved`, section 2.4). Verified by: the exported file opens in the spreadsheet tooling AppliedAvionics already uses and carries the same fields as today's manual review package.
+`FR-EXPORT-legacy-format`: Where a review record or checklist is exported, the system shall produce it in the existing Excel/CSV format AppliedAvionics uses today (`BR-review-package-exportable`, business-rules.md section 2.1; `CO-export-format-preserved`, section 2.4). Exports shall preserve the organization confirmed on [2026-11-06](client-meeting/client-interview-2026-11-06.md#5-what-is-hard-about-it): one Review Checklist spreadsheet with Platform tabs and no Code/Tools/Tests Category split, and one Review Record without separate records per Platform. Verified by: the exported files open in the spreadsheet tooling AppliedAvionics already uses, carry the existing fields, and preserve this organization. Representative templates and field mapping remain open (`OI-41`, `OI-44`, `OI-46`).
 
 **Audit logging**
 
@@ -188,18 +189,25 @@ classDiagram
   }
   class ReviewPackage {
     +String reviewId
-    +String platform
+    +String[] platforms
     +String status
   }
   class ReviewSection {
-    +String category
+    +String identifier
     +String result
   }
   class ChangedFile {
     +String path
     +String revisionNumber
   }
-  class Diff
+  class Diff {
+    +String platform
+    +String category
+  }
+  class ReviewRecord
+  class PlatformTab {
+    +String platform
+  }
   class ReviewChecklist {
     +String template
   }
@@ -216,10 +224,13 @@ classDiagram
 
   JiraTicket "1" --> "1" ReviewPackage : traced by
   Author "1" --> "*" ReviewPackage : creates
-  ReviewPackage "1" --> "*" ReviewSection : contains, up to nine
-  ReviewPackage "1" --> "1" Diff : generated from SVN
+  ReviewPackage "1" --> "*" ReviewSection : assessment structure TBD
+  ReviewPackage "1" --> "0..9" Diff : generated from SVN
+  ReviewPackage "1" --> "1" ReviewChecklist : contains
+  ReviewPackage "1" --> "1" ReviewRecord : contains
+  ReviewChecklist "1" --> "1..3" PlatformTab : organized by Platform
+  PlatformTab "*" --> "*" ChangedFile : lists
   Diff "1" --> "*" ChangedFile : covers
-  ReviewSection "1" --> "1" ReviewChecklist : evaluated against
   ReviewPackage "0..1" --> "0..1" JenkinsBuild : references
   ReviewPackage "*" --> "*" Reviewer : assigned to
   Reviewer "1" --> "*" ReviewComment : records
@@ -227,7 +238,7 @@ classDiagram
   Moderator "1" --> "*" ReviewPackage : closes
 ```
 
-The "up to nine" sections per package comes from `BR-review-nine-parts` (business-rules.md section 2.1). `ReviewComment` is named for the glossary's term (project-glossary.md, Review Comment); [use-cases.md](use-cases.md) specifies the same concept under the name "finding" (`UC-ASS-record-findings`, `UC-ASS-assess-review-section`). This is the same kind of mismatch flagged in section 6, one term should win and the other document should be updated to match.
+The “up to nine” limit applies to Diffs, not assessment sections (`BR-review-nine-parts`, business-rules.md section 2.1). Each Diff covers one Platform and Code/Tools/Tests Category combination touched by the change. The complete package has one Review Checklist spreadsheet with tabs for common, falcon, and phoenix, without a Category split, and one Review Record without a Platform split (`BR-review-package-required`; [2026-11-06 client answers](client-meeting/client-interview-2026-11-06.md#5-what-is-hard-about-it)). `0..9` allows a package still in preparation to have no Diffs; it does not establish that a complete code review may omit Changed Files. The template and treatment of unaffected Platform tabs remain to be confirmed (`OI-44`). `ReviewSection` is retained for the existing assessment use cases; its relationship to a Platform tab is unresolved (`OI-45`), so the model does not equate them. `ReviewComment` is named for the glossary's term (project-glossary.md, Review Comment); [use-cases.md](use-cases.md) specifies the same concept under the name "finding" (`UC-ASS-record-findings`, `UC-ASS-assess-review-section`). This is the same kind of mismatch flagged in section 6, one term should win and the other document should be updated to match.
 
 ### 7.2 Data dictionary
 
@@ -237,17 +248,18 @@ Each entity's fields are already specified in the use cases' Associated Informat
 |---|---|
 | ReviewPackage | `UC-REV-create-review`, `UC-REV-validate-package`, `UC-CLS-close-review` |
 | Diff / ChangedFile | `UC-REV-assemble-materials` |
-| ReviewChecklist | `UC-REV-assemble-materials`, `UC-ASS-assess-review-section` |
+| ReviewChecklist / PlatformTab | `UC-REV-assemble-materials`; assessment relationship pending `OI-45` |
+| ReviewRecord | `UC-REV-create-review`, `UC-CLS-close-review`; Platform-specific fields pending `OI-46` |
 | ReviewComment (recorded in use-cases.md as "finding") | `UC-ASS-record-findings` |
 | Notification record | `UC-NOT-notify-reviewers` |
 
 ### 7.3 Reports
 
-The review package itself, assembled at closure (`UC-CLS-close-review`), is the system's one report in the sense this section means: its audience is AppliedAvionics' audit or inspection process (`SM-audit-coverage`, vision-and-scope.md section 2.3), its content is the consolidated review record, checklist results, diff, and review comments (`BR-review-package-exportable`, business-rules.md section 2.1), it is produced once per review at closure, and its format is the existing Excel/CSV review package format AppliedAvionics uses today. No other recurring report, for example a weekly summary across reviews, has been requested.
+The review package itself, assembled at closure (`UC-CLS-close-review`), is the system's one report in the sense this section means: its audience is AppliedAvionics' audit or inspection process (`SM-audit-coverage`, vision-and-scope.md section 2.3), its content is the single Review Record, single Review Checklist with Platform tabs, up to nine Diffs, and review comments (`BR-review-package-exportable`, business-rules.md section 2.1), it is produced once per review at closure, and its format is the existing Excel/CSV review package format AppliedAvionics uses today. No other recurring report, for example a weekly summary across reviews, has been requested.
 
 ### 7.4 Data acquisition, integrity, retention, and disposal
 
-Data is acquired from three sources: Jira (ticket and change context), SVN (changed files, revisions, diffs), and Jenkins (build and test results), pulled automatically where the connected tool allows it, with the remaining fields entered by the author or reviewer (`UC-REV-assemble-materials`, use-cases.md). Integrity is checked by `ROB-incomplete-package-blocked` (section 9.6): a package cannot be marked ready for review while a required section, file, revision, or checklist item is missing.
+Data is acquired from three sources: Jira (ticket and change context), SVN (changed files, revisions, diffs), and Jenkins (build and test results), pulled automatically where the connected tool allows it, with the remaining fields entered by the author or reviewer (`UC-REV-assemble-materials`, use-cases.md). Integrity is checked by `ROB-incomplete-package-blocked` (section 9.6): a package cannot be marked ready for review while a required Review Checklist, Platform tab, Review Record, file, Revision, or checklist item is missing.
 
 No named standard such as DO-178C governs the review artifacts: asked directly, Sumalee said there is "no need to comply with rules, just be careful with what we put into AI" (`OI-1`, [client-interview-2026-10-09.md](client-meeting/client-interview-2026-10-09.md) section 9). That removes the standard as a source for a retention period, but does not supply one. How long closed review packages must be kept, and whether they are ever disposed of, is still undetermined; this section does not guess a period. Tracked as `OI-24`.
 
@@ -329,7 +341,7 @@ No uptime target or announced-maintenance-window expectation has been stated by 
 
 ### 9.6 Robustness
 
-`ROB-incomplete-package-blocked`: While a review package is being validated, if a required review section, file description, revision reference, diff coverage, or checklist item is missing, the system shall flag the specific gap and shall not mark the package ready for reviewer notification, per `UC-REV-validate-package` steps 2 through 5 and its extensions 2a and 3a ([use-cases.md](use-cases.md)). Verified by: the test cases already implied by that use case's extensions, one missing section and one incomplete diff.
+`ROB-incomplete-package-blocked`: While a review package is being validated, if the required Review Checklist, Platform tab, Review Record, file description, Revision reference, Diff coverage, or checklist item is missing, the system shall flag the specific gap and shall not mark the package ready for reviewer notification, per `UC-REV-validate-package` steps 2 through 5 and its extensions 2a and 3a ([use-cases.md](use-cases.md)). Verified by: the test cases already implied by that use case's extensions, a missing required artifact or Platform tab, and incomplete Diff coverage.
 
 ### 9.7 Scalability, interoperability, maintainability
 

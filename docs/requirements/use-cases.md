@@ -26,6 +26,7 @@ Use cases are identified as `UC-<AREA>-<slug>`, where the area code groups relat
 | 2026-09-25 | 0.1 | Initial use cases for RevView/OMNI review-preparation, review, and closure workflow | Cong Le |
 | 2026-10-18 | 0.1 | Business Rules fields cite only rules defined in business-rules.md | Oleh Zubariev |
 | 2026-11-13 | 0.2 draft | Propose artifact export and clarify scenario flow; preserve automatic assembly and current business-rule citations | Ralph Castilleja (proposed revision) |
+| 2026-11-16 | 0.2 draft | Apply the 2026-11-06 package organization (issue #45); preserve remaining client questions | Ralph Castilleja |
 
 ---
 
@@ -92,6 +93,8 @@ This document covers the feature areas identified in [vision-and-scope.md](visio
 
 The export use case below is a proposed elaboration of `FR-EXPORT-legacy-format`, subject to team and client review. Export roles, templates, and incomplete-record handling remain open; the Business Rules fields cite the rules currently defined in [business-rules.md](business-rules.md).
 
+**Package organization:** The [2026-11-06 client answers](client-meeting/client-interview-2026-11-06.md#5-what-is-hard-about-it) revise `BR-review-package-required` and `BR-review-nine-parts`. One package contains one Review Checklist with Platform tabs, one Review Record, and up to nine Diffs. Whether the existing assessment term “review section” means a Platform tab remains open (`OI-45`); no assessment workflow is redefined here.
+
 ### `UC-REV-create-review`: Create a review package
 
 **UC ID and Name:** `UC-REV-create-review`: Create a review package
@@ -100,25 +103,25 @@ The export use case below is a proposed elaboration of `FR-EXPORT-legacy-format`
 **Primary Actor:** author
 **Secondary Actors:** reviewer, moderator
 **Trigger:** The author chooses to start a formal review for a software change.
-**Description:** The author creates a review package for a specific change, selects the affected platform and review sections, and begins the review-preparation workflow.
+**Description:** The author creates a review package for a specific change, selects the affected Platforms, and begins the review-preparation workflow.
 
 **Preconditions:**
 
 - PRE-1. The author is authenticated and authorized to create review packages for the selected project or platform.
 - PRE-2. A Jira ticket or equivalent change record exists for the software change under review.
-- PRE-3. The selected platform and review sections have been defined in the system configuration or review template.
+- PRE-3. The Platform choices and Review Checklist template have been defined in the system configuration or review template.
 
 **Postconditions:**
 
-- POST-1. A review package record exists with a unique identifier, author, change context, platform, and selected sections.
+- POST-1. A review package record exists with a unique identifier, author, change context, and affected Platforms.
 - POST-2. The review package is ready for material assembly and validation.
 
 **Main Success Scenario:**
 
 1. The author selects the software change to review and chooses the project or work item from Jira.
-2. The system displays candidate review sections and required checklist templates based on the selected platform and review scope.
-3. The author selects the applicable sections and confirms the review metadata.
-4. The system creates the review record and assigns a unique review identifier.
+2. The system displays the Platform choices (common, falcon, phoenix) and the Review Checklist template for the review scope.
+3. The author selects the affected Platforms and confirms the review metadata.
+4. The system creates one Review Record for the package and assigns a unique review identifier.
 5. The system begins collection of ticket data, affected files, repository references, and relevant diff information.
 6. The system stores the review state as “In preparation” and displays the package to the author.
 7. Use case ends.
@@ -128,7 +131,7 @@ The export use case below is a proposed elaboration of `FR-EXPORT-legacy-format`
 - **1a. The change record is missing or incomplete:**
     - 1a1. The system identifies the missing Jira ticket or description.
     - 1a2. The author corrects the change reference and returns to step 1.
-- **3a. The author chooses a platform or section not supported by the configuration:**
+- **3a. The author chooses a Platform not supported by the configuration:**
     - 3a1. The system rejects the invalid selection and lists valid options.
     - 3a2. The author chooses a valid combination and resumes at step 3.
 
@@ -141,13 +144,12 @@ The export use case below is a proposed elaboration of `FR-EXPORT-legacy-format`
 | Property name | Data type | Validation rule | Security or access concerns | Glossary reference |
 |---|---|---|---|---|
 | review_id | String | Required; unique within project | Author and reviewer access only | Review record |
-| platform | String | Required; must match configured platforms | Restricted to approved engineering groups | Platform |
+| platforms | Array[String] | Required; affected Platforms drawn from common, falcon, phoenix | Restricted to approved engineering groups | Platform |
 | project_ticket | String | Required; link to the work item | Access limited to project participants | Jira ticket |
-| selected_sections | Array[String] | Required; at least one section | Section visibility follows role-based access | Review section |
 
 **Related Use Cases:** `UC-REV-assemble-materials`: Assemble review materials.
 **Assumptions:** The underlying Jira data source is available for the selected work item.
-**Open Issues:** Which platforms and sections are mandatory for each review type still need sponsor confirmation.
+**Open Issues:** The file-to-Platform rule (`OI-32`), checklist template delivery (`OI-44`), and meaning of review section (`OI-45`) remain open.
 
 ---
 
@@ -165,20 +167,20 @@ The export use case below is a proposed elaboration of `FR-EXPORT-legacy-format`
 
 - PRE-1. A review package exists in the “In preparation” state.
 - PRE-2. The author has permission to retrieve change details from Jira, SVN, and build outputs.
-- PRE-3. The review package includes at least one section requiring supporting evidence.
+- PRE-3. The review package identifies the affected Platforms requiring supporting evidence.
 
 **Postconditions:**
 
-- POST-1. The review package contains a complete set of supporting evidence for the selected sections.
+- POST-1. The review package contains one Review Checklist with Platform tabs, one Review Record, Diffs for the Platform and Category combinations touched, and supporting evidence.
 - POST-2. Missing or inconsistent material is flagged for correction before publication.
 
 **Main Success Scenario:**
 
 1. The system retrieves the associated Jira ticket and change context for the review.
-2. The system queries SVN for the changed files, revision numbers, repository links, and diff output.
-3. The system includes relevant source files or code excerpts tied to the selected review sections.
+2. The system queries SVN for the Changed Files, Revisions, repository links, and diff output.
+3. The system groups the Changed Files and source context by Platform and Code/Tools/Tests Category, producing one Diff per combination touched, up to nine.
 4. The system checks whether the selected sections require Jenkins build or test information.
-5. The system attaches the required checklist templates and review-record documents for each section.
+5. The system attaches one Review Checklist spreadsheet with Platform tabs (common, falcon, phoenix), without a Code/Tools/Tests Category split, and one Review Record without a Platform split.
 6. The system stores the assembled materials in the review package and marks it as “Materials assembled.”
 7. Use case ends.
 
@@ -190,7 +192,7 @@ The export use case below is a proposed elaboration of `FR-EXPORT-legacy-format`
 - **4a. The selected section requires build output but no Jenkins result is available:**
     - 4a1. The system marks the item as “Pending build validation.”
     - 4a2. The author requests or triggers the build and resumes the assembly process once the result is available.
-- **5a. A checklist template is not available for a selected section:**
+- **5a. The Review Checklist template is not available:**
     - 5a1. The system shows a warning and keeps the package in an incomplete state.
     - 5a2. The author confirms the template or requests a missing form before continuing.
 
@@ -204,13 +206,13 @@ The export use case below is a proposed elaboration of `FR-EXPORT-legacy-format`
 |---|---|---|---|---|
 | file_list | Array[FileRef] | At least one file required for a code review | Project-scoped access only | Repository |
 | revision_number | String | Required for each changed file when available | Restricted to project participants | Revision number |
-| diff_output | Text/Attachment | Required when a code change is under review | Sensitive source information | Diff |
+| diffs | Array[Diff] | One per Platform and Code/Tools/Tests Category touched, up to nine; covers the Changed Files | Sensitive source information | Diff |
 | build_status | Enum | Optional unless the review section requires build evidence | Restricted to authorized engineering users | Build |
-| checklist_template | String | Required for each selected section | Role-based access to review records | Review checklist |
+| checklist_template | String | One spreadsheet template with Platform tabs; no Category split | Role-based access to review records | Review Checklist |
 
 **Related Use Cases:** `UC-REV-create-review`, `UC-REV-validate-package`
 **Assumptions:** SVN and Jenkins remain the authoritative data sources for the review package.
-**Open Issues:** The exact review sections and required evidence for each platform still need formal confirmation.
+**Open Issues:** File classification (`OI-32`), template delivery (`OI-44`), and the meaning of review section (`OI-45`) remain open. Jenkins evidence selection is tracked in `OI-33` and `OI-34`.
 
 ---
 
@@ -222,11 +224,11 @@ The export use case below is a proposed elaboration of `FR-EXPORT-legacy-format`
 **Primary Actor:** author
 **Secondary Actors:** system, reviewer
 **Trigger:** The assembled review package is ready for review publication.
-**Description:** The system checks that all required sections, file descriptions, revision references, and checklist items are present before the review is sent to reviewers.
+**Description:** The system checks that the Review Checklist and its Platform tabs, the Review Record, file descriptions, Revision references, Diff coverage, and checklist items are present before the review is sent to reviewers.
 
 **Preconditions:**
 
-- PRE-1. A review package exists with assembled materials and selected sections.
+- PRE-1. A review package exists with assembled materials and identified affected Platforms.
 - PRE-2. The author has completed all required package entry fields, or the system has identified the specific missing items.
 
 **Postconditions:**
@@ -237,17 +239,17 @@ The export use case below is a proposed elaboration of `FR-EXPORT-legacy-format`
 **Main Success Scenario:**
 
 1. The author requests validation of the assembled review package.
-2. The system compares the selected review sections to the required sections for the selected platform.
+2. The system checks for one Review Checklist with the Platform tabs needed for the affected Platforms, and one Review Record without a Platform split.
 3. The system checks for missing file descriptions, missing revision numbers, incomplete diff coverage, or missing build/test evidence.
-4. The system checks that every required checklist form has an associated template or record.
+4. The system checks that the Review Checklist uses the required template and that its Platform tabs list the same Changed Files as the Diffs for those Platforms, without splitting the checklist by Code/Tools/Tests Category.
 5. The system marks the package as valid and ready for reviewer notification.
 6. Use case ends.
 
 **Extensions:**
 
-- **2a. A required review section is missing:**
-    - 2a1. The system highlights the absent section and blocks publication.
-    - 2a2. The author adds the missing section or confirms an intentional exception.
+- **2a. The Review Checklist, a required Platform tab, or the Review Record is missing:**
+    - 2a1. The system identifies the missing artifact or tab and blocks publication.
+    - 2a2. The author supplies the missing artifact or tab, or confirms an intentional exception.
 - **3a. Diff coverage is incomplete:**
     - 3a1. The system lists the files excluded from the diff and warns the author.
     - 3a2. The author updates the review package or documents the reason for exclusion.
@@ -264,12 +266,12 @@ The export use case below is a proposed elaboration of `FR-EXPORT-legacy-format`
 | Property name | Data type | Validation rule | Security or access concerns | Glossary reference |
 |---|---|---|---|---|
 | validation_status | Enum | Required; values: valid, incomplete, blocked | Author and moderator access only | Review record |
-| missing_items | Array[String] | Optional but shown for incomplete reviews | Restricted to authorized reviewers and authors | Review section |
+| missing_items | Array[String] | Optional but shown for incomplete reviews | Restricted to authorized reviewers and authors | Review Package |
 | validation_log | Text | Required for issues and remediation steps | Audit access only | Audit |
 
 **Related Use Cases:** `UC-REV-assemble-materials`, `UC-NOT-notify-reviewers`
-**Assumptions:** Review section requirements are defined by the internal review configuration.
-**Open Issues:** The exact validation rules for platform-specific completeness are still being confirmed with the project sponsor.
+**Assumptions:** The required Review Checklist template is defined by the internal review configuration.
+**Open Issues:** Platform-specific checklist criteria and templates (`OI-44`), review-section terminology (`OI-45`), and Platform-specific content within the single Review Record (`OI-46`) remain unconfirmed. The existing intentional-exception path does not define who may authorize an exception or which omissions it can cover; this remains a client question (`OI-47`).
 
 ---
 

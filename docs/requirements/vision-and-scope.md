@@ -34,6 +34,7 @@ _Why this matters more with an agent than it used to: ask an agent to insert a n
 | Date | Version | Description | Author |
 |---|---|---|---|
 | _[2026-09-12]_ | 0.1 | Initial draft from the client brief and first client meeting | _[CongLe]_ |
+| 2026-11-16 | 0.2 | Apply the 2026-11-06 package organization (issue #45); preserve remaining client questions | Ralph Castilleja |
 
 ---
 
@@ -45,7 +46,7 @@ _[This document defines the goals, purpose, and boundaries of the project. It gi
 
 ## 1.1 Background
 
-The sponsoring organization operates in aerospace software engineering. Its internal team works on avionics—electronic systems used in aircraft—and software processes associated with aircraft and spacecraft. The team conducts formal code reviews: structured examinations of software changes against defined criteria, with findings and completion information recorded for later inspection. These reviews support safety-critical software, meaning software whose failure could affect safety. The project brief does not identify the organization's name, employee count, locations, or specific commercial products and services. It does establish a review workflow that can cover three platforms, or distinct target systems, and up to nine review sections across software code, development tools, and tests. [R1, §§1–2, 11]
+The sponsoring organization operates in aerospace software engineering. Its internal team works on avionics—electronic systems used in aircraft—and software processes associated with aircraft and spacecraft. The team conducts formal code reviews: structured examinations of software changes against defined criteria, with findings and completion information recorded for later inspection. These reviews support safety-critical software, meaning software whose failure could affect safety. The project brief does not identify the organization's name, employee count, locations, or specific commercial products and services. The brief originally describes three platforms and up to nine review sections across code, tools, and tests. [R1, §§1–2, 11] The [2026-11-06 clarification](client-meeting/client-interview-2026-11-06.md#5-what-is-hard-about-it) changes the package organization to one Review Checklist with Platform tabs, one Review Record, and up to nine Diffs; section 3.2 describes that current structure.
 
 Today, engineers manually assemble information from several systems and documents before a review can begin. Authors prepare spreadsheets, describe changed files, copy version information, generate comparisons of software changes, complete review records, and notify reviewers. Reviewers then move between those materials to understand the changes and document findings. This recurring administrative work takes time away from engineering assessment and creates opportunities for incomplete reviews, outdated source code, and missed notifications. The brief estimates approximately 20 minutes to gather forms and populate fields for each review, excluding the time required for test builds. This is a planning estimate, not a measured operational baseline. [R1, §§2, 10]
 
@@ -272,7 +273,7 @@ The proposed to-be process moves the repetitive preparation work into the applic
 flowchart TD
   subgraph Author[Author]
     A1[Create or open a review record in RevView/OMNI]
-    A2[Select the change, platform, and review sections]
+    A2[Select the change and affected Platforms]
     A3[Review materials are assembled automatically]
     A4{Is the package complete and correct?}
     A5[Correct missing or inaccurate items]
@@ -284,7 +285,7 @@ flowchart TD
     S1[Fetch ticket context from Jira]
     S2[Pull changed files and revisions from SVN]
     S3[Generate diff and review evidence package]
-    S4[Attach relevant checklist templates for each section]
+    S4[Attach one checklist with Platform tabs and one review record]
     S5[Check for missing sections, file coverage, and metadata]
     S6[Run build-status checks when configured]
     S7[Notify reviewers and publish the review package]
@@ -359,7 +360,7 @@ This to-be flow addresses the manual pain points described in the current proces
 
 ### 3.2 User Environment
 
-The primary users are internal software engineers working on aerospace-related code changes. Their review activities are performed in a structured engineering environment, often spanning multiple platforms and software review sections. A review can involve up to three target platforms and as many as nine review sections across code, tool configuration, and testing. These review sections must be evaluated against the relevant checklists and supporting evidence, so the users are not simply filling in a generic form; they are coordinating a safety-oriented review workflow with multiple required artifacts.
+The primary users are internal software engineers working on aerospace-related code changes. Their review activities are performed in a structured engineering environment, often spanning multiple platforms and software review sections. A review can involve common, falcon, and phoenix, with up to nine Diffs across Platform and Code/Tools/Tests Category combinations. The package has one Review Checklist spreadsheet with Platform tabs and no Category split, and one Review Record without a Platform split ([2026-11-06 client answers](client-meeting/client-interview-2026-11-06.md#5-what-is-hard-about-it)). The changes must be evaluated against the checklist and supporting evidence, so the users are not simply filling in a generic form; they are coordinating a safety-oriented review workflow with multiple required artifacts.
 
 The work is performed on an engineering schedule and usually involves multiple participants: the author preparing the change, the reviewer assessing it, and potentially a moderator or coordinator ensuring completion. Review preparation is a recurring activity, not a one-time event. The application therefore needs to support repeated use, rapid review assembly, and consistent evidence packaging for many reviews over time.
 
@@ -399,10 +400,10 @@ The system is therefore an integration layer and workflow orchestrator. It does 
 
 ### 4.2 Major Features and Scope
 
-- `FEAT-review-initiation`: Create and manage a review package tied to a specific change, platform, and applicable review sections.
+- `FEAT-review-initiation`: Create and manage a review package tied to a specific change and its affected Platforms.
 - `FEAT-context-assembly`: Collect and organize the relevant Jira ticket information, file list, revision numbers, repository links, and associated review context in a single place.
 - `FEAT-diff-and-source-prep`: Generate or assemble the diff, supporting source file context, and review evidence required for technical assessment.
-- `FEAT-checklist-mapping`: Associate each applicable review section with the correct checklist, review record, and platform-specific criteria.
+- `FEAT-checklist-mapping`: Organize the single Review Checklist by Platform tab, associate Changed Files with their checklist criteria, and retain one Review Record for the review.
 - `FEAT-integrity-validation`: Detect missing sections, incomplete file coverage, stale metadata, and other obvious review-preparation errors before publication.
 - `FEAT-review-notification`: Notify reviewers when a review package is ready and provide access to the same evidence set they need to assess the change.
 - `FEAT-evidence-retention`: Preserve review artifacts and completion information in a form suitable for later audit or process inspection.
