@@ -3,7 +3,7 @@
 **Project:** RevView/OMNI
 **Team:** Team 8
 **Version:** 0.2
-**Last checked:** 2026-11-06, Ethan Nguyen (teammate review pending)
+**Last checked:** 2026-11-20, Ralph Castilleja (teammate review pending)
 
 ---
 
@@ -28,7 +28,7 @@ The objective and area mappings below are proposed trace links based on those de
 
 `FEAT-admin-and-configuration` is explicitly outside the MVP. Its empty cells record that no business-objective or use-case-area assignment is currently specified; no administration use case is invented here. This is a known coverage gap for team disposition, rather than a completed feature mapping.
 
-**Checks (2026-11-05):**
+**Checks (2026-11-20):**
 
 1. All eight named features in section 4.3 are present. All seven MVP features have an area; the deferred administration feature has none, as noted above.
 2. All four defined areas (`REV`, `NOT`, `ASS`, `CLS`) are reached by an MVP feature. Every objective identifier used above is defined in vision and scope section 2.2.
@@ -66,10 +66,10 @@ The following six rules have no citation in any use case's Business Rules field,
 
 An empty cell does not mean the team has decided to ignore a rule. In particular, `FR-EXPORT-legacy-format` also cites `BR-review-package-exportable`, and the SRS cites `BR-no-student-prod-access` through the sandbox-development constraint and `BR-review-nine-parts` in its domain model. These are additional specification links, not use-case Business Rules citations. Delivery-process rules may need process evidence rather than application use cases; the team must decide ownership and record any policy decision in [OPEN-ISSUES.md](requirements/OPEN-ISSUES.md).
 
-**Checks (2026-11-05):**
+**Checks (2026-11-20):**
 
 1. All 13 defined rules appear exactly once; seven have explicit use-case citations and six have empty enforcement cells.
-2. Every rule identifier cited in the seven use cases' Business Rules fields exists in business-rules.md. All concrete `BR-*` citations in the SRS also resolve. Template examples and identifier-pattern instructions are excluded from this check.
+2. Every rule identifier cited in the eight use cases' Business Rules fields exists in business-rules.md. All concrete `BR-*` citations in the SRS also resolve. Template examples and identifier-pattern instructions are excluded from this check.
 3. `BR-review-record-fields` and `BR-no-student-prod-access` retain their source document's **Flagged:Needs_Review** qualifications; this matrix does not resolve them.
 
 ---
@@ -80,15 +80,17 @@ One row tracks each of the eight use cases and each of the three functional requ
 
 **Release:** the allowed assignments are `v0.1.0`, `v0.2.0`, `v1.0.0`, `Spring`, or `Out`. Assembly is assigned `v0.1.0` as the proving slice ([architecture section 6](design/architectural-design.md#6-runtime-view) and the Block 7 instruction). The other nine were set by the team on 2026-11-09 (Oleh Zubariev, deciding for the team), following the client's roadmap in the concept document: the author side first (`v0.2.0`), then export, notification, and auditing to complete this semester's MVP (`v1.0.0`), and the reviewer side next semester (`Spring`).
 
+**Release adjustment (2026-11-20, Ralph’s checklist item 2):** `UC-REV-validate-package` leaves `v0.2.0`. `UC-REV-create-review` also leaves it: no implementation PR from Francisco was merged by the Thursday-noon cutoff (the repository still has only the unbuilt [issue #47](https://github.com/olehzu/RevView-OMNI/issues/47)). Both move to `v1.0.0`, the next planned release, keeping author preparation ahead of reviewer notification and export. Ralph delegated the destination choice on 2026-11-20; this planning assignment does not establish build completion or verification.
+
 **Build / Verify:** use the status words expected by `/design` and `/implement`. Build starts at `❌ Not started`; `/design` sets it to `📐 Designed`, and `/implement` advances it to `🟡 In progress` or `✅ Built`. Verify starts at `🔎 None`; use `🟡 Partial` for incomplete coverage and `✅ Verified` only when tests cover the main flow and every extension and pass. A release assignment or documentation PR does not establish implementation or verification.
 
 **Design / Code / Tests:** leave Design empty until `/design` fills it with `design/<area>.md`. `/implement` fills Code and Tests with the implementation and test links. Local, uncommitted proposals and paths suggested in build-context issues are not evidence of merged work.
 
 | Use case / functional requirement | Release | Build | Design | Code | Tests | Verify |
 |---|---|---|---|---|---|---|
-| [`UC-REV-create-review`](requirements/use-cases.md#uc-rev-create-review-create-a-review-package) | `v0.2.0` | ❌ Not started | | | | 🔎 None |
-| [`UC-REV-assemble-materials`](requirements/use-cases.md#uc-rev-assemble-materials-assemble-review-materials) | `v0.1.0` | 🟡 In progress (v0.1.0 slice built: main, 2a1, 4a1; fake SVN and Jenkins adapters; the review package page, #51) | [design/rev.md](design/rev.md) | `backend/app/rev/`, `backend/app/integration/`, `backend/app/errors.py`; page: `frontend/src/rev/`, trunk `frontend/src/api.ts`, `frontend/src/errors.ts`, `frontend/src/AppLayout.tsx` | `backend/tests/test_rev_review_packages.py` (main, 2a1, 4a1, SVN and Jenkins unavailable, PRE-1, unknown package), `backend/tests/test_rev_assembly.py` (step 3 classify; no branch, several branches, no Changed Files, unclassifiable path); page: `frontend/src/api.test.ts` (envelope success, error, API unreachable), `frontend/src/errors.test.ts` (shared codes, fallback), `frontend/src/rev/reviewPackage.test.ts` (every area error code, step 3 grouping, evidence, choosing the package, 4a1 "no matching Jenkins Build", reload after error); main, PRE-1, unknown package checked by hand against the running app. Untested: 2a2, 4a2, 5a (not built); real sandbox adapters; page rendering (no component-test library, so 2a1, 4a1, and outages on screen only through the plain functions) | 🟡 Partial |
-| [`UC-REV-validate-package`](requirements/use-cases.md#uc-rev-validate-package-validate-review-package-completeness) | `v0.2.0` | ❌ Not started | | | | 🔎 None |
+| [`UC-REV-create-review`](requirements/use-cases.md#uc-rev-create-review-create-a-review-package) | `v1.0.0` | ❌ Not started | | | | 🔎 None |
+| [`UC-REV-assemble-materials`](requirements/use-cases.md#uc-rev-assemble-materials-assemble-review-materials) | `v0.1.0` | 🟡 In progress (v0.1.0 slice built: main, 2a1, 4a1; fake SVN and Jenkins adapters; the review package page, #51) | [design/rev.md](design/rev.md) | [backend/app/rev/](../backend/app/rev/), [backend/app/integration/](../backend/app/integration/), [backend/app/errors.py](../backend/app/errors.py); page: [frontend/src/rev/](../frontend/src/rev/), trunk [frontend/src/api.ts](../frontend/src/api.ts), [frontend/src/errors.ts](../frontend/src/errors.ts), [frontend/src/AppLayout.tsx](../frontend/src/AppLayout.tsx) | [backend/tests/test_rev_review_packages.py](../backend/tests/test_rev_review_packages.py) (main, 2a1, 4a1, SVN and Jenkins unavailable, PRE-1, unknown package), [backend/tests/test_rev_assembly.py](../backend/tests/test_rev_assembly.py) (step 3 classify; no branch, several branches, no Changed Files, unclassifiable path); page: [frontend/src/api.test.ts](../frontend/src/api.test.ts) (envelope success, error, API unreachable), [frontend/src/errors.test.ts](../frontend/src/errors.test.ts) (shared codes, fallback), [frontend/src/rev/reviewPackage.test.ts](../frontend/src/rev/reviewPackage.test.ts) (every area error code, step 3 grouping, evidence, choosing the package, 4a1 "no matching Jenkins Build", reload after error); main, PRE-1, unknown package manually checked in [PR #54](https://github.com/olehzu/RevView-OMNI/pull/54). Untested: 2a2, 4a2, 5a (not built); real sandbox adapters; page rendering (no component-test library, so 2a1, 4a1, and outages on screen only through the plain functions) | 🟡 Partial — 2a2, 4a2, 5a not built or tested; real sandbox adapters and page rendering untested |
+| [`UC-REV-validate-package`](requirements/use-cases.md#uc-rev-validate-package-validate-review-package-completeness) | `v1.0.0` | ❌ Not started | | | | 🔎 None |
 | [`UC-NOT-notify-reviewers`](requirements/use-cases.md#uc-not-notify-reviewers-notify-reviewers) | `v1.0.0` | ❌ Not started | | | | 🔎 None |
 | [`UC-ASS-assess-review-section`](requirements/use-cases.md#uc-ass-assess-review-section-assess-a-review-section) | `Spring` | ❌ Not started | | | | 🔎 None |
 | [`UC-ASS-record-findings`](requirements/use-cases.md#uc-ass-record-findings-record-review-findings) | `Spring` | ❌ Not started | | | | 🔎 None |
@@ -107,7 +109,7 @@ One row tracks each of the eight use cases and each of the three functional requ
 - Assign owners for the six rule-citation gaps; record agreed requirement or process links without inventing new policy.
 - Confirm the proving slice can demonstrate assembly with an existing package fixture before other workflow use cases are built.
 
-**Checks (2026-11-06):** exactly ten distinct rows covered all seven use cases at that check and all three defined `FR-*` requirements; assembly is `v0.1.0`. All rows start at Build `❌ Not started` and Verify `🔎 None`, with Design empty. Every row has a release value (2026-11-09).
+**Checks (2026-11-20):** all eight use cases and all three defined `FR-*` requirements appear exactly once. Assembly remains Build `🟡 In progress` and Verify `🟡 Partial`; the other ten rows have no merged design, implementation, or tests and remain `❌ Not started` / `🔎 None`. All existing Markdown link destinations and heading anchors were checked on GitHub `main` after PRs #54 and #55 merged; the previously plain-text Code and Tests paths now link to their existing files and folders. The five cited test files were read against the design test list and use-case extensions; no row qualifies as `✅ Verified`. Targeted rerun: 41 backend tests and 86 frontend tests passed using the existing installed dependencies; the page’s manual check is evidence from PR #54, not a new end-to-end run.
 
 ---
 
