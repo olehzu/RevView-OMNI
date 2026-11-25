@@ -169,13 +169,13 @@ _File everything within 24 hours, while you still remember why each answer matte
 _[Solutions anyone floated, yours or theirs. Record them here and nowhere else yet.]_
 
 - **The team's sandbox plan:** run small SVN and Jenkins instances of its own (`DE-sandbox-self-hosted-svn-jenkins`) and a Jira of its own, filled with Synthetic Data shaped like what Sumalee has shown; make the parts the team cannot know (repository layout, branch naming, Jenkins job and parameter names) settings she can change at handoff; and give her a read-only connection check to run inside her network. Only "we will set up the sandbox" was put to her; the settings and the connection check were not discussed.
-- **Sumalee's prototype as a model.** _Team reading, to confirm: "Create New Task" (pick an existing ticket from a searchable list, or enter it manually, then review and edit the retrieved information before creating) resembles `UC-REV-create-review`, and the "Review" button resembles starting a review. The Task Dashboard has no use case today._
+- **Sumalee's prototype as a model.** Sumalee expects RevView/OMNI to follow the prototype's flow: the Author starts from a dashboard of ticket tiles, selects a tile to see its details, and starts the review from there ("Review"), creating it from an existing ticket picked from a searchable list, or entered manually, and then checking the retrieved information before creating it. _Confirmed by Oleh Zubariev (lead and scribe) on 2026-11-25 from the screenshots._ This maps onto `UC-REV-create-review`, which today starts from ticket selection and has no dashboard step, so the use case needs one.
 
 ## Disagreements and hesitations
 
 No observer was recorded.
 
-- **"Emulate something like what she did"** does not say what to emulate: the look and layout, the flow (dashboard, then create from a ticket, then review), or the fields.
+- **"Emulate something like what she did"** means the tile dashboard and its flow (dashboard, then select a ticket, then create and review), as above. It does not settle the fields shown on each tile or in the details (next bullet).
 - **The prototype's fields and statuses** (Class, Priority, Collaborators, Start and Due Date; New, In Progress, Completed, Blocked) do not match RevView/OMNI's vocabulary or the review package statuses ("In preparation", "Materials assembled", "Pending build validation"). Many look like template placeholders.
 - **A Jira of our own** is not in the specification: `DE-sandbox-self-hosted-svn-jenkins` covers SVN and Jenkins only, and Jira cannot be self-hosted for free. The team still has to agree how (for example a free Atlassian Cloud site), per the charter.
 
@@ -184,7 +184,7 @@ No observer was recorded.
 _[Copy each into [OPEN-ISSUES.md](../OPEN-ISSUES.md) as an `OI-*` with the person who can answer it.]_
 
 - `OI-39` (answered): the central time zone only.
-- New, to file: **What should RevView/OMNI take from Sumalee's prototype: the look, the dashboard-then-create-then-review flow, or specific fields? Is a dashboard of review packages, with filters, a requirement?** Sumalee Rodolph. Decides whether a new use case is needed and how `UC-REV-create-review` is designed.
+- New, to file: **Which filters does the ticket dashboard need (the prototype shows owner, class, date, and status), and which tickets does it list: every open ticket, or only the Author's?** Sumalee Rodolph. Needed before the dashboard step of `UC-REV-create-review` is designed.
 - New, to file: **Which of the prototype's fields and statuses are real** (Owner, Collaborators, Class, Priority, Assigned To, Start and Due Date; New, In Progress, Completed, Blocked), and which are template placeholders? Sumalee Rodolph. Only needed when the use case that shows them is designed.
 - Not asked: Jira, SVN, and Jenkins types, versions, and how each logs in; whether the shape she has shown (for example `tools/shared/branches/TKT-…`) is close enough to build the Synthetic Data against; the checklist template files (`OI-36`).
 
@@ -192,7 +192,7 @@ _[Copy each into [OPEN-ISSUES.md](../OPEN-ISSUES.md) as an `OI-*` with the perso
 
 - `OI-39`: architecture section 8.2.2 (the configured organization time zone is Central); `design/rev.md`, where the review package page shows build times in UTC until the zone is known.
 - The sandbox: `DE-sandbox-self-hosted-svn-jenkins` and `CO-sandbox-development` (a Jira of the team's own); `RISK-sandbox-integration-unproven` (the plan for retiring it).
-- The prototype, once the questions above are answered: possibly a new use case for a dashboard, and `UC-REV-create-review`.
+- The prototype: `UC-REV-create-review` gains a first step, the ticket tile dashboard, and an extension for entering a ticket manually; its design (`design/rev.md`, PR #62) follows. The tile and detail fields wait for the questions above.
 
 ---
 
