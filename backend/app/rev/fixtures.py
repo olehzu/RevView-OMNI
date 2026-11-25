@@ -47,13 +47,13 @@ def svn_branches() -> dict[str, list[SvnChangedFile]]:
     """The fixture branch touches three Platform x Category pairs; the others are decoys."""
     return {
         SVN_BRANCH: [
-            changed_file("tools/common/branches/SYN-1-timer-fix/src/timer.py"),
-            changed_file("code/falcon/branches/SYN-1-timer-fix/src/scheduler.c"),
-            changed_file("code/falcon/branches/SYN-1-timer-fix/src/scheduler.h"),
-            changed_file("tests/falcon/branches/SYN-1-timer-fix/test_scheduler.c"),
+            changed_file("tools/shared/branches/SYN-1-timer-fix/src/timer.py"),
+            changed_file("code/alpha/branches/SYN-1-timer-fix/src/scheduler.c"),
+            changed_file("code/alpha/branches/SYN-1-timer-fix/src/scheduler.h"),
+            changed_file("tests/alpha/branches/SYN-1-timer-fix/test_scheduler.c"),
         ],
         "SYN-10-cleanup": [
-            changed_file("code/phoenix/branches/SYN-10-cleanup/src/unused.c"),
+            changed_file("code/beta/branches/SYN-10-cleanup/src/unused.c"),
         ],
         "OTHER-2-docs": [],
     }

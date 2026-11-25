@@ -18,7 +18,7 @@ export type ReviewPackageStatus =
 /** Whether an external system answered; `null` means it was not asked yet. */
 export type Evidence = "available" | "unavailable" | null;
 
-export type Platform = "common" | "falcon" | "phoenix";
+export type Platform = "shared" | "alpha" | "beta";
 export type Category = "code" | "tools" | "tests";
 
 export interface ChangedFile {
@@ -106,7 +106,7 @@ const STATUSES: readonly unknown[] = [
 const EVIDENCE: readonly unknown[] = ["available", "unavailable", null];
 
 /** The known Platforms and Categories, in display order (step 3). */
-const PLATFORM_ORDER: readonly Platform[] = ["common", "falcon", "phoenix"];
+const PLATFORM_ORDER: readonly Platform[] = ["shared", "alpha", "beta"];
 const CATEGORY_ORDER: readonly Category[] = ["code", "tools", "tests"];
 
 /**
@@ -274,7 +274,7 @@ export interface PlatformDiffs {
   diffs: Diff[];
 }
 
-/** The Diffs by Platform (common, falcon, phoenix), then Category (code, tools, tests). Step 3. */
+/** The Diffs by Platform (shared, alpha, beta), then Category (code, tools, tests). Step 3. */
 export function groupDiffs(diffs: readonly Diff[]): PlatformDiffs[] {
   return PLATFORM_ORDER.map((platform) => ({
     platform,

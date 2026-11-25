@@ -127,9 +127,9 @@ The following are out of scope for this document because they are not yet confir
   **Source:** same document, Sections 7–8.
 - **`BR-diff-checklist-match`:** Every file included in a review's diff must match the files listed in that review's checklist.
   **Source:** same document, Section 7.3.
-- **`BR-review-nine-parts`:** A single code review has one Diff per Platform and Code/Tools/Tests Category touched by the change, up to nine Diffs across common, falcon, and phoenix.
+- **`BR-review-nine-parts`:** A single code review has one Diff per Platform and Code/Tools/Tests Category touched by the change, up to nine Diffs across shared, alpha, and beta.
   **Source:** Sumalee Rodolph, [2026-11-06 client meeting and written follow-up](client-meeting/client-interview-2026-11-06.md#5-what-is-hard-about-it), `OI-31` and `OI-36`.
-- **`BR-review-package-required`:** Every formal code review must have a review package containing one Review Record without a Platform split, one Review Checklist spreadsheet with Platform tabs (common, falcon, phoenix) and no Code/Tools/Tests Category split, the SVN-generated Diffs, build and test results, and any additional files the Author supplies.
+- **`BR-review-package-required`:** Every formal code review must have a review package containing one Review Record without a Platform split, one Review Checklist spreadsheet with Platform tabs (shared, alpha, beta) and no Code/Tools/Tests Category split, the SVN-generated Diffs, build and test results, and any additional files the Author supplies.
   **Source:** RevView/OMNI Review Helper Application Concept document, Section 7; package organization revised by Sumalee Rodolph, [2026-11-06 client meeting and written follow-up](client-meeting/client-interview-2026-11-06.md#5-what-is-hard-about-it), `OI-31` and `OI-36`.
 - **`BR-reviewer-assessment-based-on-checklist`:** Each part of a review must be assessed by its reviewer against the review checklist for the platform it belongs to, and a review is not complete while any part is unassessed.
   **Source:** RevView/OMNI Review Helper Application Concept document, Sections 2.1 and 2.3.

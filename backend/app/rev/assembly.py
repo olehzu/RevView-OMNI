@@ -69,7 +69,7 @@ def classify(path: str) -> tuple[Platform, Category]:
     """Step 3: the Platform and Code/Tools/Tests Category a repository path belongs to.
 
     The path has the form ``<category>/<platform>/branches/<branch>/<file…>``; for
-    example ``tools/common/branches/SYN-1-timer-fix/src/timer.py`` is common, tools.
+    example ``tools/shared/branches/SYN-1-timer-fix/src/timer.py`` is shared, tools.
     """
     segments = path.split("/")
     if (

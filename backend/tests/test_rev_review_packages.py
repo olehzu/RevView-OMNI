@@ -95,9 +95,9 @@ def test_main_flow_assembles_the_fixture_package(world: World):
 
     # One Diff per Platform x Category touched, and no other.
     assert [(d["platform"], d["category"]) for d in data["diffs"]] == [
-        ("common", "tools"),
-        ("falcon", "code"),
-        ("falcon", "tests"),
+        ("shared", "tools"),
+        ("alpha", "code"),
+        ("alpha", "tests"),
     ]
     assert sorted(_diff_files(data)) == sorted(
         f.path for f in fixtures.svn_branches()["SYN-1-timer-fix"]
@@ -110,7 +110,7 @@ def test_main_flow_assembles_the_fixture_package(world: World):
 
     # BR-diff-checklist-match: each tab lists exactly its Platform's Diff files.
     tabs = data["review_checklist"]["tabs"]
-    assert [tab["platform"] for tab in tabs] == ["common", "falcon"]
+    assert [tab["platform"] for tab in tabs] == ["shared", "alpha"]
     for tab in tabs:
         assert sorted(tab["changed_files"]) == sorted(
             _diff_files(data, tab["platform"])
@@ -185,7 +185,7 @@ def test_2a1_missing_revision_is_flagged_and_package_stays_in_preparation(
     world: World,
 ):
     world.use(branches=_branch_with_missing_revision())
-    path = "code/falcon/branches/SYN-1-timer-fix/src/scheduler.c"
+    path = "code/alpha/branches/SYN-1-timer-fix/src/scheduler.c"
 
     response = world.assemble()
 
@@ -194,11 +194,11 @@ def test_2a1_missing_revision_is_flagged_and_package_stays_in_preparation(
     assert data["status"] == "In preparation"
     assert data["missing"] == [{"path": path, "missing": "revision"}]
     # The file still goes into its Diff and its Review Checklist tab.
-    assert path in _diff_files(data, "falcon")
-    falcon_tab = next(
-        t for t in data["review_checklist"]["tabs"] if t["platform"] == "falcon"
+    assert path in _diff_files(data, "alpha")
+    alpha_tab = next(
+        t for t in data["review_checklist"]["tabs"] if t["platform"] == "alpha"
     )
-    assert path in falcon_tab["changed_files"]
+    assert path in alpha_tab["changed_files"]
     assert world.package() == data
 
 

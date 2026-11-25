@@ -159,26 +159,26 @@ describe("afterAssembleError", () => {
 
 // Page: step 3 grouping
 describe("groupDiffs", () => {
-  it("orders Platforms common, falcon, phoenix and Categories code, tools, tests", () => {
+  it("orders Platforms shared, alpha, beta and Categories code, tools, tests", () => {
     const groups = groupDiffs([
-      diff("phoenix", "tests"),
-      diff("falcon", "tests"),
-      diff("common", "tools"),
-      diff("falcon", "code"),
-      diff("phoenix", "code"),
-      diff("falcon", "tools"),
+      diff("beta", "tests"),
+      diff("alpha", "tests"),
+      diff("shared", "tools"),
+      diff("alpha", "code"),
+      diff("beta", "code"),
+      diff("alpha", "tools"),
     ]);
     expect(
       groups.map((g) => [g.platform, g.diffs.map((d) => d.category)]),
     ).toEqual([
-      ["common", ["tools"]],
-      ["falcon", ["code", "tools", "tests"]],
-      ["phoenix", ["code", "tests"]],
+      ["shared", ["tools"]],
+      ["alpha", ["code", "tools", "tests"]],
+      ["beta", ["code", "tests"]],
     ]);
   });
 
   it("keeps each Diff's Changed Files", () => {
-    const input = diff("falcon", "code");
+    const input = diff("alpha", "code");
     expect(groupDiffs([input])[0].diffs[0].changed_files).toEqual(
       input.changed_files,
     );
@@ -273,7 +273,7 @@ describe("getReviewPackage and assembleMaterials", () => {
       "a Diff without its Changed Files",
       reviewPackage({
         diffs: [
-          { ...diff("common", "code"), changed_files: undefined as never },
+          { ...diff("shared", "code"), changed_files: undefined as never },
         ],
       }),
     ],
@@ -293,13 +293,13 @@ describe("getReviewPackage and assembleMaterials", () => {
     [
       "a Diff with an unknown Platform",
       reviewPackage({
-        diffs: [{ ...diff("common", "code"), platform: "typo" as never }],
+        diffs: [{ ...diff("shared", "code"), platform: "typo" as never }],
       }),
     ],
     [
       "a Diff with an unknown Category",
       reviewPackage({
-        diffs: [{ ...diff("common", "code"), category: "docs" as never }],
+        diffs: [{ ...diff("shared", "code"), category: "docs" as never }],
       }),
     ],
     [
@@ -425,7 +425,7 @@ describe("formatBuildTime", () => {
 describe("safeLink", () => {
   it("keeps a web address", () => {
     const link =
-      "https://svn.example.invalid/repo/tools/common/branches/SYN-1-timer-fix/src/timer.py?p=1042";
+      "https://svn.example.invalid/repo/tools/shared/branches/SYN-1-timer-fix/src/timer.py?p=1042";
     expect(safeLink(link)).toBe(link);
   });
 
