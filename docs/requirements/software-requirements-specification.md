@@ -42,6 +42,7 @@ _Requirements cited from elsewhere keep their own identifiers: `UC-*` from [use-
 | 2026-09-25 | 0.1 | Updated section 1 to match the filled-in vision-and-scope.md sections 2 through 4 | Oleh Zubariev |
 | 2026-10-02 | 0.2 | Added identifiers for the C4 context, containers, and external-system interfaces | Ralph Castilleja |
 | 2026-10-04 | 0.3 | Filled in sections 2 through 11; merged with the section 2.5, 8.3, 8.5, and 9.3 content from PR #16 | Oleh Zubariev |
+| 2026-10-07 | 0.1 | Filled in section 8.2 (hardware interfaces) | Valerie Valles |
 | 2026-10-16 | 0.4 | Applied the 2026-10-09 client interview answers (`OI-1`, `OI-5`, `OI-13`, `OI-15`, `OI-16`, `OI-17`, `OI-19`, `OI-20`, `OI-21`); adopted the client's suggested tech stack in section 2.4; raised `OI-24` through `OI-28` for what is still assumed | Oleh Zubariev |
 | 2026-11-16 | 0.5 | Apply the 2026-11-06 package organization (issue #45); preserve remaining client questions | Ralph Castilleja |
 
@@ -282,7 +283,9 @@ The UI framework is React (`CO-frontend-language`, section 2.4). Which specific 
 
 ### 8.2 Hardware interfaces
 
-None. RevView/OMNI is a web application with no hardware interface of its own.
+None. RevView/OMNI is a web application with no direct hardware interface of its own. It interacts with users through a browser and with Jira, SVN, and Jenkins through their software interfaces (section 8.3). It does not communicate directly with the avionics targets called Platforms in the [project glossary](project-glossary.md); Platforms organize review evidence. Build and test results are retrieved through Jenkins, rather than by communicating with target or test hardware. Server and client hardware belong to the operating environment (section 2.3).
+
+The client has an existing sign-on mechanism (`OI-21`, `SI-identity-provider`). Its protocol and any smart-card or hardware-security-token requirements remain open under `OI-23` in [OPEN-ISSUES.md](OPEN-ISSUES.md). Such an authentication requirement does not by itself imply a direct device interface; confirm the integration boundary with AppliedAvionics IT before specifying one.
 
 ### 8.3 Software interfaces
 
