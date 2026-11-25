@@ -119,7 +119,7 @@ The export use case below is a proposed elaboration of `FR-EXPORT-legacy-format`
 **Main Success Scenario:**
 
 1. The author selects the software change to review and chooses the project or work item from Jira.
-2. The system displays the Platform choices (common, falcon, phoenix) and the Review Checklist template for the review scope.
+2. The system displays the Platform choices (shared, alpha, beta) and the Review Checklist template for the review scope.
 3. The author selects the affected Platforms and confirms the review metadata.
 4. The system creates one Review Record for the package and assigns a unique review identifier.
 5. The system begins collection of ticket data, affected files, repository references, and relevant diff information.
@@ -144,7 +144,7 @@ The export use case below is a proposed elaboration of `FR-EXPORT-legacy-format`
 | Property name | Data type | Validation rule | Security or access concerns | Glossary reference |
 |---|---|---|---|---|
 | review_id | String | Required; unique within project | Author and reviewer access only | Review record |
-| platforms | Array[String] | Required; affected Platforms drawn from common, falcon, phoenix | Restricted to approved engineering groups | Platform |
+| platforms | Array[String] | Required; affected Platforms drawn from shared, alpha, beta | Restricted to approved engineering groups | Platform |
 | project_ticket | String | Required; link to the work item | Access limited to project participants | Jira ticket |
 
 **Related Use Cases:** `UC-REV-assemble-materials`: Assemble review materials.
@@ -180,7 +180,7 @@ The export use case below is a proposed elaboration of `FR-EXPORT-legacy-format`
 2. The system queries SVN for the Changed Files, Revisions, repository links, and diff output.
 3. The system groups the Changed Files and source context by Platform and Code/Tools/Tests Category, producing one Diff per combination touched, up to nine.
 4. The system checks whether the selected sections require Jenkins build or test information.
-5. The system attaches one Review Checklist spreadsheet with Platform tabs (common, falcon, phoenix), without a Code/Tools/Tests Category split, and one Review Record without a Platform split.
+5. The system attaches one Review Checklist spreadsheet with Platform tabs (shared, alpha, beta), without a Code/Tools/Tests Category split, and one Review Record without a Platform split.
 6. The system stores the assembled materials in the review package and marks it as “Materials assembled.”
 7. Use case ends.
 

@@ -66,3 +66,37 @@ jobs:
         run: npm test
       - name: Production build
         run: npm run build
+
+  # The client's confidential names (Platforms, SVN path prefix, Jira key) must never be
+  # committed. The patterns live in the FORBIDDEN_TERMS secret, one extended regex per
+  # line, because listing them here would publish them. Only file names are printed.
+  confidential-names:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the repository with the pull request's commits
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: No confidential names in files or commit messages
+        env:
+          FORBIDDEN_TERMS: ${{ secrets.FORBIDDEN_TERMS }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          if [ -z "$FORBIDDEN_TERMS" ]; then
+            echo "::error::The FORBIDDEN_TERMS secret is not set, so this check cannot run."
+            exit 1
+          fi
+          patterns="$RUNNER_TEMP/forbidden-terms"
+          printf '%s\n' "$FORBIDDEN_TERMS" | sed '/^[[:space:]]*$/d' > "$patterns"
+          failed=0
+          if files=$(git grep -I -l -i -E -f "$patterns" -- .); then
+            echo "::error::These files contain a confidential name (see the team's private channel):"
+            echo "$files"
+            failed=1
+          fi
+          if git log --format=%B "$BASE_SHA..HEAD" | grep -q -i -E -f "$patterns"; then
+            echo "::error::A commit message in this pull request contains a confidential name."
+            failed=1
+          fi
+          exit "$failed"

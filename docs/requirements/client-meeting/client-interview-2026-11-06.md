@@ -28,7 +28,7 @@ _**How to use it.** Each section says what it is for, what it is worth in minute
 | **Client participants** | Sumalee Rodolph (AppliedAvionics) |
 | **Team participants** | Oleh Zubariev (lead), Ralph Castilleja (scribe), Francisco Lugo Gonzales, Valerie Valles, Cong Quoc Le, Ethan Nguyen |
 | **Recording** | None recorded. Answers below come from the scribe's notes, plus Sumalee's written follow-up sent after the meeting (date not recorded), quoted where it is used. |
-| **Photos of screens or forms** | One screenshot from Sumalee's follow-up: a VisualSVN Server listing of `dcu/tools/common/branches/ISP-BBBB/vectorcast`, file names blacked out by Sumalee. It shows each file's size, last revision, last author, and age; one file was changed by a different author "an hour ago" (revision withheld) while the rest date from four months to a year earlier. Ticket numbers in this record are placeholders (`ISP-AAAA`, `ISP-BBBB`), and author user names and revision numbers are left out, because the repository may be public. |
+| **Photos of screens or forms** | One screenshot from Sumalee's follow-up: a VisualSVN Server listing of `tools/shared/branches/TKT-BBBB/vectorcast`, file names blacked out by Sumalee. It shows each file's size, last revision, last author, and age; one file was changed by a different author "an hour ago" (revision withheld) while the rest date from four months to a year earlier. Ticket numbers in this record are placeholders (`TKT-AAAA`, `TKT-BBBB`), and author user names and revision numbers are left out, because the repository may be public. |
 
 _This meeting worked through the open list in [OPEN-ISSUES.md](../OPEN-ISSUES.md) by number. Each answer is filed under the section it belongs to and cites its `OI-*`. The scribe's notes are partly fragmentary; fragments are quoted as written and marked for confirmation._
 
@@ -50,12 +50,12 @@ _**Must ask. 5 min.**_
 
 _**Must ask. 5 min.** Every term you do not recognize goes in the glossary before you leave._
 
-**What they said:** Platform names confirmed (`OI-36`): "common (everything common between falcon and phoenix)", "falcon (one project)", "phoenix (another project)".
+**What they said:** Platform names confirmed (`OI-36`): "shared (everything shared between alpha and beta)", "alpha (one project)", "beta (another project)".
 
 **Terms for the glossary, in their words:**
 
-- **Platform:** common, falcon, phoenix, as above.
-- **SKU:** "we should focus on the SKU rather than the directory path. The SKU should match the branch number." Not defined in the meeting; the team reads it as the ticket number (for example `ISP-AAAA`). To confirm.
+- **Platform:** shared, alpha, beta, as above.
+- **SKU:** "we should focus on the SKU rather than the directory path. The SKU should match the branch number." Not defined in the meeting; the team reads it as the ticket number (for example `TKT-AAAA`). To confirm.
 - **Tools branch** and **Jenkinsfile path:** Jenkins build parameters, alongside the branch name (`OI-34`).
 - **Review package:** after the change in section 5, one checklist spreadsheet, one review record, and up to nine diff files.
 - **Stretch goal:** used for `OI-37`, meaning not developed this semester.
@@ -76,10 +76,10 @@ _**Must ask. 10 min.** Ask them to show you rather than tell you._
 
 **What they said:**
 
-- **Branches in SVN (`OI-29`):** "On the Jira board, we can use a ticket such as ISP-AAAA to find the corresponding SVN branch. In Subversion, we can look under `dcu/applications/common`, where the branch names are listed. However, the exact path may vary depending on the code, so we should focus on the SKU rather than the directory path. The SKU should match the branch number, and we can also use the search feature to find possible matches."
+- **Branches in SVN (`OI-29`):** "On the Jira board, we can use a ticket such as TKT-AAAA to find the corresponding SVN branch. In Subversion, we can look under `applications/shared`, where the branch names are listed. However, the exact path may vary depending on the code, so we should focus on the SKU rather than the directory path. The SKU should match the branch number, and we can also use the search feature to find possible matches."
 - **Where changes live (`OI-36`, scribe's notes as written):** "code will be in the application folder then …. src, test in one of the ISP branches and test,". Incomplete; to confirm.
-- **Jenkins builds (`OI-34`):** "All builds are labeled, and the ticket name is always included in the description. In the Jenkins parameters, we can find the branch name, tools branch, and Jenkinsfile path." And: "if someone is working on App Phoenix and commits changes to a branch, they can run a Jenkins build to test those changes. The ISP ticket number is added to the end of the build name to help identify it and see what changed in that branch. The platform, branch name, and tools branch are all important when finding the correct build, although which ones matter most depends on what is being worked on."
-- **From the follow-up screenshot (`OI-32`):** "we can see that 41kb file was recently changed as part of ISP-BBBB. the system should know that since a file in tools/common/branches/ISP-BBBB was changed, that file would need to be included as part of the ISP-BBBB review under the" (the sentence ends there). _Team reading, to confirm: the path places the file in the common Platform and the tools category, so it belongs in the common-tools diff of the `ISP-BBBB` review._
+- **Jenkins builds (`OI-34`):** "All builds are labeled, and the ticket name is always included in the description. In the Jenkins parameters, we can find the branch name, tools branch, and Jenkinsfile path." And: "if someone is working on App Beta and commits changes to a branch, they can run a Jenkins build to test those changes. The ISP ticket number is added to the end of the build name to help identify it and see what changed in that branch. The platform, branch name, and tools branch are all important when finding the correct build, although which ones matter most depends on what is being worked on."
+- **From the follow-up screenshot (`OI-32`):** "we can see that 41kb file was recently changed as part of TKT-BBBB. the system should know that since a file in tools/shared/branches/TKT-BBBB was changed, that file would need to be included as part of the TKT-BBBB review under the" (the sentence ends there). _Team reading, to confirm: the path places the file in the shared Platform and the tools category, so it belongs in the shared-tools diff of the `TKT-BBBB` review._
 
 **Artifacts they showed us:** The VisualSVN screenshot described in the meeting record above.
 
@@ -90,15 +90,15 @@ _**Must ask. 5 min.** Listen for "must", "unless", "only", and "except"._
 **What they said:**
 
 - **The review package changes shape (`OI-36`, `OI-31`):** "For the checklist template, everything will remain the same as the previous version, but if a new revision is introduced, we will need to adjust how it is connected. The main change is how the review gets exported into the final review package. Instead of having three separate reviews for code, tests, and tools in the checklist, everything will now be combined into one code review. This doesn't change any of the information we already have in the project, only how it is organized and formatted in the final review package." Her written follow-up spells it out: "i dont think we're bothering to use code/tools/test anymore for the checklist spreadsheet, but there will still be that distinction for the diff files. there will also be one review record now, not one for each platform like how it was earlier. so in short, a complete review package could look like this:
-  - 1 checklist spreadsheet with 3 tabs for common, falcon and phoenix. no distinction between files that are code/test/tool changes.
-  - 1 review record, no distinction between common, falcon and phoenix platforms.
-  - up to 9 diff files. this is because you may have worked on common, falcon, and/or phoenix, and within those platforms you may have worked on their respective code, tests and/or tools. for example in ISP-AAAA i made changes to tests in common, phoenix and falcon. then i also made changes to a tool in common. so there would be 4 diff files: common-test, phoenix-test, falcon-test, common-tool"
+  - 1 checklist spreadsheet with 3 tabs for shared, alpha and beta. no distinction between files that are code/test/tool changes.
+  - 1 review record, no distinction between shared, alpha and beta platforms.
+  - up to 9 diff files. this is because you may have worked on shared, alpha, and/or beta, and within those platforms you may have worked on their respective code, tests and/or tools. for example in TKT-AAAA i made changes to tests in shared, beta and alpha. then i also made changes to a tool in shared. so there would be 4 diff files: shared-test, beta-test, alpha-test, shared-tool"
 - **Diffs (`OI-31`):** "you have 3 platforms, and you also have test tools and code for each platform. so 9 in total."
 - **Merged-in work (`OI-30`):** no answer; Sumalee does not know, and it is something the team can research.
 
 **Rules heard (candidate `BR-*`):**
 
-- A review package has one checklist spreadsheet with one tab per Platform (common, falcon, phoenix), one review record, and one diff file per Platform and category that the change touches, up to nine (`OI-36`, `OI-31`). _This changes `BR-review-nine-parts` and `BR-review-package-required`; see Open questions._
+- A review package has one checklist spreadsheet with one tab per Platform (shared, alpha, beta), one review record, and one diff file per Platform and category that the change touches, up to nine (`OI-36`, `OI-31`). _This changes `BR-review-nine-parts` and `BR-review-package-required`; see Open questions._
 - Every review section needs Jenkins build or test evidence (`OI-33`): "all of them."
 - Everything the author changes needs a diff and is listed in the code review (`OI-37`).
 - If no matching branch is found, the branch field is left blank for now (`OI-29`).
@@ -215,11 +215,11 @@ _[Copy each into [OPEN-ISSUES.md](../OPEN-ISSUES.md) as an `OI-*` with the perso
 - `OI-29` (answered, to confirm "SKU"): match the ticket number to the branch name, using search; leave the branch blank if nothing matches. Several matches not answered directly.
 - `OI-30` (still open): Sumalee has no answer; the team researches it.
 - `OI-31` (answered): one diff per Platform and category touched, up to nine.
-- `OI-32` (partially answered): "based on what you edit"; the path rule (for example `tools/common/branches/<ticket>` means common tools) to confirm.
+- `OI-32` (partially answered): "based on what you edit"; the path rule (for example `tools/shared/branches/<ticket>` means shared tools) to confirm.
 - `OI-33` (answered): all sections need Jenkins evidence; list the branch's builds and let the author choose which to link.
 - `OI-34` (answered, to reconcile with `OI-33`): the most recent build, matched by ticket name, branch name, tools branch, and Jenkinsfile path.
 - `OI-35` (answered): prompt the author.
-- `OI-36` (answered): Platforms common, falcon, phoenix; one checklist spreadsheet with three Platform tabs, one review record, up to nine diffs. Templates unchanged.
+- `OI-36` (answered): Platforms shared, alpha, beta; one checklist spreadsheet with three Platform tabs, one review record, up to nine diffs. Templates unchanged.
 - `OI-37` (answered): test and tools reviews exist; developing them is a stretch goal, not this semester.
 - `OI-38` (answered, to confirm): SVN will have the information.
 - Not answered or not recorded: the quality-goal ranking, the tech stack proposal, and the checklist structure and Moderator page.

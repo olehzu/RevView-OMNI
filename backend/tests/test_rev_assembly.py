@@ -29,20 +29,20 @@ def test_classify_maps_every_platform_and_category_from_the_path(
 
 
 def test_classify_tools_common_example_from_the_design():
-    path = "tools/common/branches/SYN-1-timer-fix/src/timer.py"
+    path = "tools/shared/branches/SYN-1-timer-fix/src/timer.py"
 
-    assert classify(path) == (Platform.COMMON, Category.TOOLS)
+    assert classify(path) == (Platform.SHARED, Category.TOOLS)
 
 
 @pytest.mark.parametrize(
     "path",
     [
-        "docs/common/branches/SYN-1-timer-fix/readme.txt",  # unknown category
+        "docs/shared/branches/SYN-1-timer-fix/readme.txt",  # unknown category
         "code/apollo/branches/SYN-1-timer-fix/main.c",  # unknown platform
-        "code/falcon/trunk/SYN-1-timer-fix/main.c",  # not a branch
-        "Code/falcon/branches/SYN-1-timer-fix/main.c",  # case differs from the segment
-        "code/falcon/branches/SYN-1-timer-fix",  # no file under the branch
-        "code/falcon/branches//main.c",  # no branch name
+        "code/alpha/trunk/SYN-1-timer-fix/main.c",  # not a branch
+        "Code/alpha/branches/SYN-1-timer-fix/main.c",  # case differs from the segment
+        "code/alpha/branches/SYN-1-timer-fix",  # no file under the branch
+        "code/alpha/branches//main.c",  # no branch name
         "main.c",
     ],
 )
@@ -97,12 +97,12 @@ def test_a_branch_with_no_changed_files_is_assembly_incomplete():
 
 
 def test_an_unclassifiable_path_is_assembly_incomplete_naming_the_path():
-    path = "docs/common/branches/SYN-1-timer-fix/readme.txt"
+    path = "docs/shared/branches/SYN-1-timer-fix/readme.txt"
     service, repository, _ = _service(
         {
             "SYN-1-timer-fix": [
                 fixtures.changed_file(
-                    "code/falcon/branches/SYN-1-timer-fix/src/scheduler.c"
+                    "code/alpha/branches/SYN-1-timer-fix/src/scheduler.c"
                 ),
                 fixtures.changed_file(path),
             ]
@@ -119,7 +119,7 @@ def test_the_fixture_assembles_one_diff_per_platform_and_category_touched():
 
     assert package.status == ReviewPackageStatus.MATERIALS_ASSEMBLED
     assert [(d.platform, d.category) for d in package.diffs] == [
-        (Platform.COMMON, Category.TOOLS),
-        (Platform.FALCON, Category.CODE),
-        (Platform.FALCON, Category.TESTS),
+        (Platform.SHARED, Category.TOOLS),
+        (Platform.ALPHA, Category.CODE),
+        (Platform.ALPHA, Category.TESTS),
     ]

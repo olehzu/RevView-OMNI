@@ -47,7 +47,7 @@ def test_svn_fake_finds_only_branches_matching_the_ticket_key():
 
 
 def test_svn_fake_returns_the_branch_files():
-    files = [_file("tools/common/branches/SYN-1-timer-fix/src/timer.py")]
+    files = [_file("tools/shared/branches/SYN-1-timer-fix/src/timer.py")]
     svn = FakeSvnAdapter(branches={"SYN-1-timer-fix": files})
 
     assert svn.changed_files("SYN-1-timer-fix") == files

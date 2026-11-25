@@ -112,7 +112,7 @@ _Adapt: What are the steps in hiring a technical candidate? Could you show me yo
 
 **What they said:** Not covered this meeting. Not covered this meeting. `OI-3` (the unfinished end-to-end walkthrough from meeting 1) was deliberately not asked and is closed.
 
-**Artifacts they showed us:** Sumalee showed a page of her own notes on screen, covering the Moderator's role, tech stack options, and background on "the Phoenix and the Falcon platform, Subversion, ... Jenkins, stuff like that", a roadmap, and "what I have already written up for the HTML files". The team did not have access to it; she said "I'll get it to you guys" and "I'll send this all to you guys."
+**Artifacts they showed us:** Sumalee showed a page of her own notes on screen, covering the Moderator's role, tech stack options, and background on "the Beta and the Alpha platform, Subversion, ... Jenkins, stuff like that", a roadmap, and "what I have already written up for the HTML files". The team did not have access to it; she said "I'll get it to you guys" and "I'll send this all to you guys."
 
 The transcript opens mid-sentence with "Commit it, send an e-mail to everyone listing", apparently describing a step of the current process; the context before it was not captured.
 

@@ -163,7 +163,7 @@ An alert sent to a Relevant User after a review event, such as Review Start, a n
 
 ### Platform
 
-A client-defined avionics software target or product area: common (shared between falcon and phoenix), falcon, or phoenix. A Formal Review may affect up to three Platforms; they are represented as tabs within one Review Checklist spreadsheet, rather than separate checklists.
+A client-defined avionics software target or product area: shared (code used by both alpha and beta), alpha, or beta. These are stand-in names: the client's real Platform names are confidential and are never written in this repository. A Formal Review may affect up to three Platforms; they are represented as tabs within one Review Checklist spreadsheet, rather than separate checklists.
 
 **Needs client confirmation:** the rule used to determine which Platforms a Jira Ticket affects (`OI-32`).
 
@@ -183,7 +183,7 @@ A file, record, or result that must be captured and possibly preserved for a For
 
 ### Review Checklist
 
-One spreadsheet of criteria used to evaluate files or changes in a Formal Review, organized into Platform tabs for common, falcon, and phoenix without separate code/tools/tests checklists. RevView/OMNI may prefill information that can be determined reliably, but judgment-based items remain for a person to complete or approve.
+One spreadsheet of criteria used to evaluate files or changes in a Formal Review, organized into Platform tabs for shared, alpha, and beta without separate code/tools/tests checklists. RevView/OMNI may prefill information that can be determined reliably, but judgment-based items remain for a person to complete or approve.
 
 **Synonyms:** Checklist; Code Review Checklist.
 

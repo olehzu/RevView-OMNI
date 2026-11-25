@@ -20,6 +20,7 @@ Read this at the start of every session. Each rule cites where it lives; follow 
 - Use only the sandbox Jira, SVN, and Jenkins and synthetic data; never configure production instances (`CO-sandbox-development`, `BR-no-student-prod-access`).
 - Never commit credentials, tokens, or connection strings; the repository may be public (`SEC-no-production-credentials-in-development`, `CO-public-repository`, architecture section 8.2.6).
 - Reach Jira, SVN, and Jenkins only through the Integration Gateway's adapters (architecture sections 5.2 and 8.2.4).
+- Never write the client's confidential names (its real Platform names, SVN path prefix, or Jira project key) in code, docs, commits, or pull requests; use the stand-ins in the glossary's Platform entry. The list is in the `FORBIDDEN_TERMS` CI secret and the team's private channel, never in this repository (`CO-public-repository`).
 
 ## Conventions
 

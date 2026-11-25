@@ -35,7 +35,7 @@ Review Preparation takes a review package from "In preparation" to "Materials as
 - **The SVN and Jenkins adapters are fakes** returning Synthetic Data (`CO-sandbox-development`, section 8.2.10). The real sandbox adapters replace them behind the same interfaces.
 - **Storage is in memory.** Nothing survives a restart. PostgreSQL (`CO-database`) arrives with the first use case that needs persistence.
 
-**Package shape.** The shape follows the 2026-11-06 meeting (`OI-31`, `OI-36`), now reflected in specification section 7.1 and business-rules.md section 2.1 (issue #45). A package has one Review Checklist with one tab per Platform (common, falcon, phoenix), one Review Record, and one Diff per Platform × Code/Tools/Tests Category the change touches, up to nine. Template delivery and treatment of unaffected tabs remain open (`OI-44`); the slice uses placeholder tabs for affected Platforms only.
+**Package shape.** The shape follows the 2026-11-06 meeting (`OI-31`, `OI-36`), now reflected in specification section 7.1 and business-rules.md section 2.1 (issue #45). A package has one Review Checklist with one tab per Platform (shared, alpha, beta), one Review Record, and one Diff per Platform × Code/Tools/Tests Category the change touches, up to nine. Template delivery and treatment of unaffected tabs remain open (`OI-44`); the slice uses placeholder tabs for affected Platforms only.
 
 **The review package page.** An Author loads a review package by its review id, presses Assemble, and sees the assembled materials, the gaps flagged by 2a1, and any failure as a message they can act on. It runs in the Web Interface container ([section 5.1](architectural-design.md#51-containers)) and calls only the two endpoints below. Its frontend shell (the layout, the API client, and the error-envelope handling) is **shared code, the trunk**: later use cases reuse it, so it merges before any page built on it. In v0.1.0 the page reaches the API through Vite's development proxy; serving the built pages from the Application (`KD-deployment-shape`) comes later.
 
@@ -129,7 +129,7 @@ All under `frontend/`. **Trunk** marks shared code later use cases reuse.
 - `src/errors.ts` (new, **trunk**): `messageFor`, the Author's message for an error: the shared codes and the fallback in the table below, plus the messages an area passes in for its own codes.
 - `src/AppLayout.tsx` (new, **trunk**): the product name and a main region. No navigation, since there is one page.
 - `src/App.tsx` (reused, revised): renders `AppLayout` around `ReviewPackagePage`.
-- `src/rev/reviewPackage.ts` (new): types mirroring `backend/app/rev/models.py`; `getReviewPackage` and `assembleMaterials`; the area's error messages; and the plain functions `groupDiffs` (Platform in common, falcon, phoenix order, then Category in code, tools, tests order), `evidenceLabel`, and `initialReviewId` (the `review` query parameter, or empty).
+- `src/rev/reviewPackage.ts` (new): types mirroring `backend/app/rev/models.py`; `getReviewPackage` and `assembleMaterials`; the area's error messages; and the plain functions `groupDiffs` (Platform in shared, alpha, beta order, then Category in code, tools, tests order), `evidenceLabel`, and `initialReviewId` (the `review` query parameter, or empty).
 - `src/rev/ReviewPackagePage.tsx` (new): a review id input with Load, prefilled from `?review=` with no default; an Assemble button, enabled only while the status is "In preparation"; and the package: status, SVN Branch, SVN and Jenkins evidence, the Diffs grouped by Platform then Category with each Changed File's path, Revision, and repository link and the diff text in a collapsed block, the Jenkins Builds newest first with their result and the preselected one marked, the Review Checklist as one tab per Platform listing its Changed Files, the Review Record id, and `missing` (2a1) as an alert. Build times show in UTC, labelled "UTC" (see Open questions).
 - `vite.config.ts` (reused, revised): a development-server proxy sending `/api` to `http://127.0.0.1:8000`. Configuration only.
 - `README.md` (reused, revised): a "Run the page" section.
@@ -255,14 +255,14 @@ All responses use the section 8.2.3 envelope: `{"data": …}` or `{"error": {"co
     "jenkins_evidence": "available",
     "diffs": [
       {
-        "platform": "common",
+        "platform": "shared",
         "category": "tools",
-        "diff": "Index: tools/common/branches/SYN-1-timer-fix/src/timer.py\n...",
+        "diff": "Index: tools/shared/branches/SYN-1-timer-fix/src/timer.py\n...",
         "changed_files": [
           {
-            "path": "tools/common/branches/SYN-1-timer-fix/src/timer.py",
+            "path": "tools/shared/branches/SYN-1-timer-fix/src/timer.py",
             "revision": "1042",
-            "repository_link": "https://svn.example.invalid/repo/tools/common/branches/SYN-1-timer-fix/src/timer.py?p=1042"
+            "repository_link": "https://svn.example.invalid/repo/tools/shared/branches/SYN-1-timer-fix/src/timer.py?p=1042"
           }
         ]
       }
@@ -274,7 +274,7 @@ All responses use the section 8.2.3 envelope: `{"data": …}` or `{"error": {"co
     "preselected_build": 57,
     "review_checklist": {
       "tabs": [
-        { "platform": "common", "changed_files": ["tools/common/branches/SYN-1-timer-fix/src/timer.py"] }
+        { "platform": "shared", "changed_files": ["tools/shared/branches/SYN-1-timer-fix/src/timer.py"] }
       ]
     },
     "review_record": { "id": "rr-0001", "review_id": "rev-0001", "jira_ticket_key": "SYN-1" },
@@ -286,7 +286,7 @@ All responses use the section 8.2.3 envelope: `{"data": …}` or `{"error": {"co
 - Statuses are the use case's display strings exactly. Field names are snake_case. `platform` and `category` are lowercase, spelled exactly as the path segment. Paths are full repository paths, and the same string appears in the Diff, the checklist tab, and `missing`.
 - `missing` entries read `{"path": …, "missing": "revision"}`. `preselected_build` is `null` under 4a1. `svn_evidence` and `jenkins_evidence` are `"available"`, `"unavailable"`, or `null` when that system has not been asked yet: before the first assembly, and `jenkins_evidence` after an SVN outage, since Jenkins is not queried then.
 - After an SVN or Jenkins outage, or an `ASSEMBLY_INCOMPLETE`, the stored package has no materials (no branch, Diffs, builds, checklist, record, or `missing`), with each system's evidence as observed: a Jenkins outage stores `svn_evidence: "available"`, `jenkins_evidence: "unavailable"`; an `ASSEMBLY_INCOMPLETE` stores `svn_evidence: "available"`, `jenkins_evidence: null`. Nothing half-assembled or left over from an earlier run is stored.
-- The Review Checklist has a tab for each Platform the change touches, in common, falcon, phoenix order; Diffs are in Platform then Category order, and files within a Diff by path. The Review Record id is the review id with `rev-` replaced by `rr-`.
+- The Review Checklist has a tab for each Platform the change touches, in shared, alpha, beta order; Diffs are in Platform then Category order, and files within a Diff by path. The Review Record id is the review id with `rev-` replaced by `rr-`.
 - Errors: `source` is `null` when no external system is involved. `ASSEMBLY_INCOMPLETE` names the gap in `message` only. `reviewId` is an opaque string, and any unknown one gives `404`.
 
 The review package page uses these two rows as they stand.
@@ -317,7 +317,7 @@ _[Only the decisions a reader could not recover from the code. **Each one names 
 
 **No matching Jenkins Build is a `200` in "Pending build validation" (4a1).** Rejected: an error, because the use case makes it a state the author resolves by running a build when prompted (`OI-35`). Missing branch and missing files remain errors because there is nothing to assemble.
 
-**Platform and Category come from the repository path.** A path of the form `<category>/<platform>/branches/<branch>/…` (for example `tools/common/branches/<ticket>/…` is common, tools) decides both. Rejected: the author choosing per file, and file-type rules (the team's reading of `OI-32`).
+**Platform and Category come from the repository path.** A path of the form `<category>/<platform>/branches/<branch>/…` (for example `tools/shared/branches/<ticket>/…` is shared, tools) decides both. Rejected: the author choosing per file, and file-type rules (the team's reading of `OI-32`).
 
 **Jenkins evidence is per package, not per section.** Matching builds (the ticket key in the build name or description, and the branch-name parameter equal to the SVN Branch) are listed newest first, with the most recent preselected. Rejected: one build per section, because a build belongs to a branch, and every section needs evidence (`OI-33`, `OI-34` reconciled).
 
@@ -385,7 +385,7 @@ _[One row per flow: the main success scenario and **every** extension this docum
 | Use case, flow | Level | Asserts |
 |---|---|---|
 | UC-REV-assemble-materials main | integration | The fixture package's POST returns `200` with status "Materials assembled"; the SVN Branch matched; one Diff per Platform × Category touched and no other; every Changed File has a Revision and a repository link; each Review Checklist tab lists exactly the Changed Files in that Platform's Diffs (`BR-diff-checklist-match`); one Review Record; builds newest first with the most recent preselected; the Jenkins fake received no start-build call; the GET returns the same package |
-| UC-REV-assemble-materials step 3 | unit | `classify` maps each Platform × Category path to the right pair, for example `tools/common/branches/<ticket>/…` to common, tools |
+| UC-REV-assemble-materials step 3 | unit | `classify` maps each Platform × Category path to the right pair, for example `tools/shared/branches/<ticket>/…` to shared, tools |
 | UC-REV-assemble-materials 2a1 | integration | A Changed File without a Revision returns `200` with that file in `missing`, and the status stays "In preparation" |
 | UC-REV-assemble-materials 4a1 | integration | No matching Jenkins Build returns `200` with status "Pending build validation" and no build preselected |
 | 2a1 and 4a1 together | integration | Status stays "In preparation" (2a1 wins), no build preselected |
@@ -399,7 +399,7 @@ _[One row per flow: the main success scenario and **every** extension this docum
 | Page: envelope error (8.2.1) | unit (Vitest) | `parseEnvelope` of a `503` error envelope returns its code, message, and source unchanged |
 | Page: API unreachable | unit (Vitest) | A rejected fetch, a body that is not JSON, or a body with neither `data` nor `error` gives `API_UNREACHABLE` |
 | Page: every extension's error code | unit (Vitest) | `messageFor` gives the Error messages table's message for each of the seven API codes; `ASSEMBLY_INCOMPLETE` includes the server's message; `REVIEW_PACKAGE_NOT_FOUND` includes the review id; an unknown code gives the fallback naming the code |
-| Page: step 3 grouping | unit (Vitest) | `groupDiffs` orders Platforms common, falcon, phoenix and Categories code, tools, tests, keeps each Diff's Changed Files, and gives nothing for no Diffs |
+| Page: step 3 grouping | unit (Vitest) | `groupDiffs` orders Platforms shared, alpha, beta and Categories code, tools, tests, keeps each Diff's Changed Files, and gives nothing for no Diffs |
 | Page: evidence (8.2.1) | unit (Vitest) | `evidenceLabel` gives "available", "unavailable", and "not read yet" for `null`; never a passing word for `unavailable` |
 | Page: choosing the package | unit (Vitest) | `initialReviewId("?review=rev-0001")` is `rev-0001`; with no parameter it is empty |
 | Page: main success scenario, PRE-1, unknown package | manual, end to end | With the API and `npm run dev` running ("Run the page" in `README.md`), `/?review=rev-0001`: Load shows "In preparation" and no materials; Assemble shows "Materials assembled", SVN Branch `SYN-1-timer-fix`, the Diffs grouped with Revisions and links, build 57 marked preselected, the Review Checklist tabs, and Assemble disabled; loading `rev-9999` shows the not-found message. Recorded in the pull request under How it was verified |

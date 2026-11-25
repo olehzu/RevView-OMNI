@@ -25,9 +25,9 @@ class Evidence(StrEnum):
 
 
 class Platform(StrEnum):
-    COMMON = "common"
-    FALCON = "falcon"
-    PHOENIX = "phoenix"
+    SHARED = "shared"
+    ALPHA = "alpha"
+    BETA = "beta"
 
 
 class Category(StrEnum):
