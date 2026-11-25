@@ -84,7 +84,7 @@ _**Must ask. 3 min.**_
 
 **Artifacts they showed us:** three screens of the prototype, a static web page opened from her machine. Most field values are placeholders from a generic template (class names such as "Mathematics" and "Science", school-style task names).
 
-- **Task Dashboard.** A header with "+ New Task" and "Logout". A filter bar: owner, class, date, status, and "Clear Filters". A row of cards, one per ticket, each with the ticket key (`ISP-…`), a title, Owner, Class, Status (seen: New, In Progress, Completed, Blocked), and the number of Collaborators. Selecting a card opens a detail panel with the key, title, Owner, Collaborators, Class, Status, Priority, Assigned To, Start Date, Due Date, Description, and a green "Review" button.
+- **Task Dashboard.** A header with "+ New Task" and "Logout". A filter bar: owner, class, date, status, and "Clear Filters". A row of cards, one per ticket, each with the ticket key (`TKT-…`), a title, Owner, Class, Status (seen: New, In Progress, Completed, Blocked), and the number of Collaborators. Selecting a card opens a detail panel with the key, title, Owner, Collaborators, Class, Status, Priority, Assigned To, Start Date, Due Date, Description, and a green "Review" button.
 - **Create New Task: Select Existing Ticket.** "Select a ticket from the available list": a search box, a list of tickets with radio buttons, and the buttons "Enter Manually" and "Next".
 - **Create New Task: Information Retrieved.** The fields filled in from the chosen ticket (Name, Class, Assigned To, Status, Priority, Start Date, Due Date), and the buttons "Review/Edit Information" and "Create Task".
 
@@ -186,7 +186,7 @@ _[Copy each into [OPEN-ISSUES.md](../OPEN-ISSUES.md) as an `OI-*` with the perso
 - `OI-39` (answered): the central time zone only.
 - New, to file: **What should RevView/OMNI take from Sumalee's prototype: the look, the dashboard-then-create-then-review flow, or specific fields? Is a dashboard of review packages, with filters, a requirement?** Sumalee Rodolph. Decides whether a new use case is needed and how `UC-REV-create-review` is designed.
 - New, to file: **Which of the prototype's fields and statuses are real** (Owner, Collaborators, Class, Priority, Assigned To, Start and Due Date; New, In Progress, Completed, Blocked), and which are template placeholders? Sumalee Rodolph. Only needed when the use case that shows them is designed.
-- Not asked: Jira, SVN, and Jenkins types, versions, and how each logs in; whether the shape she has shown (for example `tools/common/branches/ISP-…`) is close enough to build the Synthetic Data against; the checklist template files (`OI-36`).
+- Not asked: Jira, SVN, and Jenkins types, versions, and how each logs in; whether the shape she has shown (for example `tools/shared/branches/TKT-…`) is close enough to build the Synthetic Data against; the checklist template files (`OI-36`).
 
 **Requirements this changes (impact list needed):**
 
